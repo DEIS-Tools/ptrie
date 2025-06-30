@@ -90,19 +90,19 @@
         },
         {
           "type": "build",
-          "name": "dev-debug"
+          "name": "dev-release"
         },
         {
           "type": "test",
-          "name": "dev-debug"
+          "name": "dev-release"
         },
         {
           "type": "build",
-          "name": "dev-release"
+          "name": "dev-debug"
         },
         {
           "type": "test",
-          "name": "dev-release"
+          "name": "dev-debug"
         }
       ]
     },
@@ -116,19 +116,19 @@
         },
         {
           "type": "build",
-          "name": "dev-san-debug"
+          "name": "dev-san-release"
         },
         {
           "type": "test",
-          "name": "dev-san-debug"
+          "name": "dev-san-release"
         },
         {
           "type": "build",
-          "name": "dev-san-release"
+          "name": "dev-san-debug"
         },
         {
           "type": "test",
-          "name": "dev-san-release"
+          "name": "dev-san-debug"
         }
       ]
     }
