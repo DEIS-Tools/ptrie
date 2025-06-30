@@ -82,7 +82,7 @@
   "workflowPresets": [
     {
       "name": "dev",
-      "displayName": "Configure and Build dev for Debug and Release",
+      "displayName": "Configure, Build and Test dev for Debug and Release",
       "steps": [
         {
           "type": "configure",
@@ -108,7 +108,7 @@
     },
     {
       "name": "dev-san",
-      "displayName": "Configure and Build dev with Sanitizers for Debug and Release",
+      "displayName": "Configure, Build and Test dev with Sanitizers for Debug and Release",
       "steps": [
         {
           "type": "configure",

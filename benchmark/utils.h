@@ -19,9 +19,8 @@
 #define PTRIE_UTILS_H
 
 #include <iostream>
-
 #include <cstdio>
-#include <cstdlib>
+#include <chrono>
 
 template <typename T>
 void read_arg(const char* data, T& dest, const char* error, const char* type)
@@ -32,8 +31,8 @@ void read_arg(const char* data, T& dest, const char* error, const char* type)
     }
 }
 
-void print_settings(const char* type, size_t elements, size_t seed, size_t bytes, double deletes, double read_rate,
-                    size_t mv)
+inline void print_settings(const char* type, size_t elements, size_t seed, size_t bytes, double deletes,
+                           double read_rate, size_t mv)
 {
     std::cout << "Using " << type << ", inserting " << elements << " items of " << bytes << " bytes produced via seed "
               << seed << ". Of those " << (deletes * 100.0)
@@ -41,5 +40,20 @@ void print_settings(const char* type, size_t elements, size_t seed, size_t bytes
               << " extra reads will occur"
               << ". All bytes in rand data are mod " << mv << std::endl;
 }
+
+struct Timer
+{
+    using Clock = std::chrono::high_resolution_clock;
+    using TimePoint = Clock::time_point;
+    using Duration = std::chrono::duration<double>;
+    Timer(): start{Clock::now()} {}
+    Duration elapsed() const { return {Clock::now() - start}; }
+    ~Timer() { std::cout << "Completed in " << elapsed() << std::endl; }
+    Timer(const Timer&) = default;
+    Timer& operator=(const Timer&) = default;
+
+private:
+    TimePoint start;
+};
 
 #endif  // PTRIE_UTILS_H
