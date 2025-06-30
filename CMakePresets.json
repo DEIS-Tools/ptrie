@@ -1,0 +1,136 @@
+{
+  "version": 10,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 28,
+    "patch": 0
+  },
+  "include": ["cmake/CommonPresets.json"],
+  "configurePresets": [
+    {
+      "name": "dev",
+      "inherits": "multi",
+      "binaryDir": "${sourceDir}/build-dev",
+      "cacheVariables": {
+        "PTRIE_BuildTests": "ON" ,
+        "PTRIE_BuildBenchmark": "ON"
+      },
+      "displayName": "Configure dev for Debug and Release"
+    },
+    {
+      "name": "dev-san",
+      "inherits": "multi-san",
+      "binaryDir": "${sourceDir}/build-dev-san",
+      "cacheVariables": {
+        "PTRIE_BuildTests": "ON"
+      },
+      "displayName": "Configure dev for Debug and Release with Sanitizers"
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "dev-release",
+      "inherits": "release",
+      "configurePreset": "dev",
+      "displayName": "Build dev for Debug"
+    },
+    {
+      "name": "dev-debug",
+      "inherits": "debug",
+      "configurePreset": "dev",
+      "displayName": "Build dev for Release"
+    },
+    {
+      "name": "dev-san-release",
+      "inherits": "release",
+      "configurePreset": "dev-san",
+      "displayName": "Build dev with Sanitizers and Debug"
+    },
+    {
+      "name": "dev-san-debug",
+      "inherits": "debug",
+      "configurePreset": "dev-san",
+      "displayName": "Build dev with Sanitizers and Release"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "dev-debug",
+      "inherits": "debug",
+      "configurePreset": "dev",
+      "displayName": "Test dev for Debug"
+    },
+    {
+      "name": "dev-release",
+      "inherits": "release",
+      "configurePreset": "dev",
+      "displayName": "Test dev for Release"
+    },
+    {
+      "name": "dev-san-debug",
+      "inherits": "debug",
+      "configurePreset": "dev-san",
+      "displayName": "Test dev with Sanitizers and Debug"
+    },
+    {
+      "name": "dev-san-release",
+      "inherits": "release",
+      "configurePreset": "dev-san",
+      "displayName": "Test dev with Sanitizers and Release"
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "dev",
+      "displayName": "Configure and Build dev for Debug and Release",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "dev"
+        },
+        {
+          "type": "build",
+          "name": "dev-debug"
+        },
+        {
+          "type": "test",
+          "name": "dev-debug"
+        },
+        {
+          "type": "build",
+          "name": "dev-release"
+        },
+        {
+          "type": "test",
+          "name": "dev-release"
+        }
+      ]
+    },
+    {
+      "name": "dev-san",
+      "displayName": "Configure and Build dev with Sanitizers for Debug and Release",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "dev-san"
+        },
+        {
+          "type": "build",
+          "name": "dev-san-debug"
+        },
+        {
+          "type": "test",
+          "name": "dev-san-debug"
+        },
+        {
+          "type": "build",
+          "name": "dev-san-release"
+        },
+        {
+          "type": "test",
+          "name": "dev-san-release"
+        }
+      ]
+    }
+  ]
+}
