@@ -30,7 +30,7 @@ inline binarywrapper_t rand_data(size_t seed, size_t maxsize, size_t minsize = s
 struct wrapper_t
 {
     binarywrapper_t data;
-    uint64_t _hash;
+    uint64_t _hash{};
 
     bool operator<(const wrapper_t& other) const
     {
@@ -62,12 +62,12 @@ template <typename T>
 void set_insert(T& set, size_t elements, size_t seed, size_t bytes, double deletes, double read_rate, size_t mv)
 {
     /*
-    auto generator = std::default_random_engine{seed};
+    auto generator = std::default_random_engine(seed);
     auto dist = std::uniform_real_distribution<double>{};
     auto rem = std::uniform_int_distribution<int>(0, elements);
     */
 
-    auto read_generator = std::default_random_engine{seed};
+    auto read_generator = std::default_random_engine(seed);
     auto read_dist = std::normal_distribution<double>(read_rate, read_rate / 2.0);
     auto read_el = std::uniform_int_distribution<int>(0, elements);
 

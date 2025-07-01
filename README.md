@@ -10,11 +10,16 @@ cmake --install build --prefix=$PWD/local
 
 # Testing and Benchmarking
 
-## Dependencies for Ubuntu
-
+## Dependencies
+Ubuntu (assuming 24.04 LTS):
 ```shell
 sudo apt install cmake ninja-build g++
 sudo apt install libsparsehash-dev libboost-test-dev
+```
+macOS (install [XCode from AppStore](https://apps.apple.com/us/app/xcode/id497799835), and [Homebrew](https://brew.sh)):
+```shell
+brew install cmake ninja 
+brew install google-sparsehash boost
 ```
 
 ## Configure, Build, Test and Benchmark:
