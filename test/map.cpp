@@ -15,16 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 // Created by Peter G. Jensen on 12/9/16.
-#define BOOST_TEST_MODULE PTrieMap
-#include "utils.h"
 
-#include <boost/test/unit_test.hpp>
+#include "utils.h"
 
 #include <ptrie/ptrie_map.h>
 
+#include <doctest/doctest.h>
+
 #include <vector>
 
-BOOST_AUTO_TEST_CASE(PseudoRand1)
+TEST_SUITE_BEGIN("PTrie Map");
+
+TEST_CASE("Pseudo Rand1")
 {
     for (size_t seed = 314; seed < (314 + 10); ++seed) {
         auto set = ptrie::map<ptrie::uchar, size_t>{};
@@ -32,7 +34,7 @@ BOOST_AUTO_TEST_CASE(PseudoRand1)
         for (size_t i = 0; i < 1024 * 10; ++i) {
             auto data = rand_data(i + seed, 20);
             auto res = set.insert(data.first.get(), data.second);
-            BOOST_CHECK(res.first);
+            CHECK(res.first);
             set.get_data(res.second) = i;
         }
 
@@ -41,13 +43,13 @@ BOOST_AUTO_TEST_CASE(PseudoRand1)
         for (size_t i = 0; i < 1024 * 10; ++i) {
             auto data = rand_data(i + seed, 20);
             auto res = set.exists(data.first.get(), data.second);
-            BOOST_CHECK(res.first);
-            BOOST_CHECK_EQUAL(set.get_data(res.second), i);
+            CHECK(res.first);
+            CHECK(set.get_data(res.second) == i);
         }
     }
 }
 
-BOOST_AUTO_TEST_CASE(PseudoRand1Key)
+TEST_CASE("Pseudo Rand1 Key")
 {
     constexpr auto mx = 5;
     auto data = std::make_unique<int32_t[]>(mx);
@@ -60,11 +62,11 @@ BOOST_AUTO_TEST_CASE(PseudoRand1Key)
             for (size_t j = 0; j < mx; ++j)
                 data[j] = rand();
             auto res = set.insert(data.get(), mx);
-            BOOST_CHECK(res.first);
+            CHECK(res.first);
             set.get_data(res.second) = i;
             auto res2 = set.exists(data.get(), mx);
-            BOOST_CHECK(res2.first);
-            BOOST_CHECK(res2.second == res.second);
+            CHECK(res2.first);
+            CHECK(res2.second == res.second);
         }
 
         // let us unwrap everything and check that it is there!
@@ -74,23 +76,23 @@ BOOST_AUTO_TEST_CASE(PseudoRand1Key)
             for (size_t j = 0; j < mx; ++j)
                 data[j] = rand();
             auto res = set.exists(data.get(), mx);
-            BOOST_CHECK(res.first);
-            BOOST_CHECK_EQUAL(set.get_data(res.second), i);
+            CHECK(res.first);
+            CHECK(set.get_data(res.second) == i);
             auto size = set.unpack(res.second, unpack.get());
-            BOOST_CHECK(size == mx);
-            BOOST_CHECK(std::equal(data.get(), data.get() + mx, unpack.get()));
+            CHECK(size == mx);
+            CHECK(std::equal(data.get(), data.get() + mx, unpack.get()));
         }
     }
 }
 
-BOOST_AUTO_TEST_CASE(PseudoRandSplitHeap)
+TEST_CASE("Pseudo Rand Split Heap")
 {
     for (size_t seed = 512; seed < (512 + 10); ++seed) {
         auto set = ptrie::map<unsigned char, size_t, sizeof(size_t) + 1, 6>{};
         for (size_t i = 0; i < 1024 * 10; ++i) {
             auto data = rand_data(i + seed, 20);
             auto res = set.insert(data.first.get(), data.second);
-            BOOST_CHECK(res.first);
+            CHECK(res.first);
             set.get_data(res.second) = i;
         }
 
@@ -100,9 +102,9 @@ BOOST_AUTO_TEST_CASE(PseudoRandSplitHeap)
             auto data = rand_data(i + seed, 20);
             auto res = set.exists(data.first.get(), data.second);
             auto d = set[{data.first.get(), data.second}];
-            BOOST_CHECK_EQUAL(d, i);
-            BOOST_CHECK(res.first);
-            BOOST_CHECK_EQUAL(set.get_data(res.second), i);
+            CHECK(d == i);
+            CHECK(res.first);
+            CHECK(set.get_data(res.second) == i);
         }
     }
 }
@@ -154,7 +156,7 @@ struct ptrie::byte_iterator<type_t>
     static constexpr bool continious() { return false; }
 };
 
-BOOST_AUTO_TEST_CASE(ComplexType1)
+TEST_CASE("Complex Type1")
 {
     for (size_t seed = 1337; seed < (1337 + 10); ++seed) {
         auto cont = ptrie::map<type_t, size_t>{};
@@ -164,35 +166,35 @@ BOOST_AUTO_TEST_CASE(ComplexType1)
             srand(i + seed);
             auto test = type_t{(char)rand(), (int)rand(), (char)rand(), (int)rand()};
             cont[test] = i;
-            BOOST_CHECK(cont[test] == i);
+            CHECK(cont[test] == i);
             auto res = cont.exists(test);
-            BOOST_CHECK(res.first);
-            BOOST_CHECK(i == res.second);
+            CHECK(res.first);
+            CHECK(i == res.second);
             ids.push_back(res.second);
             auto size = cont.unpack(res.second, &scratchpad);
 
-            BOOST_CHECK_EQUAL(size_t{1}, size);
-            BOOST_CHECK_EQUAL(test, scratchpad);
+            CHECK(size == 1);
+            CHECK(test == scratchpad);
         }
 
         // let us unwrap everything and check that it is there!
         for (size_t i = 0; i < 1024 * 10; ++i) {
             srand(i + seed);
             type_t test({(char)rand(), (int)rand(), (char)rand(), (int)rand()});
-            BOOST_CHECK(cont[test] == i);
+            CHECK(cont[test] == i);
             auto size = cont.unpack(ids[i], &scratchpad);
 
-            BOOST_CHECK_EQUAL(size_t{1}, size);
-            BOOST_CHECK_EQUAL(test, scratchpad);
+            CHECK(size == 1);
+            CHECK(test == scratchpad);
 
             auto key = cont.unpack(ids[i]);
-            BOOST_CHECK_EQUAL(size_t{1}, key.size());
-            BOOST_CHECK(key.back() == test);
+            CHECK(key.size() == 1);
+            CHECK(key.back() == test);
         }
     }
 }
 
-BOOST_AUTO_TEST_CASE(SimpleIterator)
+TEST_CASE("Simple Iterator")
 {
     std::cerr << "SimpleIterator" << std::endl;
     const size_t x = 10000;
@@ -201,10 +203,10 @@ BOOST_AUTO_TEST_CASE(SimpleIterator)
         set[i] = i;
     size_t cnt = 0;
     for (auto b = set.begin(); b != set.end(); ++b) {
-        BOOST_REQUIRE(b.index() == *b);
-        BOOST_REQUIRE(b.index() <= x);
-        BOOST_REQUIRE(b.index() == b.unpack().back());
+        REQUIRE(b.index() == *b);
+        REQUIRE(b.index() <= x);
+        REQUIRE(b.index() == b.unpack().back());
         ++cnt;
     }
-    BOOST_CHECK_EQUAL(cnt, x);
+    CHECK(cnt == x);
 }

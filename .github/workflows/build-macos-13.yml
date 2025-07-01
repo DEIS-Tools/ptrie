@@ -46,14 +46,14 @@ jobs:
       - name: Install Build Tools
         run: |
           brew update
-          brew install cmake ninja boost google-sparsehash
+          brew install cmake ninja google-sparsehash
       - uses: actions/checkout@v4
       - name: Configure Multi-Config
         run: cmake -B "$BUILD_DIR" -DPTRIE_BuildTests=ON -DPTRIE_BuildBenchmark=OFF
-      - name: Build Debug
-        run: cmake --build "$BUILD_DIR" --config Debug
-      - name: Test Debug
-        run: ctest --test-dir "$BUILD_DIR" -C Debug
+#      - name: Build Debug
+#        run: cmake --build "$BUILD_DIR" --config Debug
+#      - name: Test Debug
+#        run: ctest --test-dir "$BUILD_DIR" -C Debug
       - name: Build Release
         run: cmake --build "$BUILD_DIR" --config Release
       - name: Test Release

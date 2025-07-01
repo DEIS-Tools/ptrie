@@ -20,33 +20,36 @@
 #ifndef PTRIE_UTILS_H
 #define PTRIE_UTILS_H
 
-#include <boost/test/unit_test.hpp>
+#include <doctest/doctest.h>
+
+#include <memory>
+#include <utility>  // pair
 
 #include <cstddef>  // size_t etc
 
 template <typename T, typename G>
-void try_insert(T& trie, G generator, size_t N)
+void try_insert(T& trie, G&& generator, size_t N)
 {
     for (size_t i = 0; i < N; ++i) {
         auto data = generator(i);
         auto exists = trie.exists(data.first.get(), data.second);
-        BOOST_REQUIRE_MESSAGE(!exists.first, "FAILED ON INSERT " << i);
+        REQUIRE_MESSAGE(!exists.first, "FAILED ON INSERT " << i);
 
         auto inserted = trie.insert(data.first.get(), data.second);
-        BOOST_REQUIRE_MESSAGE(inserted.first, "EXIST FAILED FOR " << i);
+        REQUIRE_MESSAGE(inserted.first, "EXIST FAILED FOR " << i);
     }
 
     for (size_t i = 0; i < N; ++i) {
         auto data = generator(i);
         auto exists = trie.exists(data.first.get(), data.second);
-        BOOST_REQUIRE_MESSAGE(exists.first, "POST EXIST CHECK FAILED FOR " << i);
+        REQUIRE_MESSAGE(exists.first, "POST EXIST CHECK FAILED FOR " << i);
     }
 }
 
 std::pair<std::unique_ptr<unsigned char[]>, size_t> rand_data(size_t seed, size_t maxsize,
                                                               size_t minsize = sizeof(size_t))
 {
-    assert(minsize >= sizeof(size_t));
+    REQUIRE(minsize >= sizeof(size_t));
     srand(seed);
     // pick size between 0 and maxsize
     size_t size = minsize != maxsize ? minsize + rand() % (maxsize - minsize) : minsize;
