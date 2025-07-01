@@ -43,7 +43,7 @@ jobs:
       - name: Install Build Tools
         run: |
           sudo apt-get -qq update
-          sudo apt-get -qq install cmake ninja-build g++ libsparsehash-dev libboost-test-dev
+          sudo apt-get -qq install cmake ninja-build g++ libsparsehash-dev
       - uses: actions/checkout@v4
       - name: Configure Multi-Config
         run: cmake -B "$BUILD_DIR" -DPTRIE_BuildTests=ON -DPTRIE_BuildBenchmark=OFF
