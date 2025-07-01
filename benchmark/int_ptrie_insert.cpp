@@ -63,7 +63,8 @@ int main(int argc, const char** argv)
         order.push_back(i);
 
     std::srand(seed);
-    std::random_shuffle(order.begin(), order.end());
+    auto gen = std::default_random_engine(seed);
+    std::shuffle(order.begin(), order.end(), gen);
 
     if (strcmp(type, "ptrie") == 0) {
         print_settings(type, elements, seed, sizeof(size_t), deletes, read_rate, 256);

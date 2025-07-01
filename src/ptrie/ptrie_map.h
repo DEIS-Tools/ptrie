@@ -32,9 +32,9 @@ namespace ptrie {
 
 template <typename KEY, typename T, uint16_t HEAPBOUND = 17, uint16_t SPLITBOUND = 128, uint8_t BSIZE = 8,
           size_t ALLOCSIZE = (1024 * 64), typename I = size_t>
-class map : private __set_stable<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, T, I>
+class map : __set_stable<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, T, I>
 {
-    static_assert(!std::is_same<void, T>::value, "T (map-to-type) must not be void");
+    static_assert(!std::is_same_v<void, T>, "T (map-to-type) must not be void");
     using pt = __set_stable<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, T, I>;
     using entrylist_t = typename pt::entrylist_t;
 

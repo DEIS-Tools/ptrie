@@ -38,7 +38,7 @@ template <typename KEY = unsigned char, uint16_t HEAPBOUND = 17, uint16_t SPLITB
 class __set_stable : protected __ptrie<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, T, I, true>
 {
     using pt = __ptrie<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, T, I, true>;
-    static_assert(std::is_integral<I>::value, "I (index-type) must be an integral");
+    static_assert(std::is_integral_v<I>, "I (index-type) must be an integral");
 
 public:
     using pt::erase;
@@ -64,10 +64,7 @@ public:
     {
     public:
         siterator(const __base_t* base, int16_t index): __iterator<__set_stable, siterator>(base, index) {}
-        I index() const
-        {
-            return static_cast<const typename __set_stable::node_t*>(this->_node)->entries()[this->_index];
-        }
+        I index() const { return static_cast<const node_t*>(this->_node)->entries()[this->_index]; }
     };
 
     friend class siterator;
@@ -81,7 +78,7 @@ template <SPTRIETPL>
 typename __set_stable<SPTRIETPLA>::node_t* __set_stable<SPTRIETPLA>::find_metadata(I index, size_t& bindex) const
 {
     node_t* node = nullptr;
-    // we can find size without bothering anyone (to much)
+    // we can find size without bothering anyone (too much)
 
     bindex = 0;
     {
