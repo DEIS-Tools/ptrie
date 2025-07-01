@@ -16,18 +16,17 @@
  */
 // Created by Peter G. Jensen on 12/9/16.
 
-#define BOOST_TEST_MODULE PTrieStableSet
-
 #include "utils.h"
 
 #include <ptrie/ptrie_stable.h>
 
-#include <boost/test/unit_test.hpp>
+#include <doctest/doctest.h>
 #include <vector>
 
-BOOST_AUTO_TEST_CASE(SimpleRIterator)
+TEST_SUITE_BEGIN("PTrie Stable Set");
+
+TEST_CASE("Simple RIterator")
 {
-    std::cerr << "SimpleRIterator" << std::endl;
     auto set = ptrie::set_stable<size_t>{};
     constexpr size_t x = 10000;
     for (size_t i = 0; i < x; ++i)
@@ -35,15 +34,14 @@ BOOST_AUTO_TEST_CASE(SimpleRIterator)
     size_t cnt = 0;
     for (auto b = --set.end(); b != set.begin(); --b) {
         ++cnt;
-        BOOST_REQUIRE(b.index() <= x);
-        BOOST_REQUIRE(b.index() == b.unpack().back());
+        REQUIRE(b.index() <= x);
+        REQUIRE(b.index() == b.unpack().back());
     }
-    BOOST_CHECK_EQUAL(cnt, x - 1);
+    CHECK(cnt == x - 1);
 }
 
-BOOST_AUTO_TEST_CASE(SimpleIterator)
+TEST_CASE("Simple Iterator")
 {
-    std::cerr << "SimpleIterator" << std::endl;
     const size_t x = 10000;
     auto set = ptrie::set_stable<size_t>{};
     for (size_t i = 0; i < x; ++i) {
@@ -52,15 +50,14 @@ BOOST_AUTO_TEST_CASE(SimpleIterator)
     size_t cnt = 0;
     for (auto b = set.begin(); b != set.end(); ++b) {
         ++cnt;
-        BOOST_REQUIRE(b.index() <= x);
-        BOOST_REQUIRE(b.index() == b.unpack().back());
+        REQUIRE(b.index() <= x);
+        REQUIRE(b.index() == b.unpack().back());
     }
-    BOOST_CHECK_EQUAL(cnt, x);
+    CHECK(cnt == x);
 }
 
-BOOST_AUTO_TEST_CASE(PseudoRand1)
+TEST_CASE("Pseudo Rand1")
 {
-    std::cerr << "PseudoRand1" << std::endl;
     for (size_t seed = 1337; seed < (1337 + 10); ++seed) {
         auto set = ptrie::set_stable<>{};
         auto ids = std::vector<size_t>{};
@@ -68,12 +65,12 @@ BOOST_AUTO_TEST_CASE(PseudoRand1)
         for (size_t i = 0; i < 1024 * 10; ++i) {
             auto data = rand_data(i + seed, 20);
             auto res = set.insert(data.first.get(), data.second);
-            BOOST_CHECK(res.first);
+            CHECK(res.first);
             ids.push_back(res.second);
             auto size = set.unpack(res.second, scratchpad.get());
 
-            BOOST_CHECK_EQUAL(data.second, size);
-            BOOST_CHECK_EQUAL(memcmp(data.first.get(), scratchpad.get(), size), 0);
+            CHECK(data.second == size);
+            CHECK(memcmp(data.first.get(), scratchpad.get(), size) == 0);
         }
 
         // let us unwrap everything and check that it is there!
@@ -81,19 +78,18 @@ BOOST_AUTO_TEST_CASE(PseudoRand1)
             auto data = rand_data(i + seed, 20);
             auto size = set.unpack(ids[i], scratchpad.get());
 
-            BOOST_CHECK_EQUAL(data.second, size);
-            BOOST_CHECK_EQUAL(memcmp(data.first.get(), scratchpad.get(), size), 0);
+            CHECK(data.second == size);
+            CHECK(memcmp(data.first.get(), scratchpad.get(), size) == 0);
 
             auto key = set.unpack(ids[i]);
-            BOOST_CHECK_EQUAL(data.second, key.size());
-            BOOST_CHECK_EQUAL(memcmp(data.first.get(), key.data(), size), 0);
+            CHECK(data.second == key.size());
+            CHECK(memcmp(data.first.get(), key.data(), size) == 0);
         }
     }
 }
 
-BOOST_AUTO_TEST_CASE(PseudoRandSplitHeap)
+TEST_CASE("Pseudo Rand Split Heap")
 {
-    std::cerr << "PseudoRandSplitHeap" << std::endl;
     for (size_t seed = 42; seed < (42 + 10); ++seed) {
         auto set = ptrie::set_stable<unsigned char, size_t, sizeof(size_t) + 1, 6>{};
         auto ids = std::vector<size_t>{};
@@ -102,12 +98,12 @@ BOOST_AUTO_TEST_CASE(PseudoRandSplitHeap)
         for (size_t i = 0; i < 1024 * 10; ++i) {
             auto data = rand_data(i + seed, 20);
             auto res = set.insert(data.first.get(), data.second);
-            BOOST_CHECK(res.first);
+            CHECK(res.first);
             ids.push_back(res.second);
             auto size = set.unpack(res.second, scratchpad.get());
 
-            BOOST_CHECK_EQUAL(data.second, size);
-            BOOST_CHECK_EQUAL(memcmp(data.first.get(), scratchpad.get(), size), 0);
+            CHECK(data.second == size);
+            CHECK(memcmp(data.first.get(), scratchpad.get(), size) == 0);
         }
 
         // let us unwrap everything and check that it is there!
@@ -115,12 +111,12 @@ BOOST_AUTO_TEST_CASE(PseudoRandSplitHeap)
             auto data = rand_data(i + seed, 20);
             auto size = set.unpack(ids[i], scratchpad.get());
 
-            BOOST_CHECK_EQUAL(data.second, size);
-            BOOST_CHECK_EQUAL(memcmp(data.first.get(), scratchpad.get(), size), 0);
+            CHECK(data.second == size);
+            CHECK(memcmp(data.first.get(), scratchpad.get(), size) == 0);
 
             auto key = set.unpack(ids[i]);
-            BOOST_CHECK_EQUAL(data.second, key.size());
-            BOOST_CHECK_EQUAL(memcmp(data.first.get(), key.data(), size), 0);
+            CHECK(data.second == key.size());
+            CHECK(memcmp(data.first.get(), key.data(), size) == 0);
         }
     }
 }
@@ -172,9 +168,8 @@ struct ptrie::byte_iterator<type_t>
     static constexpr bool continious() { return false; }
 };
 
-BOOST_AUTO_TEST_CASE(ComplexType1)
+TEST_CASE("Complex Type1")
 {
-    std::cerr << "ComplexType1" << std::endl;
     for (size_t seed = 1337; seed < (1337 + 10); ++seed) {
         auto set = ptrie::set_stable<type_t>{};
         auto ids = std::vector<size_t>{};
@@ -183,12 +178,12 @@ BOOST_AUTO_TEST_CASE(ComplexType1)
             srand(i + seed);
             type_t test({(char)rand(), (int)rand(), (char)rand(), (int)rand()});
             auto res = set.insert(test);
-            BOOST_CHECK(res.first);
+            CHECK(res.first);
             ids.push_back(res.second);
             auto size = set.unpack(res.second, &scratchpad);
 
-            BOOST_CHECK_EQUAL(size_t{1}, size);
-            BOOST_CHECK_EQUAL(test, scratchpad);
+            CHECK(size_t{1} == size);
+            CHECK(test == scratchpad);
         }
 
         // let us unwrap everything and check that it is there!
@@ -197,70 +192,68 @@ BOOST_AUTO_TEST_CASE(ComplexType1)
             type_t test({(char)rand(), (int)rand(), (char)rand(), (int)rand()});
             auto size = set.unpack(ids[i], &scratchpad);
 
-            BOOST_CHECK_EQUAL(size_t{1}, size);
-            BOOST_CHECK_EQUAL(test, scratchpad);
+            CHECK(size_t{1} == size);
+            CHECK(test == scratchpad);
 
             auto key = set.unpack(ids[i]);
-            BOOST_CHECK_EQUAL(size_t{1}, key.size());
-            BOOST_CHECK(key.back() == test);
+            CHECK(size_t{1} == key.size());
+            CHECK(key.back() == test);
         }
     }
 }
 
-BOOST_AUTO_TEST_CASE(ComplexType2)
+TEST_CASE("Complex Type2")
 {
-    std::cerr << "ComplexType2" << std::endl;
     for (size_t seed = 1337; seed < (1337 + 10); ++seed) {
         auto set = ptrie::set_stable<type_t, size_t, 9>{};
         auto ids = std::vector<size_t>{};
-        type_t scratchpad;
+        auto scratchpad = type_t{};
         for (size_t i = 0; i < 1024 * 10; ++i) {
             srand(i + seed);
             type_t test({(char)rand(), (int)rand(), (char)rand(), (int)rand()});
             auto res = set.insert(test);
-            BOOST_REQUIRE(res.first);
+            REQUIRE(res.first);
             ids.push_back(res.second);
             auto size = set.unpack(res.second, &scratchpad);
 
-            BOOST_REQUIRE_EQUAL(size_t{1}, size);
-            BOOST_REQUIRE_EQUAL(test, scratchpad);
+            REQUIRE(size == 1);
+            REQUIRE(test == scratchpad);
         }
 
         // let us unwrap everything and check that it is there!
         for (size_t i = 0; i < 1024 * 10; ++i) {
             srand(i + seed);
-            type_t test({(char)rand(), (int)rand(), (char)rand(), (int)rand()});
+            auto test = type_t{(char)rand(), (int)rand(), (char)rand(), (int)rand()};
             auto size = set.unpack(ids[i], &scratchpad);
 
-            BOOST_CHECK_EQUAL(size_t{1}, size);
-            BOOST_CHECK_EQUAL(test, scratchpad);
+            CHECK(size == 1);
+            CHECK(test == scratchpad);
 
             auto key = set.unpack(ids[i]);
-            BOOST_CHECK_EQUAL(size_t{1}, key.size());
-            BOOST_CHECK(key.back() == test);
+            CHECK(key.size() == 1);
+            CHECK(key.back() == test);
         }
     }
 }
 
-BOOST_AUTO_TEST_CASE(ComplexType1Vector)
+TEST_CASE("Complex Type1 Vector")
 {
-    std::cerr << "ComplexType1Vector" << std::endl;
     for (size_t seed = 1337; seed < (1337 + 10); ++seed) {
         auto set = ptrie::set_stable<type_t>{};
         auto ids = std::vector<size_t>{};
-        std::vector<type_t> scratchpad(10);
+        auto scratchpad = std::vector<type_t>(10);
         for (size_t i = 0; i < 1024 * 10; ++i) {
             srand(i + seed);
             std::vector<type_t> test(10);
             for (size_t i = 0; i < 10; ++i)
                 test[i] = type_t{(char)rand(), (int)rand(), (char)rand(), (int)rand()};
             auto res = set.insert(test);
-            BOOST_REQUIRE(res.first);
+            REQUIRE(res.first);
             ids.push_back(res.second);
             auto size = set.unpack(res.second, scratchpad.data());
 
-            BOOST_REQUIRE_EQUAL(size_t{10}, size);
-            BOOST_REQUIRE(std::equal(test.begin(), test.end(), scratchpad.begin()));
+            REQUIRE(size == 10);
+            REQUIRE(test == scratchpad);
         }
 
         // let us unwrap everything and check that it is there!
@@ -271,56 +264,55 @@ BOOST_AUTO_TEST_CASE(ComplexType1Vector)
                 test[i] = type_t{(char)rand(), (int)rand(), (char)rand(), (int)rand()};
             auto size = set.unpack(ids[i], scratchpad.data());
 
-            BOOST_CHECK_EQUAL(size_t{10}, size);
-            BOOST_CHECK(std::equal(test.begin(), test.end(), scratchpad.begin()));
+            CHECK(size == 10);
+            CHECK(std::equal(test.begin(), test.end(), scratchpad.begin()));
 
             auto key = set.unpack(ids[i]);
-            BOOST_CHECK_EQUAL(size_t{10}, key.size());
-            BOOST_CHECK(std::equal(test.begin(), test.end(), key.begin()));
+            CHECK(key.size() == 10);
+            CHECK(std::equal(test.begin(), test.end(), key.begin()));
         }
     }
 }
 
-BOOST_AUTO_TEST_CASE(ComplexType2Vector)
+TEST_CASE("Complex Type2 Vector")
 {
-    std::cerr << "ComplexType2Vector" << std::endl;
     for (size_t seed = 1337; seed < (1337 + 10); ++seed) {
         auto set = ptrie::set_stable<type_t, size_t, 9>{};
         auto ids = std::vector<size_t>{};
-        std::vector<type_t> scratchpad(10);
+        auto scratchpad = std::vector<type_t>(10);
         for (size_t i = 0; i < 1024 * 10; ++i) {
             srand(i + seed);
-            std::vector<type_t> test(10);
+            auto test = std::vector<type_t>(10);
             for (size_t i = 0; i < 10; ++i)
                 test[i] = type_t{(char)rand(), (int)rand(), (char)rand(), (int)rand()};
             auto res = set.insert(test);
-            BOOST_REQUIRE(res.first);
+            REQUIRE(res.first);
             ids.push_back(res.second);
             auto size = set.unpack(res.second, scratchpad.data());
 
-            BOOST_REQUIRE_EQUAL(size_t{10}, size);
-            BOOST_REQUIRE(std::equal(test.begin(), test.end(), scratchpad.begin()));
+            REQUIRE(size == 10);
+            REQUIRE(test == scratchpad);
         }
 
         // let us unwrap everything and check that it is there!
         for (size_t i = 0; i < 1024 * 10; ++i) {
             srand(i + seed);
-            std::vector<type_t> test(10);
+            auto test = std::vector<type_t>(10);
             for (size_t i = 0; i < 10; ++i)
                 test[i] = type_t{(char)rand(), (int)rand(), (char)rand(), (int)rand()};
             auto size = set.unpack(ids[i], scratchpad.data());
 
-            BOOST_CHECK_EQUAL(size_t{10}, size);
-            BOOST_CHECK(std::equal(test.begin(), test.end(), scratchpad.begin()));
+            CHECK(size == 10);
+            CHECK(std::equal(test.begin(), test.end(), scratchpad.begin()));
 
             auto key = set.unpack(ids[i]);
-            BOOST_CHECK_EQUAL(size_t{10}, key.size());
-            BOOST_CHECK(std::equal(test.begin(), test.end(), key.begin()));
+            CHECK(key.size() == 10);
+            CHECK(test == key);
         }
     }
 }
 
-BOOST_AUTO_TEST_CASE(SimpleCopy)
+TEST_CASE("Simple Copy")
 {
     auto set = ptrie::set_stable<size_t>{};
     for (size_t i = 0; i < 100000; ++i)
@@ -329,8 +321,8 @@ BOOST_AUTO_TEST_CASE(SimpleCopy)
         const auto cpy = set;  // copy on purpose
         size_t i = 0;
         for (; i < 100000; ++i)
-            BOOST_REQUIRE(cpy.exists(i).first);
+            REQUIRE(cpy.exists(i).first);
         for (; i < 200000; ++i)
-            BOOST_REQUIRE(!cpy.exists(i).first);
+            REQUIRE(!cpy.exists(i).first);
     }
 }

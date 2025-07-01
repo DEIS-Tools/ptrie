@@ -15,15 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 // Created by Peter G. Jensen on 12/9/16.
-#define BOOST_TEST_MODULE PTrieSet
-#include <boost/test/unit_test.hpp>
+#include <doctest/doctest.h>
 
 #include <ptrie/ptrie.h>
 #include "utils.h"
 
+TEST_SUITE_BEGIN("PTrie Set");
+
 using ptrie::uchar;
 
-BOOST_AUTO_TEST_CASE(EmptyTest)
+TEST_CASE("Empty")
 {
     auto set = ptrie::set<>{};
     try_insert(
@@ -35,7 +36,7 @@ BOOST_AUTO_TEST_CASE(EmptyTest)
         1);
 }
 
-BOOST_AUTO_TEST_CASE(InsertByte)
+TEST_CASE("Insert Byte")
 {
     auto set = ptrie::set<>{};
     try_insert(
@@ -48,7 +49,7 @@ BOOST_AUTO_TEST_CASE(InsertByte)
         256);
 }
 
-BOOST_AUTO_TEST_CASE(InsertByteSplit)
+TEST_CASE("Insert Byte Split")
 {
     auto set = ptrie::set<uchar, 128, 6>{};
     try_insert(
@@ -61,7 +62,7 @@ BOOST_AUTO_TEST_CASE(InsertByteSplit)
         256);
 }
 
-BOOST_AUTO_TEST_CASE(HeapTest)
+TEST_CASE("Heap Test")
 {
     auto set = ptrie::set<uchar, sizeof(size_t) + 1>{};
     try_insert(
@@ -74,7 +75,7 @@ BOOST_AUTO_TEST_CASE(HeapTest)
         1024);
 }
 
-BOOST_AUTO_TEST_CASE(InsertMill)
+TEST_CASE("Insert Mill")
 {
     auto set = ptrie::set<>{};
     try_insert(
@@ -87,7 +88,7 @@ BOOST_AUTO_TEST_CASE(InsertMill)
         1024 * 1024);
 }
 
-BOOST_AUTO_TEST_CASE(PseudoRand1)
+TEST_CASE("Pseudo Rand1")
 {
     for (size_t seed = 0; seed < 10; ++seed) {
         auto set = ptrie::set<>{};
@@ -95,7 +96,7 @@ BOOST_AUTO_TEST_CASE(PseudoRand1)
     }
 }
 
-BOOST_AUTO_TEST_CASE(PseudoRand2)
+TEST_CASE("Pseudo Rand2")
 {
     for (size_t seed = 0; seed < 10; ++seed) {
         auto set = ptrie::set<>{};
@@ -103,7 +104,7 @@ BOOST_AUTO_TEST_CASE(PseudoRand2)
     }
 }
 
-BOOST_AUTO_TEST_CASE(PseudoRandSplitHeap)
+TEST_CASE("Pseudo Rand Split Heap")
 {
     for (size_t seed = 42; seed < (42 + 10); ++seed) {
         auto set = ptrie::set<unsigned char, sizeof(size_t) + 1, 6>{};
@@ -111,7 +112,7 @@ BOOST_AUTO_TEST_CASE(PseudoRandSplitHeap)
     }
 }
 
-BOOST_AUTO_TEST_CASE(SimpleCopy)
+TEST_CASE("Simple Copy")
 {
     auto set = ptrie::set<size_t>{};
     for (size_t i = 0; i < 100000; ++i) {
@@ -121,36 +122,36 @@ BOOST_AUTO_TEST_CASE(SimpleCopy)
         const auto cpy = set;
         size_t i = 0;
         for (; i < 100000; ++i)
-            BOOST_REQUIRE(cpy.exists(i).first);
+            REQUIRE(cpy.exists(i).first);
         for (; i < 200000; ++i)
-            BOOST_REQUIRE(!cpy.exists(i).first);
+            REQUIRE(!cpy.exists(i).first);
     }
 }
 
-BOOST_AUTO_TEST_CASE(SimpleIteratorInvariant)
+TEST_CASE("Simple Iterator Invariant")
 {
     auto set = ptrie::set<size_t>{};
-    BOOST_REQUIRE(set.begin() == set.end());
+    REQUIRE(set.begin() == set.end());
 }
 
-BOOST_AUTO_TEST_CASE(SingleIterator)
+TEST_CASE("Single Iterator")
 {
     auto set = ptrie::set<size_t>{};
     set.insert(1);
     auto b = set.begin();
     auto e = set.end();
-    BOOST_REQUIRE(b != e);
+    REQUIRE(b != e);
     ++b;
-    BOOST_REQUIRE(b == e);
+    REQUIRE(b == e);
     --b;
-    BOOST_REQUIRE(b == set.begin());
+    REQUIRE(b == set.begin());
     ++b;
-    BOOST_REQUIRE(b == set.end());
+    REQUIRE(b == set.end());
     --e;
-    BOOST_REQUIRE(e == set.begin());
+    REQUIRE(e == set.begin());
 }
 
-BOOST_AUTO_TEST_CASE(SimpleIterator)
+TEST_CASE("Simple Iterator")
 {
     auto set = ptrie::set<size_t>{};
     for (size_t i = 0; i < 100000; ++i)
@@ -158,10 +159,10 @@ BOOST_AUTO_TEST_CASE(SimpleIterator)
     size_t cnt = 0;
     for (auto b = set.begin(); b != set.end(); ++b)
         ++cnt;
-    BOOST_CHECK_EQUAL(cnt, size_t{100000});
+    CHECK(cnt == size_t{100000});
 }
 
-BOOST_AUTO_TEST_CASE(SimpleRIterator)
+TEST_CASE("Simple RIterator")
 {
     auto set = ptrie::set<size_t>{};
     for (size_t i = 0; i < 100000; ++i)
@@ -169,10 +170,10 @@ BOOST_AUTO_TEST_CASE(SimpleRIterator)
     size_t cnt = 0;
     for (auto b = --set.end(); b != set.begin(); --b)
         ++cnt;
-    BOOST_CHECK_EQUAL(cnt, size_t{100000 - 1});
+    CHECK(cnt == size_t{100000 - 1});
 }
 
-BOOST_AUTO_TEST_CASE(Dealloc)
+TEST_CASE("Dealloc")
 {
     auto set = ptrie::set<>{};
     auto mem = std::vector<std::unique_ptr<uchar[]>>{};
