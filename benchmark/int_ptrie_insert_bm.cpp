@@ -21,7 +21,7 @@ auto order = []() {
     auto res = std::vector<size_t>{};
     for (size_t i = 0; i < sizeof(size_t) * 8; ++i)
         res.push_back(i);
-    auto gen = std::default_random_engine{seed};
+    auto gen = std::default_random_engine(seed);
     std::shuffle(res.begin(), res.end(), gen);
     return res;
 }();
