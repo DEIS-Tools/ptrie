@@ -1,0 +1,124 @@
+{
+  "version": 8,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 28,
+    "patch": 0
+  },
+  "include": ["cmake/CommonPresets.json"],
+  "configurePresets": [
+    {
+      "name": "quick",
+      "inherits": "multi",
+      "binaryDir": "${sourceDir}/build-quick",
+      "cacheVariables": {
+        "PTRIE_BuildTests": { "type": "BOOL", "value": "OFF" },
+        "PTRIE_BuildBenchmark": { "type": "BOOL", "value": "OFF" }
+      },
+      "displayName": "Configure quick build (no testing) for Debug and Release"
+    },
+    {
+      "name": "quick-san",
+      "inherits": "multi-san",
+      "binaryDir": "${sourceDir}/build-quick-san",
+      "cacheVariables": {
+        "PTRIE_BuildTests": { "type": "bool", "value": "OFF" },
+        "PTRIE_BuildBenchmark": { "type": "bool", "value": "OFF" }
+      },
+      "displayName": "Configure quick build (no testing) with Sanitizers for Debug and Release"
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "quick-release",
+      "inherits": "release",
+      "configurePreset": "quick",
+      "displayName": "Build quick for Debug"
+    },
+    {
+      "name": "quick-debug",
+      "inherits": "debug",
+      "configurePreset": "quick",
+      "displayName": "Build quick (no testing) for Release"
+    },
+    {
+      "name": "quick-san-release",
+      "inherits": "release",
+      "configurePreset": "quick-san",
+      "displayName": "Build quick (no testing) with Sanitizers and Debug"
+    },
+    {
+      "name": "quick-san-debug",
+      "inherits": "debug",
+      "configurePreset": "quick-san",
+      "displayName": "Build quick (no testing) with Sanitizers and Release"
+    }
+  ],
+  "testPresets": [],
+  "workflowPresets": [
+    {
+      "name": "quick",
+      "displayName": "Configure and Build quick (no testing) for Debug and Release",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "quick"
+        },
+        {
+          "type": "build",
+          "name": "quick-release"
+        },
+        {
+          "type": "build",
+          "name": "quick-debug"
+        }
+      ]
+    },
+    {
+      "name": "quick-release",
+      "displayName": "Configure and Build quick (no testing) for Release",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "quick"
+        },
+        {
+          "type": "build",
+          "name": "quick-release"
+        }
+      ]
+    },
+    {
+      "name": "quick-san",
+      "displayName": "Configure and Build quick (no testing) with Sanitizers for Debug and Release",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "quick-san"
+        },
+        {
+          "type": "build",
+          "name": "quick-san-release"
+        },
+        {
+          "type": "build",
+          "name": "quick-san-debug"
+        }
+      ]
+    },
+    {
+      "name": "quick-san-release",
+      "displayName": "Configure and Build quick (no testing) with Sanitizers for Release",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "quick-san"
+        },
+        {
+          "type": "build",
+          "name": "quick-san-release"
+        }
+      ]
+    }
+  ]
+}
