@@ -25,6 +25,7 @@
 #include <iostream>
 #include <vector>
 
+#include <cstring>  // memset
 #include <cassert>
 #include <cstdlib>
 
@@ -68,8 +69,8 @@ public:
         _index = new index_t;
         _index->_next = nullptr;
 
-        memset(&_begin->_data, 0, sizeof(T) * C);
-        memset(&_index->_index, 0, sizeof(bucket_t*) * C);
+        std::memset(&_begin->_data, 0, sizeof(T) * C);
+        std::memset(&_index->_index, 0, sizeof(bucket_t*) * C);
         _index->_index[0] = _begin;
     }
 
@@ -147,7 +148,7 @@ public:
             next->_count = 0;
             next->_nbucket = nullptr;
             next->_offset = 0;
-            memset(&next->_data, 0, sizeof(T) * C);
+            std::memset(&next->_data, 0, sizeof(T) * C);
 
             bucket_t* n = _tnext[thread];
             if (n == nullptr) {
@@ -192,7 +193,7 @@ private:
             if (tmp == nullptr) {
                 // extend index if needed
                 index_t* nindex = new index_t;
-                memset(&nindex->_index, 0, sizeof(bucket_t*) * C);
+                std::memset(&nindex->_index, 0, sizeof(bucket_t*) * C);
                 nindex->_next = 0;
                 if (!old->_next.compare_exchange_strong(tmp, nindex)) {
                     delete nindex;
