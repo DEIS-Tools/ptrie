@@ -1,4 +1,6 @@
-cmake_policy(SET CMP0167 NEW)
+if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.30.0")
+    cmake_policy(SET CMP0167 NEW) # use FindBoost from the host system
+endif ()
 find_package (Boost 1.83 REQUIRED COMPONENTS unit_test_framework)
 
 add_executable (Delete delete.cpp)

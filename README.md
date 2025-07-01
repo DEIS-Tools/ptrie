@@ -20,9 +20,18 @@ sudo apt install libsparsehash-dev libboost-test-dev
 ## Configure, Build, Test and Benchmark:
 Test and benchmark release:
 ```shell
-cmake --workflow dev
+cmake --workflow --preset dev
 ```
 Test Debug with Sanitizers:
 ```shell
-cmake --workflow dev-san
+cmake --workflow --preset dev-san
+```
+Inspect other presets:
+```shell
+cmake --workflow --list-presets
+```
+```shell
+cmake --list-presets=configure
+cmake --list-presets=build
+cmake --list-presets=test
 ```
