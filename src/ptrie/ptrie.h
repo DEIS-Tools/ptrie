@@ -660,7 +660,7 @@ constexpr void __ptrie<PTRIETLPA>::node_t::clone(const node_t& other, entrylist_
                 ptr[0] = new uchar[lencsize];
                 std::copy_n(optr[0], lencsize - bdepth, ptr[0]);
             } else {
-                std::copy_n(other.data() + offset, lencsize - bdepth, data() + offset);
+                std::copy(other.data() + offset, other.data() + (lencsize - bdepth), data() + offset);
             }
             offset += bytes(lencsize >= bdepth ? lencsize - bdepth : 0);
         }
