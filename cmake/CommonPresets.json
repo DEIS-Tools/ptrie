@@ -24,7 +24,8 @@
       "binaryDir": "${sourceDir}/build-multi-san",
       "cacheVariables": {
         "UBSAN" : { "type": "BOOL", "value": "ON"},
-        "ASAN" : { "type": "BOOL", "value": "ON"}
+        "ASAN" : { "type": "BOOL", "value": "ON"},
+        "SSP" : { "type": "BOOL", "value": "ON"}
       },
       "displayName": "Configure for Ninja Debug/Release with Sanitizers"
     },
