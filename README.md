@@ -3,9 +3,8 @@ A memory efficient hashfree hashmap implementation packaged as a header-only lib
 
 Use CMake to install to `$PWD/local` (headers and CMake configuration):
 ```shell
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DPTRIE_BuildTests=OFF -DPTRIE_BuildBenchmark=OFF
-cmake --build build
-cmake --install build --prefix=$PWD/local
+cmake --workflow --preset quick-release
+cmake --install build-quick --config Release --prefix=$PWD/local
 ```
 
 # Testing and Benchmarking
@@ -22,14 +21,14 @@ brew install cmake ninja
 brew install google-sparsehash boost
 ```
 
-## Configure, Build, Test and Benchmark:
+## Configure, Build, Test and Benchmark
 Test and benchmark release:
 ```shell
-cmake --workflow --preset dev
+cmake --workflow --preset release
 ```
 Test Debug with Sanitizers:
 ```shell
-cmake --workflow --preset dev-san
+cmake --workflow --preset debug-san
 ```
 Inspect other presets:
 ```shell
