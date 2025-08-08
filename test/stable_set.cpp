@@ -64,13 +64,13 @@ TEST_CASE("Pseudo Rand1")
         auto scratchpad = std::make_unique<unsigned char[]>(20 + sizeof(size_t));
         for (size_t i = 0; i < 1024 * 10; ++i) {
             auto data = rand_data(i + seed, 20);
-            auto res = set.insert(data.first.get(), data.second);
+            auto res = set.insert(std::data(data), std::size(data));
             CHECK(res.first);
             ids.push_back(res.second);
             auto size = set.unpack(res.second, scratchpad.get());
 
-            CHECK(data.second == size);
-            CHECK(memcmp(data.first.get(), scratchpad.get(), size) == 0);
+            CHECK(std::size(data) == size);
+            CHECK(memcmp(std::data(data), scratchpad.get(), size) == 0);
         }
 
         // let us unwrap everything and check that it is there!
@@ -78,12 +78,12 @@ TEST_CASE("Pseudo Rand1")
             auto data = rand_data(i + seed, 20);
             auto size = set.unpack(ids[i], scratchpad.get());
 
-            CHECK(data.second == size);
-            CHECK(memcmp(data.first.get(), scratchpad.get(), size) == 0);
+            CHECK(std::size(data) == size);
+            CHECK(memcmp(std::data(data), scratchpad.get(), size) == 0);
 
             auto key = set.unpack(ids[i]);
-            CHECK(data.second == key.size());
-            CHECK(memcmp(data.first.get(), key.data(), size) == 0);
+            CHECK(std::size(data) == key.size());
+            CHECK(memcmp(std::data(data), key.data(), size) == 0);
         }
     }
 }
@@ -97,13 +97,13 @@ TEST_CASE("Pseudo Rand Split Heap")
 
         for (size_t i = 0; i < 1024 * 10; ++i) {
             auto data = rand_data(i + seed, 20);
-            auto res = set.insert(data.first.get(), data.second);
+            auto res = set.insert(std::data(data), std::size(data));
             CHECK(res.first);
             ids.push_back(res.second);
             auto size = set.unpack(res.second, scratchpad.get());
 
-            CHECK(data.second == size);
-            CHECK(memcmp(data.first.get(), scratchpad.get(), size) == 0);
+            CHECK(std::size(data) == size);
+            CHECK(memcmp(std::data(data), scratchpad.get(), size) == 0);
         }
 
         // let us unwrap everything and check that it is there!
@@ -111,12 +111,12 @@ TEST_CASE("Pseudo Rand Split Heap")
             auto data = rand_data(i + seed, 20);
             auto size = set.unpack(ids[i], scratchpad.get());
 
-            CHECK(data.second == size);
-            CHECK(memcmp(data.first.get(), scratchpad.get(), size) == 0);
+            CHECK(std::size(data) == size);
+            CHECK(memcmp(std::data(data), scratchpad.get(), size) == 0);
 
             auto key = set.unpack(ids[i]);
-            CHECK(data.second == key.size());
-            CHECK(memcmp(data.first.get(), key.data(), size) == 0);
+            CHECK(std::size(data) == key.size());
+            CHECK(memcmp(std::data(data), key.data(), size) == 0);
         }
     }
 }

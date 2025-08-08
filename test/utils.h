@@ -23,7 +23,7 @@
 #include <doctest/doctest.h>
 
 #include <memory>
-#include <utility>  // pair
+#include <vector>
 
 #include <cstddef>  // size_t etc
 
@@ -32,37 +32,35 @@ void try_insert(T& trie, G&& generator, size_t N)
 {
     for (size_t i = 0; i < N; ++i) {
         auto data = generator(i);
-        auto exists = trie.exists(data.first.get(), data.second);
+        auto exists = trie.exists(std::data(data), std::size(data));
         REQUIRE_MESSAGE(!exists.first, "FAILED ON INSERT " << i);
 
-        auto inserted = trie.insert(data.first.get(), data.second);
+        auto inserted = trie.insert(std::data(data), std::size(data));
         REQUIRE_MESSAGE(inserted.first, "EXIST FAILED FOR " << i);
     }
 
     for (size_t i = 0; i < N; ++i) {
         auto data = generator(i);
-        auto exists = trie.exists(data.first.get(), data.second);
+        auto exists = trie.exists(std::data(data), std::size(data));
         REQUIRE_MESSAGE(exists.first, "POST EXIST CHECK FAILED FOR " << i);
     }
 }
 
-std::pair<std::unique_ptr<unsigned char[]>, size_t> rand_data(size_t seed, size_t maxsize,
-                                                              size_t minsize = sizeof(size_t))
+std::vector<unsigned char> rand_data(size_t seed, size_t maxsize, size_t minsize = sizeof(size_t))
 {
     REQUIRE(minsize >= sizeof(size_t));
     srand(seed);
     // pick size between 0 and maxsize
     size_t size = minsize != maxsize ? minsize + rand() % (maxsize - minsize) : minsize;
 
-    auto data = std::make_unique<unsigned char[]>(size);
+    auto data = std::vector<unsigned char>(size);
     // fill in random data
-    for (size_t j = 0; j < size; ++j) {
-        data[j] = (unsigned char)rand();
-    }
+    for (auto& value : data)
+        value = static_cast<unsigned char>(rand());
     // make sure everything is unique
     for (size_t j = 1; j <= sizeof(size_t); ++j) {
         data[size - j] = ((unsigned char*)&seed)[j - 1];
     }
-    return std::make_pair(std::move(data), size);
+    return data;
 }
 #endif  // PTRIE_UTILS_H

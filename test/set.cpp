@@ -15,10 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 // Created by Peter G. Jensen on 12/9/16.
+
+#include "utils.h"
+#include <ptrie/ptrie.h>
+
 #include <doctest/doctest.h>
 
-#include <ptrie/ptrie.h>
-#include "utils.h"
+#include <vector>
 
 TEST_SUITE_BEGIN("PTrie Set");
 
@@ -27,39 +30,19 @@ using ptrie::uchar;
 TEST_CASE("Empty")
 {
     auto set = ptrie::set<>{};
-    try_insert(
-        set,
-        [](size_t) {
-            auto data = std::make_unique<unsigned char[]>(0);
-            return std::make_pair(std::move(data), 0);
-        },
-        1);
+    try_insert(set, [](size_t) { return std::vector<unsigned char>{}; }, 1);
 }
 
 TEST_CASE("Insert Byte")
 {
     auto set = ptrie::set<>{};
-    try_insert(
-        set,
-        [](size_t i) {
-            auto data = std::make_unique<unsigned char[]>(1);
-            data[0] = (uchar)i;
-            return std::make_pair(std::move(data), 1);
-        },
-        256);
+    try_insert(set, [](size_t i) { return std::vector{static_cast<uchar>(i)}; }, 256);
 }
 
 TEST_CASE("Insert Byte Split")
 {
     auto set = ptrie::set<uchar, 128, 6>{};
-    try_insert(
-        set,
-        [](size_t i) {
-            auto data = std::make_unique<unsigned char[]>(1);
-            data[0] = (uchar)i;
-            return std::make_pair(std::move(data), 1);
-        },
-        256);
+    try_insert(set, [](size_t i) { return std::vector{static_cast<uchar>(i)}; }, 256);
 }
 
 TEST_CASE("Heap Test")
@@ -68,9 +51,9 @@ TEST_CASE("Heap Test")
     try_insert(
         set,
         [](size_t i) {
-            auto data = std::make_unique<unsigned char[]>(sizeof(size_t));
-            memcpy(data.get(), &i, sizeof(size_t));
-            return std::make_pair(std::move(data), sizeof(size_t));
+            auto data = std::vector<unsigned char>(sizeof(size_t));
+            memcpy(std::data(data), &i, sizeof(size_t));
+            return data;
         },
         1024);
 }
@@ -81,9 +64,9 @@ TEST_CASE("Insert Mill")
     try_insert(
         set,
         [](size_t i) {
-            auto data = std::make_unique<unsigned char[]>(sizeof(size_t));
-            memcpy(data.get(), &i, sizeof(size_t));
-            return std::make_pair(std::move(data), sizeof(size_t));
+            auto data = std::vector<unsigned char>(sizeof(size_t));
+            memcpy(std::data(data), &i, sizeof(size_t));
+            return data;
         },
         1024 * 1024);
 }

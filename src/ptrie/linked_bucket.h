@@ -21,6 +21,9 @@
  *
  * Created on 07 June 2016, 21:51
  */
+#ifndef LINKED_BUCKET_H
+#define LINKED_BUCKET_H
+
 #include <atomic>
 #include <iostream>
 #include <vector>
@@ -29,19 +32,15 @@
 #include <cassert>
 #include <cstdlib>
 
-#ifndef LINKED_BUCKET_H
-#define LINKED_BUCKET_H
-
 template <typename T, size_t C>
 class linked_bucket_t
 {
-private:
     struct bucket_t
     {
         std::atomic<bucket_t*> _nbucket;
         std::atomic<size_t> _offset;
-        size_t _count;
-        T _data[C];
+        size_t _count{};
+        T _data[C]{};
     };
 
     struct index_t
@@ -50,16 +49,13 @@ private:
         std::atomic<index_t*> _next;
     };
 
-    bucket_t* _begin;
+    bucket_t* _begin{};
     std::vector<bucket_t*> _tnext;
-    index_t* _index;
+    index_t* _index{};
 
 public:
-    linked_bucket_t(size_t threads): _tnext(threads)
+    explicit linked_bucket_t(size_t threads): _tnext(threads, nullptr)
     {
-        for (size_t i = 0; i < threads; ++i) {
-            _tnext[i] = nullptr;
-        }
         _begin = new bucket_t;
         _begin->_count = 0;
         _begin->_offset = 0;
@@ -91,7 +87,7 @@ public:
         } while (_index != nullptr);
     }
 
-    inline T& operator[](size_t i)
+    T& operator[](size_t i)
     {
         bucket_t* n = indexToBucket(i);
         if (n != nullptr) {
@@ -111,7 +107,7 @@ public:
         return n->_data[i % C];
     }
 
-    inline const T& operator[](size_t i) const
+    const T& operator[](size_t i) const
     {
         bucket_t* n = indexToBucket(i);
         if (n != nullptr) {
@@ -141,10 +137,10 @@ public:
         return cnt;
     }
 
-    inline size_t next(size_t thread)
+    size_t next(size_t thread)
     {
         if (_tnext[thread] == nullptr || _tnext[thread]->_count == C) {
-            bucket_t* next = new bucket_t;
+            auto* next = new bucket_t;
             next->_count = 0;
             next->_nbucket = nullptr;
             next->_offset = 0;
@@ -177,14 +173,14 @@ public:
         return c->_offset + (c->_count++);
     }
 
-    inline void pop_back(size_t thread)
+    void pop_back(size_t thread)
     {
         assert(_tnext[thread] != nullptr && _tnext[thread]->_count > 0);
         --_tnext[thread]->_count;
     }
 
 private:
-    inline void insertToIndex(bucket_t* bucket, size_t id)
+    void insertToIndex(bucket_t* bucket, size_t id)
     {
         index_t* tmp = _index;
         while (id >= C * C) {
@@ -199,16 +195,15 @@ private:
                     delete nindex;
                     tmp = old;
                     continue;
-                } else {
-                    tmp = nindex;
                 }
+                tmp = nindex;
             }
             id -= C * C;
         }
         tmp->_index[id / C] = bucket;
     }
 
-    inline bucket_t* indexToBucket(size_t id) const
+    bucket_t* indexToBucket(size_t id) const
     {
         index_t* tmp = _index;
         while (id >= C * C) {

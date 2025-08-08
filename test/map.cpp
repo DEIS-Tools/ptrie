@@ -33,7 +33,7 @@ TEST_CASE("Pseudo Rand1")
 
         for (size_t i = 0; i < 1024 * 10; ++i) {
             auto data = rand_data(i + seed, 20);
-            auto res = set.insert(data.first.get(), data.second);
+            auto res = set.insert(std::data(data), std::size(data));
             CHECK(res.first);
             set.get_data(res.second) = i;
         }
@@ -42,7 +42,7 @@ TEST_CASE("Pseudo Rand1")
 
         for (size_t i = 0; i < 1024 * 10; ++i) {
             auto data = rand_data(i + seed, 20);
-            auto res = set.exists(data.first.get(), data.second);
+            auto res = set.exists(std::data(data), std::size(data));
             CHECK(res.first);
             CHECK(set.get_data(res.second) == i);
         }
@@ -91,7 +91,7 @@ TEST_CASE("Pseudo Rand Split Heap")
         auto set = ptrie::map<unsigned char, size_t, sizeof(size_t) + 1, 6>{};
         for (size_t i = 0; i < 1024 * 10; ++i) {
             auto data = rand_data(i + seed, 20);
-            auto res = set.insert(data.first.get(), data.second);
+            auto res = set.insert(std::data(data), std::size(data));
             CHECK(res.first);
             set.get_data(res.second) = i;
         }
@@ -100,8 +100,8 @@ TEST_CASE("Pseudo Rand Split Heap")
 
         for (size_t i = 0; i < 1024 * 10; ++i) {
             auto data = rand_data(i + seed, 20);
-            auto res = set.exists(data.first.get(), data.second);
-            auto d = set[{data.first.get(), data.second}];
+            auto res = set.exists(std::data(data), std::size(data));
+            auto d = set[{std::data(data), std::size(data)}];
             CHECK(d == i);
             CHECK(res.first);
             CHECK(set.get_data(res.second) == i);
