@@ -103,9 +103,9 @@ TEST_CASE("Pseudo Rand Split Heap")
         for (size_t i = 0; i < 1024 * 10; ++i) {
             const auto data = rand_data(i + seed, 20);
             const auto [res, id] = set.exists(std::data(data), std::size(data));
-            auto d = set[{std::data(data), std::size(data)}];
-            CHECK(d == i);
             CHECK(res);
+            const auto d = set[{std::data(data), std::size(data)}];
+            CHECK(d == i);
             CHECK(set.get_data(id) == i);
         }
     }

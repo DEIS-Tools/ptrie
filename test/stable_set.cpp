@@ -66,10 +66,10 @@ TEST_CASE("Pseudo Rand1")
         auto scratchpad = std::vector<uchar>(20 + sizeof(size_t));
         for (size_t i = 0; i < 1024 * 10; ++i) {
             const auto data = rand_data(i + seed, 20);
-            const auto res = set.insert(std::data(data), std::size(data));
-            CHECK(res.first);
-            ids.push_back(res.second);
-            const auto size = set.unpack(res.second, std::data(scratchpad));
+            const auto [res, id] = set.insert(std::data(data), std::size(data));
+            CHECK(res);
+            ids.push_back(id);
+            const auto size = set.unpack(id, std::data(scratchpad));
 
             CHECK(std::size(data) == size);
             CHECK(memcmp(std::data(data), std::data(scratchpad), size) == 0);
@@ -99,10 +99,10 @@ TEST_CASE("Pseudo Rand Split Heap")
 
         for (size_t i = 0; i < 1024 * 10; ++i) {
             const auto data = rand_data(i + seed, 20);
-            const auto res = set.insert(std::data(data), std::size(data));
-            CHECK(res.first);
-            ids.push_back(res.second);
-            const auto size = set.unpack(res.second, std::data(scratchpad));
+            const auto [res, id] = set.insert(std::data(data), std::size(data));
+            CHECK(res);
+            ids.push_back(id);
+            const auto size = set.unpack(id, std::data(scratchpad));
 
             CHECK(std::size(data) == size);
             CHECK(memcmp(std::data(data), std::data(scratchpad), size) == 0);
