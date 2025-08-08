@@ -27,6 +27,19 @@
 
 #include <cstddef>  // size_t etc
 
+template <typename T>
+auto rand_gen(unsigned int seed)
+{
+    srand(seed);
+    return [] { return static_cast<T>(rand()); };
+}
+
+template <typename T>
+auto rand_gen()
+{
+    return [] { return static_cast<T>(rand()); };
+}
+
 template <typename T, typename G>
 void try_insert(T& trie, G&& generator, size_t N)
 {
@@ -49,18 +62,33 @@ void try_insert(T& trie, G&& generator, size_t N)
 std::vector<unsigned char> rand_data(size_t seed, size_t maxsize, size_t minsize = sizeof(size_t))
 {
     REQUIRE(minsize >= sizeof(size_t));
-    srand(seed);
+    auto int_gen = rand_gen<int>(seed);
     // pick size between 0 and maxsize
-    size_t size = minsize != maxsize ? minsize + rand() % (maxsize - minsize) : minsize;
+    size_t size = minsize != maxsize ? minsize + int_gen() % (maxsize - minsize) : minsize;
 
+    auto uchar_gen = rand_gen<unsigned char>();
     auto data = std::vector<unsigned char>(size);
-    // fill in random data
     for (auto& value : data)
-        value = static_cast<unsigned char>(rand());
+        value = uchar_gen();
     // make sure everything is unique
     for (size_t j = 1; j <= sizeof(size_t); ++j) {
         data[size - j] = ((unsigned char*)&seed)[j - 1];
     }
     return data;
 }
+
+/// Pretty prints the container content when test fails
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
+{
+    const auto end = v.end();
+    os << '[';
+    if (auto it = v.begin(); it != end) {
+        os << *it;
+        while (++it != end)
+            os << ", " << *it;
+    }
+    return os << ']';
+}
+
 #endif  // PTRIE_UTILS_H

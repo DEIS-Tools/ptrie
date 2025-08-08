@@ -1057,7 +1057,7 @@ void __ptrie<PTRIETLPA>::split_fwd(node_t* node, fwdnode_t* jumppar, node_t* loc
             for (size_t i = 0; i < bucketsize; ++i) {
                 if (i < lown._count) {
                     lown._data->entries(lown._count)[i] = ents[i];
-                    _entries->operator[](ents[i])._node = low_n;
+                    (*_entries)[ents[i]]._node = low_n;
                 } else
                     node->_data->entries(node->_count)[i - lown._count] = ents[i];
             }
@@ -1221,7 +1221,7 @@ void __ptrie<PTRIETLPA>::split_node(node_t* node, fwdnode_t* jumppar, node_t* lo
                     node->_data->entries(node->_count)[i] = ents[i];
                 else {
                     h_node->_data->entries(h_node->_count)[i - node->_count] = ents[i];
-                    _entries->operator[](ents[i])._node = h_node;
+                    (*_entries)[ents[i]]._node = h_node;
                 }
             }
         }
@@ -1374,7 +1374,7 @@ returntype_t __ptrie<PTRIETLPA>::insert(const KEY* data, size_t length)
         }
 
         entry = nbucket->entries(nbucketcount)[b_index] = _entries->next(0);
-        entry_t& ent = _entries->operator[](entry);
+        entry_t& ent = (*_entries)[entry];
         ent._node = node;
     }
 

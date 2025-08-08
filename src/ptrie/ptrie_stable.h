@@ -85,7 +85,7 @@ __set_stable<SPTRIETPLA>::node_t* __set_stable<SPTRIETPLA>::find_metadata(I inde
 #ifndef NDEBUG
         bool found = false;
 #endif
-        typename pt::entry_t& ent = this->_entries->operator[](index);
+        typename pt::entry_t& ent = (*this->_entries)[index];
         node = ent._node;
         typename pt::bucket_t* bckt = node->_data;
         I* ents = bckt->entries(node->_count);

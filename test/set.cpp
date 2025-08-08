@@ -30,7 +30,7 @@ using ptrie::uchar;
 TEST_CASE("Empty")
 {
     auto set = ptrie::set<>{};
-    try_insert(set, [](size_t) { return std::vector<unsigned char>{}; }, 1);
+    try_insert(set, [](size_t) { return std::vector<uchar>{}; }, 1);
 }
 
 TEST_CASE("Insert Byte")
@@ -51,7 +51,7 @@ TEST_CASE("Heap Test")
     try_insert(
         set,
         [](size_t i) {
-            auto data = std::vector<unsigned char>(sizeof(size_t));
+            auto data = std::vector<uchar>(sizeof(size_t));
             memcpy(std::data(data), &i, sizeof(size_t));
             return data;
         },
@@ -64,7 +64,7 @@ TEST_CASE("Insert Mill")
     try_insert(
         set,
         [](size_t i) {
-            auto data = std::vector<unsigned char>(sizeof(size_t));
+            auto data = std::vector<uchar>(sizeof(size_t));
             memcpy(std::data(data), &i, sizeof(size_t));
             return data;
         },
@@ -90,7 +90,7 @@ TEST_CASE("Pseudo Rand2")
 TEST_CASE("Pseudo Rand Split Heap")
 {
     for (size_t seed = 42; seed < (42 + 10); ++seed) {
-        auto set = ptrie::set<unsigned char, sizeof(size_t) + 1, 6>{};
+        auto set = ptrie::set<uchar, sizeof(size_t) + 1, 6>{};
         try_insert(set, [seed](size_t i) { return rand_data(seed + i, 16); }, 1024 * 10);
     }
 }
@@ -159,11 +159,10 @@ TEST_CASE("Simple RIterator")
 TEST_CASE("Dealloc")
 {
     auto set = ptrie::set<>{};
-    auto mem = std::vector<std::unique_ptr<uchar[]>>{};
+    auto mem = std::vector<std::vector<uchar>>{};
     mem.reserve(10000);
     for (size_t i = 1; i < 10000; ++i) {
-        auto* tmp = mem.emplace_back(std::make_unique<uchar[]>(i)).get();
-        std::fill_n(tmp, i, std::numeric_limits<uchar>::max());
+        const auto* tmp = mem.emplace_back(i, std::numeric_limits<uchar>::max()).data();
         set.insert(tmp, i);
     }
 }
