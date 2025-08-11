@@ -85,10 +85,10 @@ __set_stable<SPTRIETPLA>::node_t* __set_stable<SPTRIETPLA>::find_metadata(I inde
 #ifndef NDEBUG
         bool found = false;
 #endif
-        typename pt::entry_t& ent = (*this->_entries)[index];
-        node = ent._node;
-        typename pt::bucket_t* bckt = node->_data;
-        I* ents = bckt->entries(node->_count);
+        const auto& entry = (*this->_entries)[index];
+        node = entry._node;
+        const auto& bucket = node->_data;
+        const I* ents = bucket.entries(node->_count);
         for (size_t i = 0; i < node->_count; ++i) {
             if (ents[i] == index) {
                 bindex = i;

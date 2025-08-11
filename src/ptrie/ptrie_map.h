@@ -54,11 +54,10 @@ public:
     static constexpr auto heapbound = HEAPBOUND;
 
     T& get_data(I index);
-    const T& get_data(I index) const;
+    const T& get_data(I index) const { const_cast<map*>(this)->get_data(index); }
+
     T& operator[](KEY key) { return get_data(pt::insert(key).second); }
-
     T& operator[](std::pair<const KEY*, size_t> key) { return get_data(pt::insert(key.first, key.second).second); }
-
     T& operator[](const std::vector<KEY>& key) { return get_data(pt::insert(key.data(), key.size()).second); }
 
     class iterator : public __iterator<map, iterator>
@@ -68,9 +67,7 @@ public:
             __iterator<map, iterator>(base, index), _entries(entries)
         {}
         I index() const { return static_cast<const typename pt::node_t*>(this->_node)->entries()[this->_index]; }
-
         T& operator*() const { return _entries[index()]._data; }
-
         T& operator->() const { return _entries[index()]._data; }
 
     private:
@@ -88,13 +85,6 @@ template <typename KEY, typename T, uint16_t HEAPBOUND, uint16_t SPLITBOUND, uin
 T& map<KEY, T, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, I>::get_data(I index)
 {
     typename pt::entry_t& ent = (*this->_entries)[index];
-    return ent._data;
-}
-template <typename KEY, typename T, uint16_t HEAPBOUND, uint16_t SPLITBOUND, uint8_t BSIZE, size_t ALLOCSIZE,
-          typename I>
-const T& map<KEY, T, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, I>::get_data(I index) const
-{
-    const typename pt::entry_t& ent = (*this->_entries)[index];
     return ent._data;
 }
 }  // namespace ptrie
