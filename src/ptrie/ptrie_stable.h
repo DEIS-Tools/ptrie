@@ -64,7 +64,7 @@ public:
     {
     public:
         siterator(const __base_t* base, int16_t index): __iterator<__set_stable, siterator>(base, index) {}
-        I index() const { return static_cast<const node_t*>(this->_node)->entries()[this->_index]; }
+        I index() const { return mem_load<I>(static_cast<const node_t*>(this->_node)->entries() + this->_index); }
     };
 
     friend class siterator;
@@ -90,7 +90,7 @@ __set_stable<SPTRIETPLA>::node_t* __set_stable<SPTRIETPLA>::find_metadata(I inde
         const auto& bucket = node->_data;
         const I* ents = bucket.entries(node->_count);
         for (size_t i = 0; i < node->_count; ++i) {
-            if (ents[i] == index) {
+            if (mem_load<size_t>(ents + i) == index) {
                 bindex = i;
 #ifndef NDEBUG
                 found = true;

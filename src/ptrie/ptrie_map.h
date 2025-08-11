@@ -66,7 +66,10 @@ public:
         iterator(const __base_t* base, int16_t index, entrylist_t& entries):
             __iterator<map, iterator>(base, index), _entries(entries)
         {}
-        I index() const { return static_cast<const typename pt::node_t*>(this->_node)->entries()[this->_index]; }
+        I index() const
+        {
+            return mem_load<I>(static_cast<const typename pt::node_t*>(this->_node)->entries() + this->_index);
+        }
         T& operator*() const { return _entries[index()]._data; }
         T& operator->() const { return _entries[index()]._data; }
 
