@@ -142,10 +142,16 @@ protected:
     template <int16_t INC, int16_t MAX>
     bool move()
     {
+        static_assert(INC != 0);
         if (_node->_type == 255) {
             auto* fwd = static_cast<const P::fwdnode_t*>(_node);
-            while (fwd->_children[_index] == fwd)
-                _index += INC;
+            if constexpr (INC > 0) {
+                while (_index <= MAX && fwd->_children[_index] == fwd)
+                    _index += INC;
+            } else {
+                while (_index >= 0 && fwd->_children[_index] == fwd)
+                    _index += INC;
+            }
             if (_index == MAX + INC)  // we have reached the end of this fwdnode
             {
                 if (fwd->_parent == nullptr)
@@ -1309,10 +1315,10 @@ returntype_t __ptrie<PTRIETLPA>::insert(const KEY* data, size_t length)
 
     if (bool res = best_match(data, size, &fwd, &base, p_byte, b_index);
         res) {  // We are not inserting duplicates, semantics of PTrie is a set.
-        returntype_t ret(false, 0);
+        auto ret = returntype_t{false, 0};
         if constexpr (HAS_ENTRIES) {
             node = (node_t*)base;
-            ret = returntype_t(false, node->_data.entries(node->_count)[b_index]);
+            ret = returntype_t(false, mem_load<size_t>(node->_data.entries(node->_count) + b_index));
         }
         return ret;
     }
