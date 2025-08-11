@@ -275,7 +275,15 @@ protected:
     struct bucket_t
     {
         bucket_t() = default;
-        bucket_t(std::size_t size): _data(size) {}
+        explicit bucket_t(std::size_t size): _data(std::make_unique<uchar[]>(size)) {}
+
+        bucket_t copy(std::size_t size)
+        {
+            auto res = bucket_t(size);
+            std::memcpy(res._data.get(), _data.get(), sizeof(uchar) * size);
+            return res;
+        }
+
         static constexpr size_t overhead(size_t count)
         {
             if (HAS_ENTRIES)
@@ -291,27 +299,23 @@ protected:
         }
         constexpr const I* entries(uint16_t count) const { return const_cast<bucket_t*>(this)->entries(count); }
 
-        constexpr uchar* data(uint16_t count) { return _data.data() + overhead(count); }
+        constexpr uchar* data(uint16_t count) { return _data.get() + overhead(count); }
         constexpr const uchar* data(uint16_t count) const { return const_cast<bucket_t*>(this)->data(count); }
 
         constexpr uint16_t& first(uint16_t = 0, uint16_t index = 0)
         {
-            assert(!_data.empty());
-            return ((uint16_t*)_data.data())[index];
+            assert(_data.get());
+            return ((uint16_t*)_data.get())[index];
         }
         constexpr const uint16_t& first(uint16_t = 0, uint16_t index = 0) const
         {
             return const_cast<bucket_t*>(this)->first(index, index);
         }
-        void clear()
-        {
-            _data.clear();
-            _data.shrink_to_fit();
-        }
-        operator bool() const { return !_data.empty(); }
+        void clear() { _data.reset(); }
+        operator bool() const { return _data.get(); }
 
     private:
-        std::vector<uchar> _data;
+        std::unique_ptr<uchar[]> _data;
     };
 
     // nodes in the tree
@@ -1045,7 +1049,7 @@ void __ptrie<PTRIETLPA>::split_fwd(node_t* const node, fwdnode_t* const jumppar,
                 auto* e = bucket.entries(bucketsize);
                 std::copy_n(e, bucketsize, lown._data.entries(bucketsize));
             }
-            node->_data = lown._data;
+            node->_data = std::move(lown._data);
         } else
             node->_data = std::move(bucket);
 
@@ -1470,7 +1474,7 @@ void __ptrie<PTRIETLPA>::inject_byte(node_t* const node, uchar topush, size_t to
     if (totsize > 0)
         nbucket = bucket_t{totsize + bucket_t::overhead(node->_count)};
     else
-        nbucket = node->_data;
+        nbucket = node->_data.copy(node->_totsize + bucket_t::overhead(node->_count));
 
     size_t dcnt = 0;
     size_t ocnt = 0;
