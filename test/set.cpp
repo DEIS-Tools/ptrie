@@ -79,11 +79,10 @@ TEST_CASE("Pseudo Rand1")
     }
 #ifdef PTRIE_MEMORY_LOGGING
     auto& alive = ptrie::get_alive();
-    if (!alive.empty()) {
-        std::clog << "Memory leaks:\n";
-        for (auto& [ptr, src] : alive)
-            std::clog << ptr << " " << src << '\n';
-    }
+    auto os = std::ostringstream{};
+    for (const auto& [_, src] : alive)
+        os << "Leaked " << src << '\n';
+    CHECK_MESSAGE(alive.empty(), "Detected memory leaks:\n", os.str());
 #endif  // PTRIE_MEMORY_LOGGING
 }
 

@@ -100,7 +100,7 @@ inline uchar* new_uchar2(std::size_t size, const std::string& src [[maybe_unused
     if (alive.find(res) != alive.end()) {
         std::abort();
     }
-    alive[res] = std::to_string(size) + ' ' + src + ':' + std::to_string(line);
+    alive[res] = std::to_string(size) + " bytes allocated at " + src + ':' + std::to_string(line);
 #endif  // PTRIE_MEMORY_LOGGING
     return res;
 }
