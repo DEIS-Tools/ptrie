@@ -48,7 +48,7 @@ struct Timer
     using Duration = std::chrono::duration<double>;
     Timer(): start{Clock::now()} {}
     Duration elapsed() const { return {Clock::now() - start}; }
-    ~Timer() { std::cout << "Completed in " << elapsed() << std::endl; }
+    ~Timer() { std::cout << "Completed in " << elapsed().count() << std::endl; }
     Timer(const Timer&) = default;
     Timer& operator=(const Timer&) = default;
 

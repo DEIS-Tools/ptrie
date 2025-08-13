@@ -560,6 +560,9 @@ __ptrie<PTRIETLPA>::~__ptrie() noexcept
         fwdnode_t* fwdnode;
         size_t depth;
         uint16_t encsize;
+        // AppleClang from Xcode-15.4 and older needs this constructor for emplace to work:
+        NodeContext(fwdnode_t* fwdnode, size_t depth, uint16_t encsize):
+            fwdnode{fwdnode}, depth{depth}, encsize{encsize} {}
     };
     auto stack = std::stack<NodeContext>{};
     stack.emplace(&_root, 0, 0);
