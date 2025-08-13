@@ -75,11 +75,14 @@ void mem_copy(const T* src, T* dest, size_t count)
 }
 
 /// type-punning uint16_t with uchar
-typedef union
+union puint16_t
 {
-    uint16_t u;
+    uint16_t u{0};
     uchar c[2];
-} puint16_t;
+    puint16_t() = default;
+    puint16_t(uint16_t u): u{u} {}
+    puint16_t(size_t s): u{static_cast<uint16_t>(s)} {}
+};
 
 #ifdef PTRIE_MEMORY_LOGGING
 auto& get_alive()
@@ -842,7 +845,7 @@ bool __ptrie<PTRIETLPA>::bucket_search(const KEY* target, const size_t size, nod
     if (node->_count > 0) {
         size_t offset = 0;
         b_index = 0;
-        auto bs = puint16_t{0};
+        auto bs = puint16_t{};
         auto f = puint16_t{};
         for (; b_index < node->_count; ++b_index) {
             f.u = bucket.first(node->_count, b_index);
