@@ -240,7 +240,7 @@ private:
 
     static void dealloc(uchar* data) { free(data); }
 
-    static uchar* offset(uchar* data, uint16_t size)
+    static uchar* offset(uchar* data, uint16_t size [[maybe_unused]])
     {
         //            if((size % __BW_BSIZE__) == 0) return data;
         //            else return &data[(__BW_BSIZE__ - (size % __BW_BSIZE__))];

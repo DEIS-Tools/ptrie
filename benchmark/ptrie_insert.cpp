@@ -86,8 +86,8 @@ int main(int argc, const char** argv)
         print_settings(type, elements, seed, bytes, deletes, read_rate, maxval);
         auto set = google::dense_hash_set<wrapper_t, hasher_o, equal_o>(elements / 10);
         const auto sw = Timer{};
-        auto empty = wrapper_t{.data{}, ._hash{0}};
-        auto del = wrapper_t{.data{}, ._hash{std::numeric_limits<uint64_t>::max()}};
+        auto empty = wrapper_t{.data{}, ._hash = 0};
+        auto del = wrapper_t{.data{}, ._hash = std::numeric_limits<uint64_t>::max()};
         set.set_empty_key(empty);
         if (deletes > 0.0)
             set.set_deleted_key(del);

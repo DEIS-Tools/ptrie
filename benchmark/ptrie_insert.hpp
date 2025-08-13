@@ -59,7 +59,8 @@ struct equal_o
 };
 
 template <typename T>
-void set_insert(T& set, size_t elements, size_t seed, size_t bytes, double deletes, double read_rate, size_t mv)
+void set_insert(T& set, size_t elements, size_t seed, size_t bytes, double deletes [[maybe_unused]], double read_rate,
+                size_t mv)
 {
     /*
     auto generator = std::default_random_engine(seed);
@@ -111,7 +112,8 @@ void set_insert(T& set, size_t elements, size_t seed, size_t bytes, double delet
 }
 
 template <typename T>
-void set_insert_ptrie(T& set, size_t elements, size_t seed, size_t bytes, double deletes, double read_rate, size_t mv)
+void set_insert_ptrie(T& set, const size_t elements, const size_t seed, const size_t bytes,
+                      double deletes [[maybe_unused]], const double read_rate, const size_t mv)
 {
     /*
     auto del_generator = std::default_random_engine(seed);

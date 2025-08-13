@@ -29,7 +29,7 @@ using ptrie::uchar;
 
 TEST_CASE("Empty")
 {
-    auto set = ptrie::set<>{};
+    auto set = typename ptrie::set<>{};
     try_insert(set, [](size_t) { return std::vector<uchar>{}; }, 1);
 }
 
@@ -77,6 +77,14 @@ TEST_CASE("Pseudo Rand1")
         auto set = ptrie::set<>{};
         try_insert(set, [seed](size_t i) { return rand_data(seed + i, 256); }, 1024 * 10);
     }
+#ifdef PTRIE_MEMORY_LOGGING
+    auto& alive = ptrie::get_alive();
+    if (!alive.empty()) {
+        std::clog << "Memory leaks:\n";
+        for (auto& [ptr, src] : alive)
+            std::clog << ptr << " " << src << '\n';
+    }
+#endif  // PTRIE_MEMORY_LOGGING
 }
 
 TEST_CASE("Pseudo Rand2")

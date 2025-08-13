@@ -10,6 +10,7 @@ project(ptrie VERSION ${PTRIE_VERSION} LANGUAGES CXX)
 
 option(PTRIE_BuildTests "Build the unit tests" ON)
 option(PTRIE_BuildBenchmark "Build the simple benchmark suite" ON)
+option(PTRIE_MEMORY_LOGGING "Enable memory (leak) logging (in tests)" OFF)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
