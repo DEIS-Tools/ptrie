@@ -69,9 +69,9 @@ void mem_assign(void* memory, const T& value)
 
 /// Solves alignment warnings when writing into compressed storage
 template <typename T>
-void mem_copy(const T& value, T* memory)
+void mem_copy(const T* src, T* dest, size_t count)
 {
-    std::memcpy(memory, &value, sizeof(T));
+    std::memcpy((void*)dest, (void*)src, sizeof(src[0]) * count);
 }
 
 /// type-punning uint16_t with uchar
@@ -1102,7 +1102,7 @@ void __ptrie<PTRIETLPA>::split_fwd(node_t* const node, fwdnode_t* const jumppar,
         if (to_cut != 0) {
             if constexpr (HAS_ENTRIES) {
                 auto* e = bucket.entries(bucketsize);
-                std::copy_n(e, bucketsize, node->_data.entries(bucketsize));
+                mem_copy(e, node->_data.entries(bucketsize), bucketsize);
             }
             lown._data.clear();
         } else
@@ -1118,7 +1118,7 @@ void __ptrie<PTRIETLPA>::split_fwd(node_t* const node, fwdnode_t* const jumppar,
         if (to_cut != 0) {
             if constexpr (HAS_ENTRIES) {
                 auto* e = bucket.entries(bucketsize);
-                std::copy_n(e, bucketsize, lown._data.entries(bucketsize));
+                mem_copy(e, lown._data.entries(bucketsize), bucketsize);
             }
             node->_data = std::move(lown._data);
         } else
@@ -1447,12 +1447,12 @@ returntype_t __ptrie<PTRIETLPA>::insert(const KEY* data, size_t length)
     size_t entry = 0;
     if constexpr (HAS_ENTRIES) {
         // copy over entries
-        {
-            auto* src = node->_data.entries(node->_count);
-            auto* mid = src + b_index;
-            auto* end = mid + (node->_count - b_index);
-            std::copy(src, mid, nbucket.entries(nbucketcount));
-            std::copy(mid, end, nbucket.entries(nbucketcount) + b_index + 1);
+        if (node->_data) {
+            const auto* src = node->_data.entries(node->_count);
+            const auto* mid = src + b_index;
+            auto* dest = nbucket.entries(nbucketcount);
+            mem_copy(src, dest, b_index);
+            mem_copy(mid, dest + b_index + 1, node->_count - b_index);
         }
 
         entry = _entries->next(0);
@@ -1633,10 +1633,12 @@ void __ptrie<PTRIETLPA>::merge_empty(node_t* node, int on_heap, const KEY* data,
 
             if (other == nullptr) {
                 return;
-            } else if (other->_type != 255) {
+            }
+            if (other->_type != 255) {
                 node = (node_t*)other;
                 return merge_down(node, on_heap, data, byte);
-            } else if (other != parent) {
+            }
+            if (other != parent) {
                 assert(other->_type == 255);
                 return;
             }
@@ -1673,8 +1675,8 @@ bool __ptrie<PTRIETLPA>::merge_nodes(node_t* node, node_t* other, uchar path)
 
     if constexpr (HAS_ENTRIES) {
         // copy over entries
-        std::copy_n(first->entries(), first->_count, nbucket.entries(nbucketcount));
-        std::copy_n(second->entries(), second->_count, nbucket.entries(nbucketcount) + first->_count);
+        mem_copy(first->entries(), nbucket.entries(nbucketcount), first->_count);
+        mem_copy(second->entries(), nbucket.entries(nbucketcount) + first->_count, second->_count);
     }
 
     // copy over old data
@@ -1951,12 +1953,11 @@ void __ptrie<PTRIETLPA>::erase(node_t* node, size_t bindex, int on_heap, const K
         if constexpr (HAS_ENTRIES) {
             // copy over entries
             {
-                auto* src = node->entries();
-                auto* mid = src + bindex;
-                auto* end = src + node->_count;
+                const auto* src = node->entries();
+                const auto* mid = src + bindex;
                 auto* dest = node->_data.entries(node->_count);
-                std::copy(src, mid, dest);
-                std::copy(mid + 1, end, dest + bindex);
+                mem_copy(src, dest, bindex);
+                mem_copy(mid + 1, dest + bindex, node->_count - bindex - 1);
             }
 
             // copy back entries here in _entries!
