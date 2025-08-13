@@ -36,7 +36,7 @@ class map : __set_stable<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, T, I>
 {
     static_assert(!std::is_same_v<void, T>, "T (map-to-type) must not be void");
     using pt = __set_stable<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, T, I>;
-    using entrylist_t = pt::entrylist_t;
+    using entrylist_t = typename pt::entrylist_t;
 
 public:
     using pt::erase;
@@ -46,8 +46,8 @@ public:
     using pt::unpack;
     using typename pt::__set_stable;
 
-    using node_t = pt::node_t;
-    using fwdnode_t = pt::fwdnode_t;
+    using node_t = typename pt::node_t;
+    using fwdnode_t = typename pt::fwdnode_t;
     using typename pt::key_t;
     static constexpr auto bsize = pt::bsize;
     static constexpr auto bdiv = pt::bdiv;

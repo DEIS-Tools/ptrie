@@ -189,7 +189,7 @@ protected:
     {
         static_assert(INC != 0);
         if (_node->_type == 255) {
-            auto* fwd = static_cast<const P::fwdnode_t*>(_node);
+            auto* fwd = static_cast<const typename P::fwdnode_t*>(_node);
             if constexpr (INC > 0) {
                 while (_index <= MAX && fwd->_children[_index] == fwd)
                     _index += INC;
@@ -213,13 +213,13 @@ protected:
             _index = 255 - MAX;
             if (_node->_type != 255) {
                 if constexpr (MAX == 0)
-                    _index = static_cast<const P::node_t*>(_node)->_count - 1;
+                    _index = static_cast<const typename P::node_t*>(_node)->_count - 1;
                 return false;
             }
             return true;
         }
         _index += INC;
-        auto* node = static_cast<const P::node_t*>(_node);
+        auto* node = static_cast<const typename P::node_t*>(_node);
         if (MAX == 255 && _index < node->_count)
             return false;
         if (MAX == 0 && _index >= 0)
@@ -280,12 +280,12 @@ public:
         return cpy;
     }
 
-    size_t unpack(P::key_t* dest) const
+    size_t unpack(typename P::key_t* dest) const
     {
         size_t ps, offset;
         uint16_t size;
         auto path = std::stack<uchar>{};
-        auto node = static_cast<const P::node_t*>(_node);
+        auto node = static_cast<const typename P::node_t*>(_node);
         __build_path<typename P::node_t, P::bdiv, P::bsize, P::heapbound>(node, path, _index, offset, ps, size);
         __write_data<typename P::node_t, typename P::key_t, P::bdiv, P::bsize, P::heapbound>(dest, node, path, _index,
                                                                                              offset, ps, size);
@@ -297,7 +297,7 @@ public:
         size_t ps, offset;
         uint16_t size;
         std::stack<uchar> path;
-        auto node = static_cast<const P::node_t*>(_node);
+        auto node = static_cast<const typename P::node_t*>(_node);
         __build_path<typename P::node_t, P::bdiv, P::bsize, P::heapbound>(node, path, _index, offset, ps, size);
         std::vector<typename P::key_t> destination(size / byte_iterator<typename P::key_t>::element_size());
         __write_data<typename P::node_t, typename P::key_t, P::bdiv, P::bsize, P::heapbound>(
@@ -310,7 +310,7 @@ public:
         size_t ps, offset;
         uint16_t size;
         std::stack<uchar> path;
-        auto node = static_cast<const P::node_t*>(_node);
+        auto node = static_cast<const typename P::node_t*>(_node);
         __build_path<typename P::node_t, P::bdiv, P::bsize, P::heapbound>(node, path, _index, offset, ps, size);
         dest.resize(size / byte_iterator<typename P::key_t>::element_size());
         __write_data<typename P::node_t, typename P::key_t, P::bdiv, P::bsize, P::heapbound>(node, path, _index, offset,
@@ -523,8 +523,8 @@ public:
     using pt::insert;
     using typename pt::__ptrie;
 
-    using node_t = pt::node_t;
-    using fwdnode_t = pt::fwdnode_t;
+    using node_t = typename pt::node_t;
+    using fwdnode_t = typename pt::fwdnode_t;
     using typename pt::key_t;
 
     static constexpr auto bsize = pt::bsize;

@@ -46,8 +46,8 @@ public:
     using pt::insert;
     using typename pt::__ptrie;
 
-    using node_t = pt::node_t;
-    using fwdnode_t = pt::fwdnode_t;
+    using node_t = typename pt::node_t;
+    using fwdnode_t = typename pt::fwdnode_t;
     using typename pt::key_t;
 
     static constexpr auto bsize = pt::bsize;
@@ -71,11 +71,11 @@ public:
 
 protected:
     node_t* find_metadata(I index, size_t& bindex) const;
-    using entrylist_t = pt::entrylist_t;
+    using entrylist_t = typename pt::entrylist_t;
 };
 
 template <SPTRIETPL>
-__set_stable<SPTRIETPLA>::node_t* __set_stable<SPTRIETPLA>::find_metadata(I index, size_t& bindex) const
+typename __set_stable<SPTRIETPLA>::node_t* __set_stable<SPTRIETPLA>::find_metadata(I index, size_t& bindex) const
 {
     node_t* node = nullptr;
     // we can find size without bothering anyone (too much)
@@ -132,7 +132,7 @@ template <typename KEY = unsigned char, typename I = size_t, uint16_t HEAPBOUND 
 class set_stable : private __set_stable<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, void, I>
 {
     using pt = __set_stable<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, void, I>;
-    using iterator = pt::siterator;
+    using iterator = typename pt::siterator;
 
 public:
     using pt::erase;
