@@ -184,6 +184,10 @@ constexpr uint16_t __memsize(uint16_t d, size_t HEAPBOUND)
 template <typename P, typename R>
 struct __iterator
 {
+    using fwdnode_t = P::fwdnode_t;
+    using node_t = P::node_t;
+    using key_t = P::key_t;
+
 protected:
     const __base_t* _node = nullptr;
     int16_t _index = 0;
@@ -192,7 +196,7 @@ protected:
     {
         static_assert(INC != 0);
         if (_node->_type == 255) {
-            auto* fwd = static_cast<const typename P::fwdnode_t*>(_node);
+            auto* fwd = static_cast<const fwdnode_t*>(_node);
             if constexpr (INC > 0) {
                 while (_index <= MAX && fwd->_children[_index] == fwd)
                     _index += INC;
@@ -216,13 +220,13 @@ protected:
             _index = 255 - MAX;
             if (_node->_type != 255) {
                 if constexpr (MAX == 0)
-                    _index = static_cast<const typename P::node_t*>(_node)->_count - 1;
+                    _index = static_cast<const node_t*>(_node)->_count - 1;
                 return false;
             }
             return true;
         }
         _index += INC;
-        auto* node = static_cast<const typename P::node_t*>(_node);
+        auto* node = static_cast<const node_t*>(_node);
         if (MAX == 255 && _index < node->_count)
             return false;
         if (MAX == 0 && _index >= 0)
@@ -283,41 +287,39 @@ public:
         return cpy;
     }
 
-    size_t unpack(typename P::key_t* dest) const
+    size_t unpack(key_t* dest) const
     {
         size_t ps, offset;
         uint16_t size;
         auto path = std::stack<uchar>{};
-        auto node = static_cast<const typename P::node_t*>(_node);
-        __build_path<typename P::node_t, P::bdiv, P::bsize, P::heapbound>(node, path, _index, offset, ps, size);
-        __write_data<typename P::node_t, typename P::key_t, P::bdiv, P::bsize, P::heapbound>(dest, node, path, _index,
-                                                                                             offset, ps, size);
-        return size / byte_iterator<typename P::key_t>::element_size();
+        auto node = static_cast<const node_t*>(_node);
+        __build_path<node_t, P::bdiv, P::bsize, P::heapbound>(node, path, _index, offset, ps, size);
+        __write_data<node_t, key_t, P::bdiv, P::bsize, P::heapbound>(dest, node, path, _index, offset, ps, size);
+        return size / byte_iterator<key_t>::element_size();
     }
 
-    std::vector<typename P::key_t> unpack() const
+    std::vector<key_t> unpack() const
     {
         size_t ps, offset;
         uint16_t size;
         std::stack<uchar> path;
-        auto node = static_cast<const typename P::node_t*>(_node);
-        __build_path<typename P::node_t, P::bdiv, P::bsize, P::heapbound>(node, path, _index, offset, ps, size);
-        std::vector<typename P::key_t> destination(size / byte_iterator<typename P::key_t>::element_size());
-        __write_data<typename P::node_t, typename P::key_t, P::bdiv, P::bsize, P::heapbound>(
-            destination.data(), node, path, _index, offset, ps, size);
+        auto node = static_cast<const node_t*>(_node);
+        __build_path<node_t, P::bdiv, P::bsize, P::heapbound>(node, path, _index, offset, ps, size);
+        std::vector<key_t> destination(size / byte_iterator<key_t>::element_size());
+        __write_data<node_t, key_t, P::bdiv, P::bsize, P::heapbound>(destination.data(), node, path, _index, offset, ps,
+                                                                     size);
         return destination;
     }
 
-    void unpack(std::vector<typename P::key_t>& dest) const
+    void unpack(std::vector<key_t>& dest) const
     {
         size_t ps, offset;
         uint16_t size;
         std::stack<uchar> path;
-        auto node = static_cast<const typename P::node_t*>(_node);
-        __build_path<typename P::node_t, P::bdiv, P::bsize, P::heapbound>(node, path, _index, offset, ps, size);
-        dest.resize(size / byte_iterator<typename P::key_t>::element_size());
-        __write_data<typename P::node_t, typename P::key_t, P::bdiv, P::bsize, P::heapbound>(node, path, _index, offset,
-                                                                                             ps, size);
+        auto node = static_cast<const node_t*>(_node);
+        __build_path<node_t, P::bdiv, P::bsize, P::heapbound>(node, path, _index, offset, ps, size);
+        dest.resize(size / byte_iterator<key_t>::element_size());
+        __write_data<node_t, key_t, P::bdiv, P::bsize, P::heapbound>(node, path, _index, offset, ps, size);
     }
 };
 
@@ -354,9 +356,10 @@ protected:
     struct bucket_t
     {
         bucket_t() = default;
-        explicit bucket_t(std::size_t size): _data(std::make_unique<uchar[]>(size)) {}
+        explicit bucket_t(const std::size_t size): _data(std::make_unique<uchar[]>(size)) {}
 
-        bucket_t copy(std::size_t size)
+        /// Creates a copy of *this given the size, assumes that _data contains at least `size` `uchar`s
+        bucket_t copy(const std::size_t size) const
         {
             auto res = bucket_t(size);
             std::memcpy(res._data.get(), _data.get(), sizeof(uchar) * size);
@@ -562,7 +565,8 @@ __ptrie<PTRIETLPA>::~__ptrie() noexcept
         uint16_t encsize;
         // AppleClang from Xcode-15.4 and older needs this constructor for emplace to work:
         NodeContext(fwdnode_t* fwdnode, size_t depth, uint16_t encsize):
-            fwdnode{fwdnode}, depth{depth}, encsize{encsize} {}
+            fwdnode{fwdnode}, depth{depth}, encsize{encsize}
+        {}
     };
     auto stack = std::stack<NodeContext>{};
     stack.emplace(&_root, 0, 0);
@@ -2103,7 +2107,7 @@ void __write_data(KEY* dest, const N* node, std::stack<uchar>& path, size_t bind
                 byte_iterator<KEY>::access(dest, ps + i) = src[i];
     }
 
-    uint16_t first = node->_data.first(0, bindex);
+    puint16_t first = node->_data.first(0, bindex);
 
     size_t pos = 0;
     while (path.size() >= BDIV) {
@@ -2119,12 +2123,11 @@ void __write_data(KEY* dest, const N* node, std::stack<uchar>& path, size_t bind
     }
 
     if (ps > 0) {
-        auto* fc = (uchar*)&first;
         if (ps > 1) {
-            byte_iterator<KEY>::access(dest, pos) = fc[1];
+            byte_iterator<KEY>::access(dest, pos) = first.c[1];
             ++pos;
         }
-        byte_iterator<KEY>::access(dest, pos) = fc[0];
+        byte_iterator<KEY>::access(dest, pos) = first.c[0];
         ++pos;
     }
 }
