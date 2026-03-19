@@ -184,9 +184,9 @@ constexpr uint16_t __memsize(uint16_t d, size_t HEAPBOUND)
 template <typename P, typename R>
 struct __iterator
 {
-    using fwdnode_t = P::fwdnode_t;
-    using node_t = P::node_t;
-    using key_t = P::key_t;
+    using fwdnode_t = typename P::fwdnode_t;
+    using node_t = typename P::node_t;
+    using key_t = typename P::key_t;
 
 protected:
     const __base_t* _node = nullptr;
