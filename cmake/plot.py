@@ -20,7 +20,7 @@ METRICS = [
 ]
 TRANSFORMS = {"": lambda x: x, "inverse": lambda x: 1.0 / x}
 
-fig, ax = plt.subplots(1,1,figsize=(16,9))
+fig, ax = plt.subplots(layout="constrained")
 map_legend_to_ax = {}  # Will map legend lines to original lines.
 
 def get_default_ylabel(args):
@@ -52,7 +52,7 @@ def parse_args():
         choices=TRANSFORMS.keys(),
         default="",
         help="transform to apply to the chosen metric, valid choices are: %s"
-        % ", ".join(list(TRANSFORMS)),
+             % ", ".join(list(TRANSFORMS)),
         dest="transform",
     )
     parser.add_argument(
@@ -72,7 +72,13 @@ def parse_args():
         "--logx", action="store_true", help="plot x-axis on a logarithmic scale"
     )
     parser.add_argument(
+        "--log2x", action="store_true", help="plot x-axis on a logarithmic base 2 scale"
+    )
+    parser.add_argument(
         "--logy", action="store_true", help="plot y-axis on a logarithmic scale"
+    )
+    parser.add_argument(
+        "--log2y", action="store_true", help="plot y-axis on a logarithmic base 2 scale"
     )
     parser.add_argument(
         "--output", type=str, default="", help="File in which to save the graph"
@@ -87,10 +93,12 @@ def parse_args():
 
 
 def parse_input_size(name):
-    splits = name.split("/")
-    if len(splits) == 1:
+    parts = name.split("/")
+    if len(parts) == 1:
         return 1
-    return int(splits[1])
+    if parts[1].startswith("threads:"):
+        return int(parts[1].split(":")[1])
+    return int(parts[1])
 
 
 def read_data(args):
@@ -120,29 +128,35 @@ def read_data(args):
 
 def plot_groups(label_groups, args):
     """Display the processed data"""
+    fig.canvas.manager.set_window_title(args.title)
     ax.set_title(args.title)
     ax.set_xlabel(args.xlabel)
     ax.set_ylabel(args.ylabel)
+    ax.xaxis.grid()
+    ax.yaxis.grid()
     ax_lines = []
     for label, group in label_groups.items():
         (line, ) = ax.plot(group["input"], group[args.metric], label=label, marker=".")
         ax_lines.append(line)
-    leg = ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.1), ncol=4);
+    leg = ax.legend(loc="center left", bbox_to_anchor=(1, 0.5), ncol=1);
     pickradius = 5  # Points (Pt). How close the click needs to be to trigger an event.
     for legend_line, ax_line in zip(leg.get_lines(), ax_lines):
         legend_line.set_picker(pickradius)  # Enable picking on the legend line.
         map_legend_to_ax[legend_line] = ax_line
     if args.logx:
         plt.xscale("log")
+    if args.log2x:
+        plt.xscale("log", base=2)
     if args.logy:
         plt.yscale("log")
+    if args.log2y:
+        plt.yscale("log", base=2)
     if args.output:
         logging.info("Saving to %s" % args.output)
         plt.savefig(args.output)
     else:
         fig.canvas.mpl_connect('pick_event', on_pick)
         fig.canvas.mpl_connect('button_press_event', on_press)
-        fig.canvas.manager.set_window_title(args.title)
         leg.set_draggable(True) # allow to drag the leggend
         plt.show()
 
