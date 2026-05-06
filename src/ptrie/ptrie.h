@@ -782,8 +782,8 @@ constexpr void __ptrie<PTRIETLPA>::node_t::clone(const node_t& other, entrylist_
     if constexpr (HAS_ENTRIES) {
         for (size_t i = 0; i < _count; ++i) {
             auto eid = entries->next(0);
-            this->entries()[i] = eid;
-            (*entries)[eid] = (*other_entries)[other.entries()[i]];
+            mem_assign(this->entries() + i, eid);
+            (*entries)[eid] = (*other_entries)[mem_load<I>(other.entries() + i)];
         }
     }
 }
