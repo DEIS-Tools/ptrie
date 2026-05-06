@@ -62,7 +62,7 @@ T mem_load(const void* memory)
 
 /// Solves alignment warnings when writing into compressed storage
 template <typename T>
-void mem_assign(void* memory, const T& value)
+void mem_store(void* memory, const T& value)
 {
     std::memcpy(memory, &value, sizeof(T));
 }
@@ -71,7 +71,7 @@ void mem_assign(void* memory, const T& value)
 template <typename T>
 void mem_copy(const T* src, T* dest, size_t count)
 {
-    std::memcpy((void*)dest, (void*)src, sizeof(src[0]) * count);
+    std::memcpy((void*)dest, (void*)src, sizeof(T) * count);
 }
 
 /// type-punning uint16_t with uchar
@@ -782,7 +782,7 @@ constexpr void __ptrie<PTRIETLPA>::node_t::clone(const node_t& other, entrylist_
     if constexpr (HAS_ENTRIES) {
         for (size_t i = 0; i < _count; ++i) {
             auto eid = entries->next(0);
-            mem_assign(this->entries() + i, eid);
+            mem_store(this->entries() + i, eid);
             (*entries)[eid] = (*other_entries)[mem_load<I>(other.entries() + i)];
         }
     }
@@ -1060,7 +1060,7 @@ void __ptrie<PTRIETLPA>::split_fwd(node_t* const node, fwdnode_t* const jumppar,
             uchar* dest = node.data() + nbcnt;
             if (next_length >= HEAPBOUND) {
                 auto* data = new_uchar(next_length);
-                mem_assign(dest, data);
+                mem_store(dest, data);
                 dest = data;
             }
 
@@ -1160,10 +1160,10 @@ void __ptrie<PTRIETLPA>::split_fwd(node_t* const node, fwdnode_t* const jumppar,
             for (size_t i = 0; i < bucketsize; ++i) {
                 const auto idx = mem_load<I>(ents + i);
                 if (i < low_n->_count) {
-                    mem_assign(low_n->_data.entries(low_n->_count) + i, idx);
+                    mem_store(low_n->_data.entries(low_n->_count) + i, idx);
                     (*_entries)[idx]._node = low_n;
                 } else
-                    mem_assign(node->_data.entries(node->_count) + i - low_n->_count, idx);
+                    mem_store(node->_data.entries(node->_count) + i - low_n->_count, idx);
             }
         }
     }
@@ -1318,9 +1318,9 @@ void __ptrie<PTRIETLPA>::split_node(node_t* const node, fwdnode_t* const jumppar
             for (size_t i = 0; i < bucketsize; ++i) {
                 const auto idx = mem_load<I>(ents + i);
                 if (i < node->_count)
-                    mem_assign(node->_data.entries(node->_count) + i, idx);
+                    mem_store(node->_data.entries(node->_count) + i, idx);
                 else {
-                    mem_assign(h_node->_data.entries(h_node->_count) + i - node->_count, idx);
+                    mem_store(h_node->_data.entries(h_node->_count) + i - node->_count, idx);
                     (*_entries)[idx]._node = h_node;
                 }
             }
@@ -1447,7 +1447,7 @@ returntype_t __ptrie<PTRIETLPA>::insert(const KEY* data, size_t length)
             f[0] = 0;
         }
     } else {
-        mem_assign(&nbucket.first(nbucketcount, b_index), static_cast<uint16_t>(size));
+        mem_store(&nbucket.first(nbucketcount, b_index), static_cast<uint16_t>(size));
         if (byte == 1) {
             nbucket.first(nbucketcount, b_index) <<= 8;
             f[0] = byte_iterator<KEY>::const_access(data, 0);
@@ -1466,7 +1466,7 @@ returntype_t __ptrie<PTRIETLPA>::insert(const KEY* data, size_t length)
         }
 
         entry = _entries->next(0);
-        mem_assign(nbucket.entries(nbucketcount) + b_index, entry);
+        mem_store(nbucket.entries(nbucketcount) + b_index, entry);
         entry_t& ent = (*_entries)[entry];
         ent._node = node;
     }
@@ -1519,7 +1519,7 @@ returntype_t __ptrie<PTRIETLPA>::insert(const KEY* data, size_t length)
                 dest[i] = byte_iterator<KEY>::const_access(data, byte + i);
 
         // copy pointer in
-        mem_assign(nbucket.data(nbucketcount) + tmpsize, dest);
+        mem_store(nbucket.data(nbucketcount) + tmpsize, dest);
     }
 
     // if needed, split the node
@@ -1584,7 +1584,7 @@ void __ptrie<PTRIETLPA>::inject_byte(node_t* const node, uchar topush, size_t to
             } else if (size >= HEAPBOUND) {
                 const uchar* src = nullptr;
                 auto* dest = new_uchar(size);
-                mem_assign(nbucket.data(node->_count) + dcnt, dest);
+                mem_store(nbucket.data(node->_count) + dcnt, dest);
                 ++dest;
                 dcnt += sizeof(size_t);
                 if (size == HEAPBOUND) {
