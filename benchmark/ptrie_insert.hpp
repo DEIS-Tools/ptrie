@@ -109,6 +109,8 @@ void set_insert(T& set, size_t elements, size_t seed, size_t bytes, double delet
                 }*/
     }
     w.data = binarywrapper_t();
+    for (auto& elem : set)
+        const_cast<wrapper_t&>(elem).data.release();
 }
 
 template <typename T>

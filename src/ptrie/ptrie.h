@@ -631,7 +631,7 @@ void __ptrie<PTRIETLPA>::node_t::cleanup(const size_t depth, const uint16_t enc_
                 assert(dummy.u == lencsize);
 #endif
             }
-            if (lencsize > bdepth && (lencsize - bdepth) > HEAPBOUND) {
+            if (lencsize > bdepth && (lencsize - bdepth) >= HEAPBOUND) {
                 auto* ptr = mem_load<uchar*>(data() + offset);
                 delete_uchar(ptr);
             }
@@ -1555,9 +1555,11 @@ void __ptrie<PTRIETLPA>::inject_byte(node_t* const node, uchar topush, size_t to
 {
     static_assert(std::is_invocable_r_v<uint16_t, Fn, size_t>, "expected signature: uint16_t(size_t)");
     auto nbucket = bucket_t{};
-    if (totsize > 0)
+    if (totsize > 0) {
         nbucket = bucket_t{totsize + bucket_t::overhead(node->_count)};
-    else
+        if constexpr (HAS_ENTRIES)
+            mem_copy(node->_data.entries(node->_count), nbucket.entries(node->_count), node->_count);
+    } else
         nbucket = node->_data.copy(node->_totsize + bucket_t::overhead(node->_count));
 
     size_t dcnt = 0;
@@ -1591,10 +1593,11 @@ void __ptrie<PTRIETLPA>::inject_byte(node_t* const node, uchar topush, size_t to
                     ocnt += size - 1;
                 } else {
                     assert(size > HEAPBOUND);
-                    // allready on heap, but we need to expand it
+                    // already on heap, but we need to expand it
                     src = mem_load<const uchar*>(node->data() + ocnt);
                     std::copy_n(src, size - 1, dest);
                     ocnt += sizeof(size_t);
+                    delete_uchar(src);
                 }
                 --dest;
                 dest[0] = push;
@@ -1618,18 +1621,11 @@ void __ptrie<PTRIETLPA>::merge_empty(node_t* node, int on_heap, const KEY* data,
     assert(node->_count == 0);
     auto parent = node->_parent;
     for (size_t i = 0; i < WIDTH; ++i)
-        parent->_children[i] = parent;
+        if (parent->_children[i] == node)
+            parent->_children[i] = parent;
     delete node;
     do {
         if (parent != &_root) {
-            // we can remove fwd and go back one level
-            parent->_parent->_children[parent->_path] = parent->_parent;
-            --byte;
-            if ((byte % BDIV) == 0)
-                ++on_heap;
-            fwdnode_t* next = parent->_parent;
-            delete parent;
-            parent = next;
             __base_t* other = parent;
             for (size_t i = 0; i < WIDTH; ++i) {
                 if (parent->_children[i] != parent && other != parent->_children[i]) {
@@ -1653,6 +1649,14 @@ void __ptrie<PTRIETLPA>::merge_empty(node_t* node, int on_heap, const KEY* data,
                 return;
             }
 
+            // parent has no remaining non-self children, we can remove it
+            parent->_parent->_children[parent->_path] = parent->_parent;
+            --byte;
+            if ((byte % BDIV) == 0)
+                ++on_heap;
+            fwdnode_t* next = parent->_parent;
+            delete parent;
+            parent = next;
         } else {
             return;
         }
@@ -1878,6 +1882,15 @@ void __ptrie<PTRIETLPA>::merge_regular(node_t* node, int on_heap, const KEY* dat
             assert(parent->_children[i] == child || parent->_children[i] == node);
             parent->_children[i] = node;
         }
+        if (child->_type != 255) {
+            if constexpr (HAS_ENTRIES) {
+                for (size_t i = 0; i < node->_count; ++i) {
+                    auto idx = mem_load<I>(node->entries() + i);
+                    (*_entries)[idx]._node = node;
+                }
+            }
+            delete static_cast<node_t*>(child);
+        }
         merge_down(node, on_heap, data, byte);
     }
 }
@@ -1891,6 +1904,7 @@ void __ptrie<PTRIETLPA>::merge_down(node_t* node, int on_heap, const KEY* data, 
     if (node->_type == 0) {
         if (node->_count == 0) {
             merge_empty(node, on_heap, data, byte);
+            return;
         } else if (node->_parent != &_root) {
             // we need to re-add path to items here.
             readd_byte(node, on_heap, data, byte);
@@ -1961,17 +1975,10 @@ void __ptrie<PTRIETLPA>::erase(node_t* node, size_t bindex, int on_heap, const K
         }
 
         if constexpr (HAS_ENTRIES) {
-            // copy over entries
-            {
-                const auto* src = node->entries();
-                const auto* mid = src + bindex;
-                auto* dest = node->_data.entries(node->_count);
-                mem_copy(src, dest, bindex);
-                mem_copy(mid + 1, dest + bindex, node->_count - bindex - 1);
-            }
-
-            // copy back entries here in _entries!
-            // TODO fixme!
+            const auto* src = node->entries();
+            auto* dest = nbucket.entries(nbucketcount);
+            mem_copy(src, dest, bindex);
+            mem_copy(src + bindex + 1, dest + bindex, node->_count - bindex - 1);
         }
 
         // copy over old data
@@ -2123,12 +2130,14 @@ void __write_data(KEY* dest, const N* node, std::stack<uchar>& path, size_t bind
     }
 
     if (ps > 0) {
-        if (ps > 1) {
+        if (ps > 1 && pos < size) {
             byte_iterator<KEY>::access(dest, pos) = first.c[1];
             ++pos;
         }
-        byte_iterator<KEY>::access(dest, pos) = first.c[0];
-        ++pos;
+        if (pos < size) {
+            byte_iterator<KEY>::access(dest, pos) = first.c[0];
+            ++pos;
+        }
     }
 }
 }  // namespace ptrie
