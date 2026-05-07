@@ -59,7 +59,7 @@ void try_insert(T& trie, G&& generator, size_t N)
     }
 }
 
-std::vector<unsigned char> rand_data(size_t seed, size_t maxsize, size_t minsize = sizeof(size_t))
+inline std::vector<unsigned char> rand_data(size_t seed, size_t maxsize, size_t minsize = sizeof(size_t))
 {
     REQUIRE(minsize >= sizeof(size_t));
     auto int_gen = rand_gen<int>(seed);

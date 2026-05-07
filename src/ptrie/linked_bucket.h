@@ -30,7 +30,7 @@
 
 #include <cstring>  // memset
 #include <cassert>
-#include <cstdlib>
+// #include <cstdlib>
 
 template <typename T, size_t C>
 class linked_bucket_t
@@ -188,7 +188,7 @@ private:
             tmp = old->_next;
             if (tmp == nullptr) {
                 // extend index if needed
-                index_t* nindex = new index_t;
+                auto* nindex = new index_t;
                 std::memset(&nindex->_index, 0, sizeof(bucket_t*) * C);
                 nindex->_next = 0;
                 if (!old->_next.compare_exchange_strong(tmp, nindex)) {

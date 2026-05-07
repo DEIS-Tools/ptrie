@@ -71,7 +71,7 @@ void mem_store(void* memory, const T& value)
 template <typename T>
 void mem_copy(const T* src, T* dest, size_t count)
 {
-    std::memcpy((void*)dest, (void*)src, sizeof(T) * count);
+    std::memcpy(dest, src, sizeof(T) * count);
 }
 
 /// type-punning uint16_t with uchar
@@ -146,14 +146,14 @@ struct byte_iterator
                                                                                                     size_t id)
     {
         assert(data);
-        return ((uchar*)data)[id];
+        return reinterpret_cast<uchar*>(data)[id];
     }
 
     static constexpr std::enable_if_t<std::has_unique_object_representations_v<KEY>, const uchar&> const_access(
         const KEY* data, size_t id)
     {
         assert(data);
-        return ((const uchar*)data)[id];
+        return reinterpret_cast<const uchar*>(data)[id];
     }
 
     static constexpr std::enable_if_t<std::has_unique_object_representations_v<KEY>, size_t> element_size()
@@ -376,7 +376,7 @@ protected:
         constexpr I* entries(uint16_t count)
         {
             if (HAS_ENTRIES)
-                return (I*)(data(0) + (count * (sizeof(uint16_t))));
+                return reinterpret_cast<I*>(data(0) + (count * sizeof(uint16_t)));
             return nullptr;
         }
         constexpr const I* entries(uint16_t count) const { return const_cast<bucket_t*>(this)->entries(count); }
@@ -408,7 +408,7 @@ public:
         uint32_t _totsize = 0;
         fwdnode_t* _parent = nullptr;
         bucket_t _data;  ///< back-pointers to data-array up to date
-        void cleanup(size_t depth, uint16_t encsize);
+        void cleanup(size_t depth, uint16_t enc_size);
 
         constexpr uchar* data() { return _data.data(_count); }
         constexpr const uchar* data() const { return const_cast<node_t*>(this)->data(); }
@@ -610,7 +610,7 @@ void __ptrie<PTRIETLPA>::node_t::cleanup(const size_t depth, const uint16_t enc_
     {
         // nothing on heap
     } else if (bdepth >= 2) {
-        // If 'encsize - bdepth < HEAPBOUND' is true and 'bdepth >= 2' we hit the if
+        // If 'encsize - bdepth < HEAPBOUND' is true and 'bdepth >= 2' we hit the condition
         // above. everything is allocated on heap
         for (size_t i = 0; i < _count; ++i) {
             auto* ptr = mem_load<uchar*>(data() + i * sizeof(uchar*));
@@ -789,11 +789,11 @@ constexpr void __ptrie<PTRIETLPA>::node_t::clone(const node_t& other, entrylist_
 }
 
 template <PTRIETPL>
-__base_t* __ptrie<PTRIETLPA>::fast_forward(const KEY* data, size_t s, fwdnode_t** tree_pos, uint& p_byte) const
+__base_t* __ptrie<PTRIETLPA>::fast_forward(const KEY* data, size_t length, fwdnode_t** tree_pos, uint& p_byte) const
 {
     fwdnode_t* t_pos = *tree_pos;
 
-    auto* sc = (uchar*)&s;
+    auto* lengthc = (uchar*)&length;
 
     do {
         *tree_pos = t_pos;
@@ -804,7 +804,7 @@ __base_t* __ptrie<PTRIETLPA>::fast_forward(const KEY* data, size_t s, fwdnode_t*
         if (byte >= 2)
             nb = byte_iterator<KEY>::const_access(data, byte - 2);
         else
-            nb = sc[1 - byte];
+            nb = lengthc[1 - byte];
         if constexpr (BSIZE != 8)
             nb = (nb >> (((BDIV - 1) - (p_byte % BDIV)) * BSIZE)) & FILTER;
         next = t_pos->_children[nb];

@@ -7,7 +7,7 @@
 #include <random>
 #include <vector>
 
-inline size_t reorder(size_t el, std::vector<size_t>& order, size_t seed)
+inline size_t reorder(size_t el, const std::vector<size_t>& order, size_t seed)
 {
     el = el ^ seed;
     auto s = ptrie::binarywrapper_t{(ptrie::uchar*)&el, sizeof(size_t) * 8};
@@ -23,8 +23,8 @@ inline size_t reorder(size_t el, std::vector<size_t>& order, size_t seed)
         } else {
             t.set(order[i], flip[i % 8] xor s.at(i));
         }
-        for (size_t j = 0; j < 8; ++j)
-            flip[j] = flip[j] xor t.at(order[i]);
+        for (auto&& f : flip)
+            f = f xor t.at(order[i]);
     }
     return target;
 }
@@ -44,7 +44,7 @@ void set_insert(T& set, size_t elements, size_t seed, double deletes, double rea
         set.insert(val);
 
         if (read_rate > 0.0) {
-            int reads = std::round(read_dist(read_generator));
+            int reads = static_cast<int>(std::round(read_dist(read_generator)));
             for (int r = 0; r < reads; ++r) {
                 size_t el = reorder(read_el(read_generator), order, seed);
                 set.count(el);
@@ -52,7 +52,7 @@ void set_insert(T& set, size_t elements, size_t seed, double deletes, double rea
         }
 
         if (dist(generator) < deletes) {
-            std::uniform_int_distribution<size_t> rem(1, i);
+            auto rem = std::uniform_int_distribution<size_t>{1, i};
             size_t el = reorder(rem(generator), order, seed);
             auto it = set.find(el);
             if (it != set.end())
@@ -77,7 +77,7 @@ void set_insert_ptrie(T& set, size_t elements, size_t seed, double deletes, doub
         set.insert((unsigned char*)&val, sizeof(val));
 
         if (read_rate > 0.0) {
-            int reads = std::round(read_dist(read_generator));
+            auto reads = static_cast<int>(std::round(read_dist(read_generator)));
             for (int r = 0; r < reads; ++r) {
                 size_t el = reorder(read_el(read_generator), order, seed);
                 set.exists((unsigned char*)&el, sizeof(el));

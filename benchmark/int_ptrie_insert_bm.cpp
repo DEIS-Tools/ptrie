@@ -13,11 +13,11 @@
 
 #include <benchmark/benchmark.h>
 
-size_t seed = std::random_device{}();
-double deletes = 0.0;
-double read_rate = 0.0;
+static size_t seed = std::random_device{}();
+static double deletes = 0.0;
+static double read_rate = 0.0;
 
-auto order = []() {
+static auto order = []() {
     auto res = std::vector<size_t>{};
     for (size_t i = 0; i < sizeof(size_t) * 8; ++i)
         res.push_back(i);

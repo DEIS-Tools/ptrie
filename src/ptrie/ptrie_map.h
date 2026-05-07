@@ -54,7 +54,7 @@ public:
     static constexpr auto heapbound = HEAPBOUND;
 
     T& get_data(I index);
-    const T& get_data(I index) const { const_cast<map*>(this)->get_data(index); }
+    const T& get_data(I index) const { return const_cast<map*>(this)->get_data(index); }
 
     T& operator[](KEY key) { return get_data(pt::insert(key).second); }
     T& operator[](std::pair<const KEY*, size_t> key) { return get_data(pt::insert(key.first, key.second).second); }

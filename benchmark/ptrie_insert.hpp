@@ -18,7 +18,7 @@ inline binarywrapper_t rand_data(size_t seed, size_t maxsize, size_t minsize = s
     auto data = binarywrapper_t(size * 8);
     // fill in random data
     for (size_t j = 0; j < size; ++j) {
-        data.raw()[j] = (uchar)(rand() % mv);
+        data.raw()[j] = static_cast<uchar>(rand() % mv);
     }
     // make sure everything is unique
     for (size_t j = 1; j <= sizeof(size_t); ++j) {
@@ -70,7 +70,7 @@ void set_insert(T& set, size_t elements, size_t seed, size_t bytes, double delet
 
     auto read_generator = std::default_random_engine(seed);
     auto read_dist = std::normal_distribution<double>(read_rate, read_rate / 2.0);
-    auto read_el = std::uniform_int_distribution<int>(0, elements);
+    auto read_el = std::uniform_int_distribution<size_t>(0, elements);
 
     auto w = wrapper_t{};
     for (size_t i = 0; i < elements; ++i) {
@@ -83,9 +83,9 @@ void set_insert(T& set, size_t elements, size_t seed, size_t bytes, double delet
         set.insert(w);
 
         if (read_rate > 0.0) {
-            int reads = std::round(read_dist(read_generator));
+            const int reads = std::round(read_dist(read_generator));
             for (int r = 0; r < reads; ++r) {
-                size_t el = read_el(read_generator);
+                const size_t el = read_el(read_generator);
                 w.data = rand_data(seed + el, bytes, bytes, mv);
                 w._hash = MurmurHash64A(w.data.raw(), w.data.size(), seed);
                 if (w._hash == 0)
