@@ -36,27 +36,27 @@
 #include <cstdlib>
 
 int main(int argc, const char** argv)
-{
+try {
     if (argc < 3 || argc > 8) {
-        std::cout << "usage : <ptrie/std/sparse/dense> <number elements> <?seed> "
-                     "<?delete ratio> <?read rate>"
+        std::cerr << "Wrong number of arguments, expected 2-8" << std::endl;
+        std::cout << "Usage: (ptrie|std|sparse|dense) (number elements) ?(seed) ?(delete ratio) ?(read rate)"
                   << std::endl;
-        exit(-1);
+        std::exit(EXIT_FAILURE);
     }
-
-    const auto type = std::string_view{argv[1]};
-    size_t elements = 1024;
+    auto type = std::string_view{argv[1]};
     size_t seed = 0;
     double deletes = 0.0;
-    double read_rate = 0.0;
-
-    read_arg(argv[2], elements, "Error in <number of elements>", "%zu");
+    double read_rate = 2.0;
+    auto elements = read_arg(size_t{1024}, argv[2], "<number of elements>");
     if (argc > 3)
-        read_arg(argv[3], seed, "Error in <seed>", "%zu");
+        seed = read_arg(seed, argv[3], "<seed>");
     if (argc > 4)
-        read_arg(argv[4], deletes, "Error in <delete ratio>", "%lf");
-    if (argc > 5)
-        read_arg(argv[5], read_rate, "Error in <read rate>", "%lf");
+        deletes = read_arg(deletes, argv[4], "<delete ratio>");
+    if (argc > 5) {
+        read_rate = read_arg(read_rate, argv[5], "<read rate>");
+        if (read_rate <= 0.0)
+            throw std::invalid_argument{"read rate must be greater than zero"};
+    }
 
     auto order = std::vector<size_t>{};
     for (size_t i = 0; i < sizeof(size_t) * 8; ++i)
@@ -105,12 +105,12 @@ int main(int argc, const char** argv)
         if (deletes > 0.0)
             set.set_deleted_key(reorder(std::numeric_limits<uint32_t>::max(), order, seed));
         set_insert(set, elements, seed, deletes, read_rate, order);
-    } else {
-        std::cerr << "ERROR IN TYPE, ONLY VALUES ALLOWED : ptrie, ptrie-stable, "
-                     "ptrie-map, std, sparse, dense, tbb"
-                  << std::endl;
-        exit(-1);
-    }
-
+    } else
+        throw std::invalid_argument{
+            "ERROR IN TYPE, ALLOWED VALUES: ptrie, ptrie-stable, ptrie-map, std, sparse, dense, tbb"};
     return 0;
+} catch (std::exception& e) {
+    std::cerr << e.what() << std::endl;
+} catch (...) {
+    std::cerr << "Caught unknown exception" << std::endl;
 }

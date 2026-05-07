@@ -21,16 +21,14 @@
 #include <iostream>
 #include <string_view>
 
-#include <cstdio>
 #include <chrono>
 
 template <typename T>
-void read_arg(const char* data, T& dest, const char* error, const char* type)
+T read_arg(T default_value, const char* arg, const char* name)
 {
-    if (sscanf(data, type, &dest) != 1) {
-        std::cerr << error << std::endl;
-        exit(-1);
-    }
+    if (std::istringstream{arg} >> default_value)
+        return default_value;
+    throw std::logic_error{std::string{"Error parsing "} + name};
 }
 
 inline void print_settings(std::string_view type, size_t elements, size_t seed, size_t bytes, double deletes,

@@ -10,11 +10,13 @@
 
 #include <unordered_set>
 
-const size_t seed = 0;
-const double deletes = 0.0;
-const double read_rate = 0.0;
-const size_t maxval = 256;
-const size_t bytes = 16;
+constexpr size_t seed = 0;
+constexpr double deletes = 0.0;
+constexpr double read_rate = 2.0;
+constexpr size_t maxval = 256;
+constexpr size_t bytes = 16;
+
+static_assert(read_rate > 0, "normal distribution requires deviation greater than zero");
 
 constexpr auto ELEM1 = 100;
 constexpr auto ELEM2 = 1000;

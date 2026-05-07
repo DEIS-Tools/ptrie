@@ -39,50 +39,52 @@ using ptrie::hasher_o;
 using ptrie::equal_o;
 
 int main(int argc, const char** argv)
-{
+try {
     if (argc < 3 || argc > 8) {
-        std::cout << "usage : <ptrie/std/sparse/dense> <number elements> <?seed> "
-                     "<?number of bytes> <?delete ratio> <?read rate> <?max byte val>"
+        std::cerr << "Wrong number of arguments, expected 2-7" << std::endl;
+        std::cout << "Usage: (ptrie|std|sparse|dense) (number elements) ?(seed) "
+                     "?(number of bytes) ?(delete ratio) ?(read rate) ?(max byte val)"
                   << std::endl;
-        exit(-1);
+        std::exit(EXIT_FAILURE);
     }
 
-    const char* type = argv[1];
-    size_t elements = 1024;
+    auto type = std::string_view{argv[1]};
+    auto elements = read_arg(size_t{1024}, argv[2], "<number of elements>");
     size_t seed = 0;
     size_t bytes = 16;
-    double deletes = 0.0;
-    double read_rate = 0.0;
+    auto deletes = 0.0;
+    auto read_rate = 2.0;
     size_t maxval = 256;
-
-    read_arg<size_t>(argv[2], elements, "Error in <number of elements>", "%zu");
     if (argc > 3)
-        read_arg<size_t>(argv[3], seed, "Error in <seed>", "%zu");
+        seed = read_arg(seed, argv[3], "<seed>");
     if (argc > 4)
-        read_arg<size_t>(argv[4], bytes, "Error in <bytes>", "%zu");
+        bytes = read_arg(bytes, argv[4], "<bytes>");
     if (argc > 5)
-        read_arg<double>(argv[5], deletes, "Error in <delete ratio>", "%lf");
-    if (argc > 6)
-        read_arg<double>(argv[6], read_rate, "Error in <read rate>", "%lf");
+        deletes = read_arg(deletes, argv[5], "<delete ratio>");
+    if (argc > 6) {
+        read_rate = read_arg(read_rate, argv[6], "<read rate>");
+        if (read_rate <= 0)
+            throw std::invalid_argument{"<read rate> must be greater than 0"};
+    }
     if (argc > 7)
-        read_arg<size_t>(argv[7], maxval, "Error in <max byte val>", "%zu");
+        maxval = read_arg(maxval, argv[7], "<max byte val>");
 
-    if (strcmp(type, "ptrie") == 0) {
+    if (type == "ptrie") {
         print_settings(type, elements, seed, bytes, deletes, read_rate, maxval);
         auto set = ptrie::set<>{};
         const auto sw = Timer{};
         ptrie::set_insert_ptrie(set, elements, seed, bytes, deletes, read_rate, maxval);
-    } else if (strcmp(type, "std") == 0) {
+    } else if (type == "std") {
         print_settings(type, elements, seed, bytes, deletes, read_rate, maxval);
         auto set = std::unordered_set<wrapper_t, hasher_o, equal_o>{};
         const auto sw = Timer{};
         set_insert(set, elements, seed, bytes, deletes, read_rate, maxval);
-    } else if (strcmp(type, "sparse") == 0) {
+    } else if (type == "sparse") {
         print_settings(type, elements, seed, bytes, deletes, read_rate, maxval);
         auto set = google::sparse_hash_set<wrapper_t, hasher_o, equal_o>(elements / 10);
         const auto sw = Timer{};
         ptrie::set_insert(set, elements, seed, bytes, deletes, read_rate, maxval);
-    } else if (strcmp(type, "dense") == 0) {
+    } else if (type == "dense") {
         print_settings(type, elements, seed, bytes, deletes, read_rate, maxval);
         auto set = google::dense_hash_set<wrapper_t, hasher_o, equal_o>(elements / 10);
         const auto sw = Timer{};
@@ -92,10 +94,13 @@ int main(int argc, const char** argv)
         if (deletes > 0.0)
             set.set_deleted_key(del);
         ptrie::set_insert(set, elements, seed, bytes, deletes, read_rate, maxval);
-    } else {
-        std::cerr << "ERROR IN TYPE, ONLY VALUES ALLOWED : ptrie, std, sparse, dense" << std::endl;
-        exit(-1);
-    }
-
-    return 0;
+    } else
+        throw std::logic_error{"ERROR IN TYPE, ONLY VALUES ALLOWED: ptrie, std, sparse, dense"};
+    return EXIT_SUCCESS;
+} catch (std::exception& e) {
+    std::cerr << e.what() << std::endl;
+    return EXIT_FAILURE;
+} catch (...) {
+    std::cerr << "Caught unknown exception!" << std::endl;
+    return EXIT_FAILURE;
 }

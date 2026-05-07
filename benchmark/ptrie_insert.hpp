@@ -125,7 +125,7 @@ void set_insert_ptrie(T& set, const size_t elements, const size_t seed, const si
 
     auto read_generator = std::default_random_engine(seed);
     auto read_dist = std::normal_distribution<double>(read_rate, read_rate / 2.0);
-    auto read_el = std::uniform_int_distribution<int>(0, elements);
+    auto read_el = std::uniform_int_distribution<size_t>(0, elements);
 
     for (size_t i = 0; i < elements; ++i) {
         auto data = rand_data(seed + i, bytes, bytes, mv);

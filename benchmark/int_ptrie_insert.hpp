@@ -30,7 +30,8 @@ inline size_t reorder(size_t el, const std::vector<size_t>& order, size_t seed)
 }
 
 template <typename T>
-void set_insert(T& set, size_t elements, size_t seed, double deletes, double read_rate, std::vector<size_t>& order)
+void set_insert(T& set, size_t elements, size_t seed, double deletes, double read_rate,
+                const std::vector<size_t>& order)
 {
     auto generator = std::default_random_engine(seed);
     auto dist = std::uniform_real_distribution<double>{};
@@ -63,7 +64,7 @@ void set_insert(T& set, size_t elements, size_t seed, double deletes, double rea
 
 template <typename T>
 void set_insert_ptrie(T& set, size_t elements, size_t seed, double deletes, double read_rate,
-                      std::vector<size_t>& order)
+                      const std::vector<size_t>& order)
 {
     auto del_generator = std::default_random_engine(seed);
     auto del_dist = std::uniform_real_distribution<double>{};

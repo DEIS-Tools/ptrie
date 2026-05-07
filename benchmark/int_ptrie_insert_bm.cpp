@@ -14,13 +14,14 @@
 #include <benchmark/benchmark.h>
 
 static size_t seed = std::random_device{}();
-static double deletes = 0.0;
-static double read_rate = 0.0;
+constexpr double deletes = 0.0;
+constexpr double read_rate = 2.0;
 
-static auto order = []() {
-    auto res = std::vector<size_t>{};
-    for (size_t i = 0; i < sizeof(size_t) * 8; ++i)
-        res.push_back(i);
+static_assert(read_rate > 0, "normal distribution requires deviation greater than zero");
+
+static const auto order = []() {
+    auto res = std::vector<size_t>(sizeof(size_t) * 8);
+    std::iota(res.begin(), res.end(), 0);
     auto gen = std::default_random_engine(seed);
     std::shuffle(res.begin(), res.end(), gen);
     return res;
