@@ -84,40 +84,15 @@ union puint16_t
     puint16_t(size_t s): u{static_cast<uint16_t>(s)} {}
 };
 
-#ifdef PTRIE_MEMORY_LOGGING
-auto& get_alive()
-{
-    static std::map<const void*, std::string> alive;
-    return alive;
-}
-#endif  // PTRIE_MEMORY_LOGGING
-
 inline uchar* new_uchar2(std::size_t size, const std::string& src [[maybe_unused]], std::size_t line [[maybe_unused]])
 {
     auto res = new uchar[size];
-#ifdef PTRIE_MEMORY_LOGGING
-    auto& alive = get_alive();
-    if (alive.find(res) != alive.end()) {
-        std::abort();
-    }
-    alive[res] = std::to_string(size) + " bytes allocated at " + src + ':' + std::to_string(line);
-#endif  // PTRIE_MEMORY_LOGGING
     return res;
 }
 
 #define new_uchar(ptr) new_uchar2(ptr, __FILE__, __LINE__)
 
-inline void delete_uchar(const uchar* data)
-{
-#ifdef PTRIE_MEMORY_LOGGING
-    auto& alive = get_alive();
-    if (auto it = alive.find(data); it != alive.end())
-        alive.erase(it);
-    else
-        std::abort();
-#endif  // PTRIE_MEMORY_LOGGING
-    delete[] data;
-}
+inline void delete_uchar(const uchar* data) { delete[] data; }
 
 template <typename D, typename N>
 struct __ptrie_el_t

@@ -7,7 +7,6 @@ project(ptrie VERSION ${PTRIE_VERSION})
 
 option(PTRIE_BuildTests "Build the unit tests" ON)
 option(PTRIE_BuildBenchmark "Build the simple benchmark suite" ON)
-option(PTRIE_MEMORY_LOGGING "Enable memory (leak) logging (in tests)" OFF)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

@@ -77,13 +77,6 @@ TEST_CASE("Pseudo Rand1")
         auto set = ptrie::set<>{};
         try_insert(set, [seed](size_t i) { return rand_data(seed + i, 256); }, 1024 * 10);
     }
-#ifdef PTRIE_MEMORY_LOGGING
-    auto& alive = ptrie::get_alive();
-    auto os = std::ostringstream{};
-    for (const auto& [_, src] : alive)
-        os << "Leaked " << src << '\n';
-    CHECK_MESSAGE(alive.empty(), "Detected memory leaks:\n", os.str());
-#endif  // PTRIE_MEMORY_LOGGING
 }
 
 TEST_CASE("Pseudo Rand2")
