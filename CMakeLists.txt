@@ -1,9 +1,6 @@
 cmake_minimum_required(VERSION 3.28.3)
 
 cmake_policy(SET CMP0048 NEW)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(PTRIE_VERSION 1.1.2)
 project(ptrie VERSION ${PTRIE_VERSION})
@@ -12,8 +9,6 @@ option(PTRIE_BuildTests "Build the unit tests" ON)
 option(PTRIE_BuildBenchmark "Build the simple benchmark suite" ON)
 option(PTRIE_MEMORY_LOGGING "Enable memory (leak) logging (in tests)" OFF)
 
-#set(CMAKE_CXX_STANDARD 17)
-#set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 

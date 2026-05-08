@@ -25,12 +25,8 @@
 #include <sparsehash/sparse_hash_set>
 
 #include <iostream>
-
-#include <chrono>
 #include <random>
 #include <unordered_set>
-
-#include <cstdlib>
 
 using ptrie::binarywrapper_t;
 using ptrie::uchar;
@@ -47,53 +43,29 @@ try {
                   << std::endl;
         std::exit(EXIT_FAILURE);
     }
-
-    auto type = std::string_view{argv[1]};
-    auto elements = read_arg(size_t{1024}, argv[2], "<number of elements>");
-    size_t seed = 0;
-    size_t bytes = 16;
-    auto deletes = 0.0;
-    auto read_rate = 2.0;
-    size_t maxval = 256;
-    if (argc > 3)
-        seed = read_arg(seed, argv[3], "<seed>");
-    if (argc > 4)
-        bytes = read_arg(bytes, argv[4], "<bytes>");
-    if (argc > 5)
-        deletes = read_arg(deletes, argv[5], "<delete ratio>");
-    if (argc > 6) {
-        read_rate = read_arg(read_rate, argv[6], "<read rate>");
-        if (read_rate <= 0)
-            throw std::invalid_argument{"<read rate> must be greater than 0"};
-    }
-    if (argc > 7)
-        maxval = read_arg(maxval, argv[7], "<max byte val>");
-
-    if (type == "ptrie") {
-        print_settings(type, elements, seed, bytes, deletes, read_rate, maxval);
+    auto s = cli_settings(argc, argv);
+    std::cout << s;
+    if (s.type == "ptrie") {
         auto set = ptrie::set<>{};
         const auto sw = Timer{};
-        ptrie::set_insert_ptrie(set, elements, seed, bytes, deletes, read_rate, maxval);
-    } else if (type == "std") {
-        print_settings(type, elements, seed, bytes, deletes, read_rate, maxval);
+        ptrie::set_insert_ptrie(set, s);
+    } else if (s.type == "std") {
         auto set = std::unordered_set<wrapper_t, hasher_o, equal_o>{};
         const auto sw = Timer{};
-        set_insert(set, elements, seed, bytes, deletes, read_rate, maxval);
-    } else if (type == "sparse") {
-        print_settings(type, elements, seed, bytes, deletes, read_rate, maxval);
-        auto set = google::sparse_hash_set<wrapper_t, hasher_o, equal_o>(elements / 10);
+        set_insert(set, s);
+    } else if (s.type == "sparse") {
+        auto set = google::sparse_hash_set<wrapper_t, hasher_o, equal_o>(s.elements / 10);
         const auto sw = Timer{};
-        ptrie::set_insert(set, elements, seed, bytes, deletes, read_rate, maxval);
-    } else if (type == "dense") {
-        print_settings(type, elements, seed, bytes, deletes, read_rate, maxval);
-        auto set = google::dense_hash_set<wrapper_t, hasher_o, equal_o>(elements / 10);
+        ptrie::set_insert(set, s);
+    } else if (s.type == "dense") {
+        auto set = google::dense_hash_set<wrapper_t, hasher_o, equal_o>(s.elements / 10);
         const auto sw = Timer{};
         auto empty = wrapper_t{.data{}, ._hash = 0};
         auto del = wrapper_t{.data{}, ._hash = std::numeric_limits<uint64_t>::max()};
         set.set_empty_key(empty);
-        if (deletes > 0.0)
+        if (s.deletes > 0.0)
             set.set_deleted_key(del);
-        ptrie::set_insert(set, elements, seed, bytes, deletes, read_rate, maxval);
+        ptrie::set_insert(set, s);
     } else
         throw std::logic_error{"ERROR IN TYPE, ONLY VALUES ALLOWED: ptrie, std, sparse, dense"};
     return EXIT_SUCCESS;

@@ -46,7 +46,7 @@ binarywrapper_t::binarywrapper_t(uchar* raw, uint size)
     _blob = raw;
 
     if (_nbytes <= PTR_SIZE)
-        memcpy(const_raw(), raw, _nbytes);
+        std::memcpy(const_raw(), raw, _nbytes);
 
     //        assert(raw[0] == const_raw()[0]);
 }

@@ -26,7 +26,6 @@
 #include <sparsehash/dense_hash_set>
 #include <sparsehash/sparse_hash_set>
 
-#include <chrono>
 #include <iostream>
 #include <random>
 #include <set>
@@ -43,68 +42,47 @@ try {
                   << std::endl;
         std::exit(EXIT_FAILURE);
     }
-    auto type = std::string_view{argv[1]};
-    size_t seed = 0;
-    double deletes = 0.0;
-    double read_rate = 2.0;
-    auto elements = read_arg(size_t{1024}, argv[2], "<number of elements>");
-    if (argc > 3)
-        seed = read_arg(seed, argv[3], "<seed>");
-    if (argc > 4)
-        deletes = read_arg(deletes, argv[4], "<delete ratio>");
-    if (argc > 5) {
-        read_rate = read_arg(read_rate, argv[5], "<read rate>");
-        if (read_rate <= 0.0)
-            throw std::invalid_argument{"read rate must be greater than zero"};
-    }
+    auto settings = cli_settings(argc, argv);
+    auto order = std::vector<size_t>(sizeof(size_t) * 8);
+    std::iota(order.begin(), order.end(), 0);
 
-    auto order = std::vector<size_t>{};
-    for (size_t i = 0; i < sizeof(size_t) * 8; ++i)
-        order.push_back(i);
-
-    std::srand(seed);
-    auto gen = std::default_random_engine(seed);
+    std::srand(settings.seed);
+    auto gen = std::default_random_engine(settings.seed);
     std::shuffle(order.begin(), order.end(), gen);
 
-    if (type == "ptrie") {
-        print_settings(type, elements, seed, sizeof(size_t), deletes, read_rate, 256);
+    std::cout << settings;
+    if (settings.type == "ptrie") {
         auto set = ptrie::set<>{};
         const auto sw = Timer{};
-        set_insert_ptrie(set, elements, std::rand(), deletes, read_rate, order);
-    } else if (type == "ptrie-stable") {
-        print_settings(type, elements, seed, sizeof(size_t), deletes, read_rate, 256);
+        set_insert_ptrie(set, settings, order);
+    } else if (settings.type == "ptrie-stable") {
         auto set = ptrie::set_stable<>{};
         const auto sw = Timer{};
-        set_insert_ptrie(set, elements, std::rand(), deletes, read_rate, order);
-    } else if (type == "ptrie-map") {
-        print_settings(type, elements, seed, sizeof(size_t), deletes, read_rate, 256);
+        set_insert_ptrie(set, settings, order);
+    } else if (settings.type == "ptrie-map") {
         auto set = ptrie::map<unsigned char, size_t>{};
         const auto sw = Timer{};
-        set_insert_ptrie(set, elements, std::rand(), deletes, read_rate, order);
-    } else if (type == "std") {
-        print_settings(type, elements, seed, sizeof(size_t), deletes, read_rate, 256);
+        set_insert_ptrie(set, settings, order);
+    } else if (settings.type == "std") {
         auto set = std::unordered_set<size_t, hasher_o, equal_o>{};
         const auto sw = Timer{};
-        set_insert(set, elements, std::rand(), deletes, read_rate, order);
-    } else if (type == "redblack") {
-        print_settings(type, elements, seed, sizeof(size_t), deletes, read_rate, 256);
+        set_insert(set, settings, order);
+    } else if (settings.type == "redblack") {
         auto set = std::set<size_t>{};
         const auto sw = Timer{};
-        set_insert(set, elements, std::rand(), deletes, read_rate, order);
-    } else if (type == "sparse") {
-        print_settings(type, elements, seed, sizeof(size_t), deletes, read_rate, 256);
-        auto set = google::sparse_hash_set<size_t, hasher_o, equal_o>(elements / 10);
+        set_insert(set, settings, order);
+    } else if (settings.type == "sparse") {
+        auto set = google::sparse_hash_set<size_t, hasher_o, equal_o>(settings.elements / 10);
         const auto sw = Timer{};
-        set_insert(set, elements, std::rand(), deletes, read_rate, order);
-    } else if (type == "dense") {
-        print_settings(type, elements, seed, sizeof(size_t), deletes, read_rate, 256);
-        seed = std::rand();
-        auto set = google::dense_hash_set<size_t, hasher_o, equal_o>(elements / 10);
+        set_insert(set, settings, order);
+    } else if (settings.type == "dense") {
+        settings.seed = std::rand();
+        auto set = google::dense_hash_set<size_t, hasher_o, equal_o>(settings.elements / 10);
         const auto sw = Timer{};
-        set.set_empty_key(reorder(0, order, seed));
-        if (deletes > 0.0)
-            set.set_deleted_key(reorder(std::numeric_limits<uint32_t>::max(), order, seed));
-        set_insert(set, elements, seed, deletes, read_rate, order);
+        set.set_empty_key(reorder(0, order, settings.seed));
+        if (settings.deletes > 0.0)
+            set.set_deleted_key(reorder(std::numeric_limits<uint32_t>::max(), order, settings.seed));
+        set_insert(set, settings, order);
     } else
         throw std::invalid_argument{
             "ERROR IN TYPE, ALLOWED VALUES: ptrie, ptrie-stable, ptrie-map, std, sparse, dense, tbb"};
