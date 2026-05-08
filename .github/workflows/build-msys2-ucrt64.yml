@@ -1,0 +1,60 @@
+---
+name: Build for Windows-MSYS2-UCRT64
+on:
+  push:
+    branches: [main]
+    paths:
+      - src/**
+      - test/**
+      - benchmark/**
+      - cmake/**
+      - CMakeLists.txt
+      - CMakePresets.json
+      - .github/workflows/build-ubuntu-2404.yml
+  pull_request:
+    branches: [main]
+    types: [synchronize, opened, reopened, ready_for_review]
+    paths:
+      - src/**
+      - test/**
+      - benchmark/**
+      - cmake/**
+      - CMakeLists.txt
+      - CMakePresets.json
+      - .github/workflows/build-ubuntu-2404.yml
+  workflow_dispatch:
+
+jobs:
+  windows-msys2-ucrt64:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    env:
+      CMAKE_GENERATOR: "Ninja Multi-Config"
+      CTEST_OUTPUT_ON_FAILURE: 1
+      BUILD_DIR: build
+    steps:
+      - name: Setup Runner Environment
+        run: |
+          uname -a
+          CORES=$(nproc)
+          echo "CMAKE_BUILD_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
+          echo "CTEST_TEST_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
+          echo "CTEST_TEST_LOAD=$CORES" >> $GITHUB_ENV
+      - uses: actions/checkout@v5
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: git cmake ninja mingw-w64-ucrt-x86_64-gcc
+      - name: Configure Multi-Config
+        run: cmake -B "$BUILD_DIR" -DPTRIE_BuildTests=ON -DPTRIE_BuildBenchmark=OFF -DUBSAN=ON -DASAN=ON -DLSAN=ON -DSSP=ON
+      - name: Build Debug
+        run: cmake --build "$BUILD_DIR" --config Debug
+      - name: Test Debug
+        run: ctest --test-dir "$BUILD_DIR" -C Debug
+      - name: Build Release
+        run: cmake --build "$BUILD_DIR" --config Release
+      - name: Test Release
+        run: ctest --test-dir "$BUILD_DIR" -C Release
