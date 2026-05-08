@@ -35,6 +35,11 @@ jobs:
       CTEST_OUTPUT_ON_FAILURE: 1
       BUILD_DIR: build
     steps:
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: git cmake ninja mingw-w64-ucrt-x86_64-gcc
       - name: Setup Runner Environment
         run: |
           uname -a
@@ -43,11 +48,6 @@ jobs:
           echo "CTEST_TEST_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
           echo "CTEST_TEST_LOAD=$CORES" >> $GITHUB_ENV
       - uses: actions/checkout@v5
-      - uses: msys2/setup-msys2@v2
-        with:
-          msystem: UCRT64
-          update: true
-          install: git cmake ninja mingw-w64-ucrt-x86_64-gcc
       - name: Configure Multi-Config
         run: cmake -B "$BUILD_DIR" -DPTRIE_BuildTests=ON -DPTRIE_BuildBenchmark=OFF -DUBSAN=ON -DASAN=ON -DLSAN=ON -DSSP=ON
       - name: Build Debug
