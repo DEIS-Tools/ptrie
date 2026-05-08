@@ -19,26 +19,59 @@
 #define PTRIE_UTILS_H
 
 #include <iostream>
-#include <cstdio>
+#include <sstream>
+#include <string_view>
+
 #include <chrono>
 
 template <typename T>
-void read_arg(const char* data, T& dest, const char* error, const char* type)
+T read_arg(T default_value, const char* arg, const char* name)
 {
-    if (sscanf(data, type, &dest) != 1) {
-        std::cerr << error << std::endl;
-        exit(-1);
-    }
+    if (std::istringstream{arg} >> default_value)
+        return default_value;
+    throw std::logic_error{std::string{"Error parsing "} + name};
 }
 
-inline void print_settings(const char* type, size_t elements, size_t seed, size_t bytes, double deletes,
-                           double read_rate, size_t mv)
+struct Settings
 {
-    std::cout << "Using " << type << ", inserting " << elements << " items of " << bytes << " bytes produced via seed "
-              << seed << ". Of those " << (deletes * 100.0)
-              << "% will be deleted at random, and for each insert, on average " << read_rate
-              << " extra reads will occur"
-              << ". All bytes in rand data are mod " << mv << std::endl;
+    std::string type;
+    size_t elements{1024};
+    size_t seed{0};
+    size_t bytes{16};
+    double deletes{0};
+    double read_rate{2};
+    size_t maxval{256};
+
+private:
+    friend std::ostream& operator<<(std::ostream& os, const Settings& s)
+    {
+        os << "Using " << s.type << "\n\tinserting " << s.elements << " items of " << s.bytes << " bytes"
+           << "\n\tproduced via seed " << s.seed << "\n\tOf those " << (s.deletes * 100.0) << "% are deleted at random,"
+           << "\n\tand for each insert, on average " << s.read_rate << " extra reads will occur."
+           << "\nAll bytes in rand data are mod " << s.maxval << std::endl;
+        return os;
+    }
+};
+
+inline Settings cli_settings(int argc, const char* argv[])
+{
+    auto res = Settings{};
+    res.type = std::string_view{argv[1]};
+    res.elements = read_arg(size_t{1024}, argv[2], "<number of elements>");
+    if (argc > 3)
+        res.seed = read_arg(res.seed, argv[3], "<seed>");
+    if (argc > 4)
+        res.bytes = read_arg(res.bytes, argv[4], "<bytes>");
+    if (argc > 5)
+        res.deletes = read_arg(res.deletes, argv[5], "<delete ratio>");
+    if (argc > 6) {
+        res.read_rate = read_arg(res.read_rate, argv[6], "<read rate>");
+        if (res.read_rate <= 0)
+            throw std::invalid_argument{"<read rate> must be greater than 0"};
+    }
+    if (argc > 7)
+        res.maxval = read_arg(res.maxval, argv[7], "<max byte val>");
+    return res;
 }
 
 struct Timer
@@ -46,14 +79,14 @@ struct Timer
     using Clock = std::chrono::high_resolution_clock;
     using TimePoint = Clock::time_point;
     using Duration = std::chrono::duration<double>;
-    Timer(): start{Clock::now()} {}
+    Timer() = default;
     Duration elapsed() const { return {Clock::now() - start}; }
-    ~Timer() { std::cout << "Completed in " << elapsed() << std::endl; }
-    Timer(const Timer&) = default;
-    Timer& operator=(const Timer&) = default;
+    ~Timer() { std::cout << "Completed in " << elapsed().count() << std::endl; }
+    Timer(const Timer&) = delete;
+    Timer& operator=(const Timer&) = delete;
 
 private:
-    TimePoint start;
+    TimePoint start = Clock::now();
 };
 
 #endif  // PTRIE_UTILS_H

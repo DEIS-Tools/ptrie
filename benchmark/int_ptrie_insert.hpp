@@ -1,13 +1,15 @@
 #ifndef INT_PTRIE_INSERT_HPP
 #define INT_PTRIE_INSERT_HPP
 
+#include "utils.h"
+
 #include "binarywrapper.h"
 #include "MurmurHash2.h"
 
 #include <random>
 #include <vector>
 
-inline size_t reorder(size_t el, std::vector<size_t>& order, size_t seed)
+inline size_t reorder(size_t el, const std::vector<size_t>& order, size_t seed)
 {
     el = el ^ seed;
     auto s = ptrie::binarywrapper_t{(ptrie::uchar*)&el, sizeof(size_t) * 8};
@@ -23,69 +25,69 @@ inline size_t reorder(size_t el, std::vector<size_t>& order, size_t seed)
         } else {
             t.set(order[i], flip[i % 8] xor s.at(i));
         }
-        for (size_t j = 0; j < 8; ++j)
-            flip[j] = flip[j] xor t.at(order[i]);
+        for (auto&& f : flip)
+            f = f xor t.at(order[i]);
     }
     return target;
 }
 
 template <typename T>
-void set_insert(T& set, size_t elements, size_t seed, double deletes, double read_rate, std::vector<size_t>& order)
+void set_insert(T& set, const Settings& s, const std::vector<size_t>& order)
 {
-    auto generator = std::default_random_engine(seed);
+    assert(s.read_rate > 0 && "read_rate must be greater than zero for the variance of std::normal_distribution");
+    auto generator = std::default_random_engine(s.seed);
     auto dist = std::uniform_real_distribution<double>{};
 
-    auto read_generator = std::default_random_engine(seed);
-    auto read_dist = std::normal_distribution<double>(read_rate, read_rate / 2.0);
-    auto read_el = std::uniform_int_distribution<size_t>(1, elements);
+    auto read_generator = std::default_random_engine(s.seed);
+    auto read_dist = std::normal_distribution<double>(s.read_rate, s.read_rate / 2.0);
+    auto read_el = std::uniform_int_distribution<size_t>(1, s.elements);
 
-    for (size_t i = 1; i <= elements; ++i) {
-        size_t val = reorder(i, order, seed);
+    for (size_t i = 1; i <= s.elements; ++i) {
+        size_t val = reorder(i, order, s.seed);
         set.insert(val);
 
-        if (read_rate > 0.0) {
-            int reads = std::round(read_dist(read_generator));
+        if (s.read_rate > 0.0) {
+            int reads = static_cast<int>(std::round(read_dist(read_generator)));
             for (int r = 0; r < reads; ++r) {
-                size_t el = reorder(read_el(read_generator), order, seed);
+                size_t el = reorder(read_el(read_generator), order, s.seed);
                 set.count(el);
             }
         }
 
-        if (dist(generator) < deletes) {
-            std::uniform_int_distribution<size_t> rem(1, i);
-            size_t el = reorder(rem(generator), order, seed);
-            auto it = set.find(el);
-            if (it != set.end())
+        if (dist(generator) < s.deletes) {
+            auto rem = std::uniform_int_distribution<size_t>{1, i};
+            size_t el = reorder(rem(generator), order, s.seed);
+            if (auto it = set.find(el); it != set.end())
                 set.erase(it);
         }
     }
 }
 
 template <typename T>
-void set_insert_ptrie(T& set, size_t elements, size_t seed, double deletes, double read_rate,
-                      std::vector<size_t>& order)
+void set_insert_ptrie(T& set, const Settings& s, const std::vector<size_t>& order)
 {
-    auto del_generator = std::default_random_engine(seed);
+    assert(s.read_rate > 0 && "read_rate must be greater than zero for the variance of std::normal_distribution");
+    auto del_generator = std::default_random_engine(s.seed);
     auto del_dist = std::uniform_real_distribution<double>{};
 
-    auto read_generator = std::default_random_engine(seed);
-    auto read_dist = std::normal_distribution<double>(read_rate, read_rate / 2.0);
-    auto read_el = std::uniform_int_distribution<size_t>(1, elements);
+    auto read_generator = std::default_random_engine(s.seed);
+    auto read_dist = std::normal_distribution<double>(s.read_rate, s.read_rate / 2.0);
+    auto read_el = std::uniform_int_distribution<size_t>(1, s.elements);
 
-    for (size_t i = 1; i <= elements; ++i) {
-        size_t val = reorder(i, order, seed);
+    for (size_t i = 1; i <= s.elements; ++i) {
+        size_t val = reorder(i, order, s.seed);
         set.insert((unsigned char*)&val, sizeof(val));
 
-        if (read_rate > 0.0) {
-            int reads = std::round(read_dist(read_generator));
+        if (s.read_rate > 0.0) {
+            auto reads = static_cast<int>(std::round(read_dist(read_generator)));
             for (int r = 0; r < reads; ++r) {
-                size_t el = reorder(read_el(read_generator), order, seed);
+                size_t el = reorder(read_el(read_generator), order, s.seed);
                 set.exists((unsigned char*)&el, sizeof(el));
             }
         }
-        if (del_dist(del_generator) < deletes) {
-            std::uniform_int_distribution<size_t> del_el(1, i);
-            size_t el = reorder(del_el(del_generator), order, seed);
+        if (del_dist(del_generator) < s.deletes) {
+            auto del_el = std::uniform_int_distribution<size_t>{1, i};
+            size_t el = reorder(del_el(del_generator), order, s.seed);
             set.erase((unsigned char*)&el, sizeof(el));
         }
     }

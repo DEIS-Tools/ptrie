@@ -25,12 +25,8 @@
 #include <sparsehash/sparse_hash_set>
 
 #include <iostream>
-
-#include <chrono>
 #include <random>
 #include <unordered_set>
-
-#include <cstdlib>
 
 using ptrie::binarywrapper_t;
 using ptrie::uchar;
@@ -39,63 +35,44 @@ using ptrie::hasher_o;
 using ptrie::equal_o;
 
 int main(int argc, const char** argv)
-{
+try {
     if (argc < 3 || argc > 8) {
-        std::cout << "usage : <ptrie/std/sparse/dense> <number elements> <?seed> "
-                     "<?number of bytes> <?delete ratio> <?read rate> <?max byte val>"
+        std::cerr << "Wrong number of arguments, expected 2-7" << std::endl;
+        std::cout << "Usage: (ptrie|std|sparse|dense) (number elements) ?(seed) "
+                     "?(number of bytes) ?(delete ratio) ?(read rate) ?(max byte val)"
                   << std::endl;
-        exit(-1);
+        std::exit(EXIT_FAILURE);
     }
-
-    const char* type = argv[1];
-    size_t elements = 1024;
-    size_t seed = 0;
-    size_t bytes = 16;
-    double deletes = 0.0;
-    double read_rate = 0.0;
-    size_t maxval = 256;
-
-    read_arg<size_t>(argv[2], elements, "Error in <number of elements>", "%zu");
-    if (argc > 3)
-        read_arg<size_t>(argv[3], seed, "Error in <seed>", "%zu");
-    if (argc > 4)
-        read_arg<size_t>(argv[4], bytes, "Error in <bytes>", "%zu");
-    if (argc > 5)
-        read_arg<double>(argv[5], deletes, "Error in <delete ratio>", "%lf");
-    if (argc > 6)
-        read_arg<double>(argv[6], read_rate, "Error in <read rate>", "%lf");
-    if (argc > 7)
-        read_arg<size_t>(argv[7], maxval, "Error in <max byte val>", "%zu");
-
-    if (strcmp(type, "ptrie") == 0) {
-        print_settings(type, elements, seed, bytes, deletes, read_rate, maxval);
+    auto s = cli_settings(argc, argv);
+    std::cout << s;
+    if (s.type == "ptrie") {
         auto set = ptrie::set<>{};
         const auto sw = Timer{};
-        ptrie::set_insert_ptrie(set, elements, seed, bytes, deletes, read_rate, maxval);
-    } else if (strcmp(type, "std") == 0) {
-        print_settings(type, elements, seed, bytes, deletes, read_rate, maxval);
+        ptrie::set_insert_ptrie(set, s);
+    } else if (s.type == "std") {
         auto set = std::unordered_set<wrapper_t, hasher_o, equal_o>{};
         const auto sw = Timer{};
-        set_insert(set, elements, seed, bytes, deletes, read_rate, maxval);
-    } else if (strcmp(type, "sparse") == 0) {
-        print_settings(type, elements, seed, bytes, deletes, read_rate, maxval);
-        auto set = google::sparse_hash_set<wrapper_t, hasher_o, equal_o>(elements / 10);
+        set_insert(set, s);
+    } else if (s.type == "sparse") {
+        auto set = google::sparse_hash_set<wrapper_t, hasher_o, equal_o>(s.elements / 10);
         const auto sw = Timer{};
-        ptrie::set_insert(set, elements, seed, bytes, deletes, read_rate, maxval);
-    } else if (strcmp(type, "dense") == 0) {
-        print_settings(type, elements, seed, bytes, deletes, read_rate, maxval);
-        auto set = google::dense_hash_set<wrapper_t, hasher_o, equal_o>(elements / 10);
+        ptrie::set_insert(set, s);
+    } else if (s.type == "dense") {
+        auto set = google::dense_hash_set<wrapper_t, hasher_o, equal_o>(s.elements / 10);
         const auto sw = Timer{};
-        auto empty = wrapper_t{.data{}, ._hash{0}};
-        auto del = wrapper_t{.data{}, ._hash{std::numeric_limits<uint64_t>::max()}};
+        auto empty = wrapper_t{.data{}, ._hash = 0};
+        auto del = wrapper_t{.data{}, ._hash = std::numeric_limits<uint64_t>::max()};
         set.set_empty_key(empty);
-        if (deletes > 0.0)
+        if (s.deletes > 0.0)
             set.set_deleted_key(del);
-        ptrie::set_insert(set, elements, seed, bytes, deletes, read_rate, maxval);
-    } else {
-        std::cerr << "ERROR IN TYPE, ONLY VALUES ALLOWED : ptrie, std, sparse, dense" << std::endl;
-        exit(-1);
-    }
-
-    return 0;
+        ptrie::set_insert(set, s);
+    } else
+        throw std::logic_error{"ERROR IN TYPE, ONLY VALUES ALLOWED: ptrie, std, sparse, dense"};
+    return EXIT_SUCCESS;
+} catch (std::exception& e) {
+    std::cerr << e.what() << std::endl;
+    return EXIT_FAILURE;
+} catch (...) {
+    std::cerr << "Caught unknown exception!" << std::endl;
+    return EXIT_FAILURE;
 }

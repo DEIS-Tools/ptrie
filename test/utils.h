@@ -23,46 +23,72 @@
 #include <doctest/doctest.h>
 
 #include <memory>
-#include <utility>  // pair
+#include <vector>
 
 #include <cstddef>  // size_t etc
+
+template <typename T>
+auto rand_gen(unsigned int seed)
+{
+    srand(seed);
+    return [] { return static_cast<T>(rand()); };
+}
+
+template <typename T>
+auto rand_gen()
+{
+    return [] { return static_cast<T>(rand()); };
+}
 
 template <typename T, typename G>
 void try_insert(T& trie, G&& generator, size_t N)
 {
     for (size_t i = 0; i < N; ++i) {
         auto data = generator(i);
-        auto exists = trie.exists(data.first.get(), data.second);
+        auto exists = trie.exists(std::data(data), std::size(data));
         REQUIRE_MESSAGE(!exists.first, "FAILED ON INSERT " << i);
 
-        auto inserted = trie.insert(data.first.get(), data.second);
+        auto inserted = trie.insert(std::data(data), std::size(data));
         REQUIRE_MESSAGE(inserted.first, "EXIST FAILED FOR " << i);
     }
 
     for (size_t i = 0; i < N; ++i) {
         auto data = generator(i);
-        auto exists = trie.exists(data.first.get(), data.second);
+        auto exists = trie.exists(std::data(data), std::size(data));
         REQUIRE_MESSAGE(exists.first, "POST EXIST CHECK FAILED FOR " << i);
     }
 }
 
-std::pair<std::unique_ptr<unsigned char[]>, size_t> rand_data(size_t seed, size_t maxsize,
-                                                              size_t minsize = sizeof(size_t))
+inline std::vector<unsigned char> rand_data(size_t seed, size_t maxsize, size_t minsize = sizeof(size_t))
 {
     REQUIRE(minsize >= sizeof(size_t));
-    srand(seed);
+    auto int_gen = rand_gen<int>(seed);
     // pick size between 0 and maxsize
-    size_t size = minsize != maxsize ? minsize + rand() % (maxsize - minsize) : minsize;
+    size_t size = minsize != maxsize ? minsize + int_gen() % (maxsize - minsize) : minsize;
 
-    auto data = std::make_unique<unsigned char[]>(size);
-    // fill in random data
-    for (size_t j = 0; j < size; ++j) {
-        data[j] = (unsigned char)rand();
-    }
+    auto uchar_gen = rand_gen<unsigned char>();
+    auto data = std::vector<unsigned char>(size);
+    for (auto& value : data)
+        value = uchar_gen();
     // make sure everything is unique
     for (size_t j = 1; j <= sizeof(size_t); ++j) {
         data[size - j] = ((unsigned char*)&seed)[j - 1];
     }
-    return std::make_pair(std::move(data), size);
+    return data;
 }
+
+/// Pretty prints the container content when test fails
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
+{
+    const auto end = v.end();
+    os << '[';
+    if (auto it = v.begin(); it != end) {
+        os << *it;
+        while (++it != end)
+            os << ", " << *it;
+    }
+    return os << ']';
+}
+
 #endif  // PTRIE_UTILS_H

@@ -25,34 +25,31 @@
 #ifndef BINARYWRAPPER_H
 #define BINARYWRAPPER_H
 
-#include <iostream>
-#include <limits>
+#include <algorithm>  // std::min
 
 #include <cassert>
 #include <cstdint>
-#include <cstdlib>
-#include <cstring>
+#include <cstdlib>  // calloc, free
+#include <cstring>  // memcmp
 
-#define __BW_BSIZE__ sizeof(size_t)  // SIZE OF POINTER!
 namespace ptrie {
+constexpr auto PTR_SIZE = sizeof(uintptr_t);  // SIZE OF POINTER!
 using uint = unsigned int;
 using uchar = unsigned char;
+constexpr uchar Bx80 = 0x80;
 
 /**
  * Wrapper for binary data. This provides easy access to individual bits,
  * heap allocation and comparison. Notice that one has to make sure to
  * explicitly call release() if one wishes to deallocate (possibly shared data).
- *
  */
-class binarywrapper_t
+struct binarywrapper_t
 {
-public:
-    // Constructors
     /// Default constructor does not allocate any data
     binarywrapper_t() = default;
 
     /// Allocates a room for at least size bits
-    binarywrapper_t(uint size);
+    explicit binarywrapper_t(uint size);
 
     /**
      * Assign (not copy) raw data to pointer. Set number of bytes to size
@@ -68,36 +65,36 @@ public:
     uint size() const { return _nbytes; }
 
     /**
-     * Raw access to data when in const setting
+     * Raw access to data
      * @return
      */
-    uchar* const_raw() const
+    uchar* raw()
     {
-        if (_nbytes <= __BW_BSIZE__)
+        if (_nbytes <= PTR_SIZE)
             return offset((uchar*)&_blob, _nbytes);
         return offset(_blob, _nbytes);
     }
 
     /**
-     * Raw access to data
+     * Raw access to data when in const setting
      * @return
      */
-    uchar* raw() { return const_raw(); }
+    uchar* const_raw() const { return const_cast<binarywrapper_t*>(this)->raw(); }
 
     /**
      * Change value of place'th bit
      * @param place: index of bit to change
      * @param value: desired value
      */
-    void set(const uint place, const bool value) const
+    void set(const uint place, const bool value)
     {
         assert(place < _nbytes * 8);
         uint offset = place % 8;
         uint theplace = place / 8;
         if (value) {
-            const_raw()[theplace] |= (0x80 >> offset);
+            raw()[theplace] |= (Bx80 >> offset);
         } else {
-            const_raw()[theplace] &= ~(0x80 >> offset);
+            raw()[theplace] &= ~(Bx80 >> offset);
         }
     }
 
@@ -111,10 +108,9 @@ public:
         uint offset = place % 8;
         bool res2;
         if (place / 8 < _nbytes)
-            res2 = (const_raw()[place / 8] & (0x80 >> offset)) != 0;
+            res2 = (const_raw()[place / 8] & (Bx80 >> offset)) != 0;
         else
             res2 = false;
-
         return res2;
     }
 
@@ -131,7 +127,7 @@ public:
      */
     void release()
     {
-        if (_nbytes > __BW_BSIZE__)
+        if (_nbytes > PTR_SIZE)
             dealloc(_blob);
         _blob = nullptr;
         _nbytes = 0;
@@ -152,7 +148,7 @@ public:
 
     /**
      * Compares two wrappers. Assumes that smaller number of bytes also means
-     * a smaller wrapper. Otherwise compares byte by byte.
+     * a smaller wrapper. Otherwise, compares byte by byte.
      * @param other: wrapper to compare to
      * @return -1 if other is smaller, 0 if same, 1 if other is larger
      */
@@ -160,11 +156,11 @@ public:
     {
         if (_nbytes < other._nbytes)
             return -1;
-        else if (_nbytes > other._nbytes)
+        if (_nbytes > other._nbytes)
             return 1;
 
         size_t bcmp = std::min(_nbytes, other._nbytes);
-        return memcmp(const_raw(), other.const_raw(), bcmp);
+        return std::memcmp(const_raw(), other.const_raw(), bcmp);
     }
 
     /**
@@ -224,23 +220,23 @@ public:
 private:
     static uchar* zallocate(size_t n)
     {
-        if (n <= __BW_BSIZE__)
-            return 0;
+        if (n <= PTR_SIZE)
+            return nullptr;
 #ifndef NDEBUG
         size_t on = n;
 #endif
-        if (n % __BW_BSIZE__ != 0) {
-            n = (1 + (n / __BW_BSIZE__)) * (__BW_BSIZE__);
-            assert(n == on + (__BW_BSIZE__ - (on % __BW_BSIZE__)));
+        if (n % PTR_SIZE != 0) {
+            n = (1 + (n / PTR_SIZE)) * PTR_SIZE;
+            assert(n == on + (PTR_SIZE - (on % PTR_SIZE)));
         }
-        assert(n % __BW_BSIZE__ == 0);
+        assert(n % PTR_SIZE == 0);
         assert(on <= n);
         return (uchar*)calloc(n, 1);
     }
 
     static void dealloc(uchar* data) { free(data); }
 
-    static uchar* offset(uchar* data, uint16_t size)
+    static uchar* offset(uchar* data, uint16_t size [[maybe_unused]])
     {
         //            if((size % __BW_BSIZE__) == 0) return data;
         //            else return &data[(__BW_BSIZE__ - (size % __BW_BSIZE__))];

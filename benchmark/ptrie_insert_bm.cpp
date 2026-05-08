@@ -10,12 +10,6 @@
 
 #include <unordered_set>
 
-const size_t seed = 0;
-const double deletes = 0.0;
-const double read_rate = 0.0;
-const size_t maxval = 256;
-const size_t bytes = 16;
-
 constexpr auto ELEM1 = 100;
 constexpr auto ELEM2 = 1000;
 constexpr auto ELEM3 = 10000;
@@ -27,10 +21,16 @@ using ptrie::equal_o;
 
 static void ptrie_bm(benchmark::State& state)
 {
-    const auto elements = state.range(0);
+    auto settings = Settings{.type = state.name(),
+                             .elements = static_cast<size_t>(state.range(0)),
+                             .bytes = 16,
+                             .deletes = 0,
+                             .read_rate = 2,
+                             .maxval = 256};
     for (auto _ : state) {
         auto set = ptrie::set<>{};
-        set_insert_ptrie(set, elements, seed, bytes, deletes, read_rate, maxval);
+        settings.seed = std::rand();
+        set_insert_ptrie(set, settings);
         benchmark::DoNotOptimize(set);
         benchmark::ClobberMemory();
     }
@@ -39,10 +39,16 @@ BENCHMARK(ptrie_bm)->Name("ptrie")->Arg(ELEM1)->Arg(ELEM2)->Arg(ELEM3)->Arg(ELEM
 
 static void std_bm(benchmark::State& state)
 {
-    const auto elements = state.range(0);
+    auto settings = Settings{.type = state.name(),
+                             .elements = static_cast<size_t>(state.range(0)),
+                             .bytes = 16,
+                             .deletes = 0,
+                             .read_rate = 2,
+                             .maxval = 256};
     for (auto _ : state) {
         auto set = std::unordered_set<wrapper_t, hasher_o, equal_o>{};
-        set_insert(set, elements, seed, bytes, deletes, read_rate, maxval);
+        settings.seed = std::rand();
+        set_insert(set, settings);
         benchmark::DoNotOptimize(set);
         benchmark::ClobberMemory();
     }
@@ -51,10 +57,16 @@ BENCHMARK(std_bm)->Name("std")->Arg(ELEM1)->Arg(ELEM2)->Arg(ELEM3)->Arg(ELEM4);
 
 static void sparse_bm(benchmark::State& state)
 {
-    const auto elements = state.range(0);
+    auto settings = Settings{.type = state.name(),
+                             .elements = static_cast<size_t>(state.range(0)),
+                             .bytes = 16,
+                             .deletes = 0,
+                             .read_rate = 2,
+                             .maxval = 256};
     for (auto _ : state) {
-        auto set = google::sparse_hash_set<wrapper_t, hasher_o, equal_o>(elements / 10);
-        set_insert(set, elements, seed, bytes, deletes, read_rate, maxval);
+        auto set = google::sparse_hash_set<wrapper_t, hasher_o, equal_o>(settings.elements / 10);
+        settings.seed = std::rand();
+        set_insert(set, settings);
         benchmark::DoNotOptimize(set);
         benchmark::ClobberMemory();
     }
@@ -63,15 +75,21 @@ BENCHMARK(sparse_bm)->Name("sparse")->Arg(ELEM1)->Arg(ELEM2)->Arg(ELEM3)->Arg(EL
 
 static void dense_bm(benchmark::State& state)
 {
-    const auto elements = state.range(0);
+    auto settings = Settings{.type = state.name(),
+                             .elements = static_cast<size_t>(state.range(0)),
+                             .bytes = 16,
+                             .deletes = 0,
+                             .read_rate = 2,
+                             .maxval = 256};
     for (auto _ : state) {
-        auto set = google::dense_hash_set<wrapper_t, hasher_o, equal_o>(elements / 10);
+        auto set = google::dense_hash_set<wrapper_t, hasher_o, equal_o>(settings.elements / 10);
         auto empty = wrapper_t{{}, 0};
         auto del = wrapper_t{{}, std::numeric_limits<uint64_t>::max()};
         set.set_empty_key(empty);
-        if (deletes > 0.0)
+        settings.seed = std::rand();
+        if (settings.deletes > 0.0)
             set.set_deleted_key(del);
-        set_insert(set, elements, seed, bytes, deletes, read_rate, maxval);
+        set_insert(set, settings);
         benchmark::DoNotOptimize(set);
         benchmark::ClobberMemory();
     }

@@ -1,6 +1,8 @@
 #ifndef PTRIE_INSERT_HPP
 #define PTRIE_INSERT_HPP
 
+#include "utils.h"
+
 #include "binarywrapper.h"
 #include "MurmurHash2.h"
 
@@ -18,7 +20,7 @@ inline binarywrapper_t rand_data(size_t seed, size_t maxsize, size_t minsize = s
     auto data = binarywrapper_t(size * 8);
     // fill in random data
     for (size_t j = 0; j < size; ++j) {
-        data.raw()[j] = (uchar)(rand() % mv);
+        data.raw()[j] = static_cast<uchar>(rand() % mv);
     }
     // make sure everything is unique
     for (size_t j = 1; j <= sizeof(size_t); ++j) {
@@ -59,7 +61,7 @@ struct equal_o
 };
 
 template <typename T>
-void set_insert(T& set, size_t elements, size_t seed, size_t bytes, double deletes, double read_rate, size_t mv)
+void set_insert(T& set, const Settings& s)
 {
     /*
     auto generator = std::default_random_engine(seed);
@@ -67,26 +69,26 @@ void set_insert(T& set, size_t elements, size_t seed, size_t bytes, double delet
     auto rem = std::uniform_int_distribution<int>(0, elements);
     */
 
-    auto read_generator = std::default_random_engine(seed);
-    auto read_dist = std::normal_distribution<double>(read_rate, read_rate / 2.0);
-    auto read_el = std::uniform_int_distribution<int>(0, elements);
+    auto read_generator = std::default_random_engine(s.seed);
+    auto read_dist = std::normal_distribution<double>(s.read_rate, s.read_rate / 2.0);
+    auto read_el = std::uniform_int_distribution<size_t>(0, s.elements);
 
     auto w = wrapper_t{};
-    for (size_t i = 0; i < elements; ++i) {
-        w.data = rand_data(seed + i, bytes, bytes, mv);
-        w._hash = MurmurHash64A(w.data.raw(), w.data.size(), seed);
+    for (size_t i = 0; i < s.elements; ++i) {
+        w.data = rand_data(s.seed + i, s.bytes, s.bytes, s.maxval);
+        w._hash = MurmurHash64A(w.data.raw(), w.data.size(), s.seed);
         if (w._hash == 0)
             w._hash += 1;
         else if (w._hash == std::numeric_limits<uint64_t>::max())
             w._hash -= 1;
         set.insert(w);
 
-        if (read_rate > 0.0) {
-            int reads = std::round(read_dist(read_generator));
+        if (s.read_rate > 0.0) {
+            const int reads = std::round(read_dist(read_generator));
             for (int r = 0; r < reads; ++r) {
-                size_t el = read_el(read_generator);
-                w.data = rand_data(seed + el, bytes, bytes, mv);
-                w._hash = MurmurHash64A(w.data.raw(), w.data.size(), seed);
+                const size_t el = read_el(read_generator);
+                w.data = rand_data(s.seed + el, s.bytes, s.bytes, s.maxval);
+                w._hash = MurmurHash64A(w.data.raw(), w.data.size(), s.seed);
                 if (w._hash == 0)
                     w._hash += 1;
                 else if (w._hash == std::numeric_limits<uint64_t>::max())
@@ -108,10 +110,12 @@ void set_insert(T& set, size_t elements, size_t seed, size_t bytes, double delet
                 }*/
     }
     w.data = binarywrapper_t();
+    for (auto& elem : set)
+        const_cast<wrapper_t&>(elem).data.release();
 }
 
 template <typename T>
-void set_insert_ptrie(T& set, size_t elements, size_t seed, size_t bytes, double deletes, double read_rate, size_t mv)
+void set_insert_ptrie(T& set, const Settings& s)
 {
     /*
     auto del_generator = std::default_random_engine(seed);
@@ -119,20 +123,20 @@ void set_insert_ptrie(T& set, size_t elements, size_t seed, size_t bytes, double
     auto del_el = std::uniform_int_distribution<int>(0, elements);
     */
 
-    auto read_generator = std::default_random_engine(seed);
-    auto read_dist = std::normal_distribution<double>(read_rate, read_rate / 2.0);
-    auto read_el = std::uniform_int_distribution<int>(0, elements);
+    auto read_generator = std::default_random_engine(s.seed);
+    auto read_dist = std::normal_distribution<double>(s.read_rate, s.read_rate / 2.0);
+    auto read_el = std::uniform_int_distribution<size_t>(0, s.elements);
 
-    for (size_t i = 0; i < elements; ++i) {
-        auto data = rand_data(seed + i, bytes, bytes, mv);
+    for (size_t i = 0; i < s.elements; ++i) {
+        auto data = rand_data(s.seed + i, s.bytes, s.bytes, s.maxval);
         set.insert(data.raw(), data.size());
         data.release();
 
-        if (read_rate > 0.0) {
+        if (s.read_rate > 0.0) {
             int reads = std::round(read_dist(read_generator));
             for (int r = 0; r < reads; ++r) {
                 size_t el = read_el(read_generator);
-                data = rand_data(seed + el, bytes, bytes, mv);
+                data = rand_data(s.seed + el, s.bytes, s.bytes, s.maxval);
                 set.exists(data.raw(), data.size());
                 data.release();
             }

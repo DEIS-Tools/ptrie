@@ -25,10 +25,12 @@
 
 TEST_SUITE_BEGIN("PTrie Stable Set");
 
+using ptrie::uchar;
+
 TEST_CASE("Simple RIterator")
 {
-    auto set = ptrie::set_stable<size_t>{};
     constexpr size_t x = 10000;
+    auto set = ptrie::set_stable<size_t>{};
     for (size_t i = 0; i < x; ++i)
         set.insert(i);
     size_t cnt = 0;
@@ -42,7 +44,7 @@ TEST_CASE("Simple RIterator")
 
 TEST_CASE("Simple Iterator")
 {
-    const size_t x = 10000;
+    constexpr size_t x = 10000;
     auto set = ptrie::set_stable<size_t>{};
     for (size_t i = 0; i < x; ++i) {
         set.insert(i);
@@ -61,29 +63,29 @@ TEST_CASE("Pseudo Rand1")
     for (size_t seed = 1337; seed < (1337 + 10); ++seed) {
         auto set = ptrie::set_stable<>{};
         auto ids = std::vector<size_t>{};
-        auto scratchpad = std::make_unique<unsigned char[]>(20 + sizeof(size_t));
+        auto scratchpad = std::vector<uchar>(20 + sizeof(size_t));
         for (size_t i = 0; i < 1024 * 10; ++i) {
-            auto data = rand_data(i + seed, 20);
-            auto res = set.insert(data.first.get(), data.second);
-            CHECK(res.first);
-            ids.push_back(res.second);
-            auto size = set.unpack(res.second, scratchpad.get());
+            const auto data = rand_data(i + seed, 20);
+            const auto [res, id] = set.insert(std::data(data), std::size(data));
+            CHECK(res);
+            ids.push_back(id);
+            const auto size = set.unpack(id, std::data(scratchpad));
 
-            CHECK(data.second == size);
-            CHECK(memcmp(data.first.get(), scratchpad.get(), size) == 0);
+            CHECK(std::size(data) == size);
+            CHECK(memcmp(std::data(data), std::data(scratchpad), size) == 0);
         }
 
         // let us unwrap everything and check that it is there!
         for (size_t i = 0; i < 1024 * 10; ++i) {
-            auto data = rand_data(i + seed, 20);
-            auto size = set.unpack(ids[i], scratchpad.get());
+            const auto data = rand_data(i + seed, 20);
+            const auto size = set.unpack(ids[i], std::data(scratchpad));
 
-            CHECK(data.second == size);
-            CHECK(memcmp(data.first.get(), scratchpad.get(), size) == 0);
+            CHECK(std::size(data) == size);
+            CHECK(memcmp(std::data(data), std::data(scratchpad), size) == 0);
 
-            auto key = set.unpack(ids[i]);
-            CHECK(data.second == key.size());
-            CHECK(memcmp(data.first.get(), key.data(), size) == 0);
+            const auto key = set.unpack(ids[i]);
+            REQUIRE(std::size(data) == key.size());
+            CHECK(memcmp(std::data(data), std::data(key), size) == 0);
         }
     }
 }
@@ -91,32 +93,32 @@ TEST_CASE("Pseudo Rand1")
 TEST_CASE("Pseudo Rand Split Heap")
 {
     for (size_t seed = 42; seed < (42 + 10); ++seed) {
-        auto set = ptrie::set_stable<unsigned char, size_t, sizeof(size_t) + 1, 6>{};
+        auto set = ptrie::set_stable<uchar, size_t, sizeof(size_t) + 1, 6>{};
         auto ids = std::vector<size_t>{};
-        auto scratchpad = std::make_unique<unsigned char[]>(20 + sizeof(size_t));
+        auto scratchpad = std::vector<uchar>(20 + sizeof(size_t));
 
         for (size_t i = 0; i < 1024 * 10; ++i) {
-            auto data = rand_data(i + seed, 20);
-            auto res = set.insert(data.first.get(), data.second);
-            CHECK(res.first);
-            ids.push_back(res.second);
-            auto size = set.unpack(res.second, scratchpad.get());
+            const auto data = rand_data(i + seed, 20);
+            const auto [res, id] = set.insert(std::data(data), std::size(data));
+            CHECK(res);
+            ids.push_back(id);
+            const auto size = set.unpack(id, std::data(scratchpad));
 
-            CHECK(data.second == size);
-            CHECK(memcmp(data.first.get(), scratchpad.get(), size) == 0);
+            CHECK(std::size(data) == size);
+            CHECK(memcmp(std::data(data), std::data(scratchpad), size) == 0);
         }
 
         // let us unwrap everything and check that it is there!
         for (size_t i = 0; i < 1024 * 10; ++i) {
-            auto data = rand_data(i + seed, 20);
-            auto size = set.unpack(ids[i], scratchpad.get());
+            const auto data = rand_data(i + seed, 20);
+            const auto size = set.unpack(ids[i], std::data(scratchpad));
 
-            CHECK(data.second == size);
-            CHECK(memcmp(data.first.get(), scratchpad.get(), size) == 0);
+            CHECK(std::size(data) == size);
+            CHECK(memcmp(std::data(data), std::data(scratchpad), size) == 0);
 
-            auto key = set.unpack(ids[i]);
-            CHECK(data.second == key.size());
-            CHECK(memcmp(data.first.get(), key.data(), size) == 0);
+            const auto key = set.unpack(ids[i]);
+            CHECK(std::size(data) == key.size());
+            CHECK(memcmp(std::data(data), key.data(), size) == 0);
         }
     }
 }
@@ -130,6 +132,21 @@ struct type_t
     bool operator==(const type_t& other) const
     {
         return _a == other._a && _b == other._b && _c == other._c && _d == other._d;
+    }
+    static type_t rand(unsigned int seed)
+    {
+        auto char_gen = rand_gen<char>();
+        auto int_gen = rand_gen<int>(seed);
+        return {char_gen(), int_gen(), char_gen(), int_gen()};
+    }
+    static std::vector<type_t> rand_vec(unsigned int seed, std::size_t size)
+    {
+        auto char_gen = rand_gen<char>();
+        auto int_gen = rand_gen<int>(seed);
+        auto res = std::vector<type_t>(size);
+        for (auto& t : res)
+            t = type_t{char_gen(), int_gen(), char_gen(), int_gen()};
+        return res;
     }
     friend std::ostream& operator<<(std::ostream& os, const type_t& el)
     {
@@ -173,14 +190,13 @@ TEST_CASE("Complex Type1")
     for (size_t seed = 1337; seed < (1337 + 10); ++seed) {
         auto set = ptrie::set_stable<type_t>{};
         auto ids = std::vector<size_t>{};
-        type_t scratchpad;
+        auto scratchpad = type_t{};
         for (size_t i = 0; i < 1024 * 10; ++i) {
-            srand(i + seed);
-            type_t test({(char)rand(), (int)rand(), (char)rand(), (int)rand()});
-            auto res = set.insert(test);
-            CHECK(res.first);
-            ids.push_back(res.second);
-            auto size = set.unpack(res.second, &scratchpad);
+            const auto test = type_t::rand(i + seed);
+            const auto [res, id] = set.insert(test);
+            CHECK(res);
+            ids.push_back(id);
+            const auto size = set.unpack(id, &scratchpad);
 
             CHECK(size_t{1} == size);
             CHECK(test == scratchpad);
@@ -188,14 +204,13 @@ TEST_CASE("Complex Type1")
 
         // let us unwrap everything and check that it is there!
         for (size_t i = 0; i < 1024 * 10; ++i) {
-            srand(i + seed);
-            type_t test({(char)rand(), (int)rand(), (char)rand(), (int)rand()});
-            auto size = set.unpack(ids[i], &scratchpad);
+            const auto test = type_t::rand(i + seed);
+            const auto size = set.unpack(ids[i], &scratchpad);
 
             CHECK(size_t{1} == size);
             CHECK(test == scratchpad);
 
-            auto key = set.unpack(ids[i]);
+            const auto key = set.unpack(ids[i]);
             CHECK(size_t{1} == key.size());
             CHECK(key.back() == test);
         }
@@ -209,12 +224,11 @@ TEST_CASE("Complex Type2")
         auto ids = std::vector<size_t>{};
         auto scratchpad = type_t{};
         for (size_t i = 0; i < 1024 * 10; ++i) {
-            srand(i + seed);
-            type_t test({(char)rand(), (int)rand(), (char)rand(), (int)rand()});
-            auto res = set.insert(test);
-            REQUIRE(res.first);
-            ids.push_back(res.second);
-            auto size = set.unpack(res.second, &scratchpad);
+            const auto test = type_t::rand(i + seed);
+            const auto [res, id] = set.insert(test);
+            REQUIRE(res);
+            ids.push_back(id);
+            const auto size = set.unpack(id, &scratchpad);
 
             REQUIRE(size == 1);
             REQUIRE(test == scratchpad);
@@ -222,14 +236,13 @@ TEST_CASE("Complex Type2")
 
         // let us unwrap everything and check that it is there!
         for (size_t i = 0; i < 1024 * 10; ++i) {
-            srand(i + seed);
-            auto test = type_t{(char)rand(), (int)rand(), (char)rand(), (int)rand()};
-            auto size = set.unpack(ids[i], &scratchpad);
+            const auto test = type_t::rand(i + seed);
+            const auto size = set.unpack(ids[i], &scratchpad);
 
             CHECK(size == 1);
             CHECK(test == scratchpad);
 
-            auto key = set.unpack(ids[i]);
+            const auto key = set.unpack(ids[i]);
             CHECK(key.size() == 1);
             CHECK(key.back() == test);
         }
@@ -243,14 +256,11 @@ TEST_CASE("Complex Type1 Vector")
         auto ids = std::vector<size_t>{};
         auto scratchpad = std::vector<type_t>(10);
         for (size_t i = 0; i < 1024 * 10; ++i) {
-            srand(i + seed);
-            std::vector<type_t> test(10);
-            for (size_t i = 0; i < 10; ++i)
-                test[i] = type_t{(char)rand(), (int)rand(), (char)rand(), (int)rand()};
-            auto res = set.insert(test);
-            REQUIRE(res.first);
-            ids.push_back(res.second);
-            auto size = set.unpack(res.second, scratchpad.data());
+            const auto test = type_t::rand_vec(i + seed, 10);
+            const auto [res, id] = set.insert(test);
+            REQUIRE(res);
+            ids.push_back(id);
+            const auto size = set.unpack(id, scratchpad.data());
 
             REQUIRE(size == 10);
             REQUIRE(test == scratchpad);
@@ -258,16 +268,13 @@ TEST_CASE("Complex Type1 Vector")
 
         // let us unwrap everything and check that it is there!
         for (size_t i = 0; i < 1024 * 10; ++i) {
-            srand(i + seed);
-            std::vector<type_t> test(10);
-            for (size_t i = 0; i < 10; ++i)
-                test[i] = type_t{(char)rand(), (int)rand(), (char)rand(), (int)rand()};
-            auto size = set.unpack(ids[i], scratchpad.data());
+            const auto test = type_t::rand_vec(i + seed, 10);
+            const auto size = set.unpack(ids[i], scratchpad.data());
 
             CHECK(size == 10);
             CHECK(std::equal(test.begin(), test.end(), scratchpad.begin()));
 
-            auto key = set.unpack(ids[i]);
+            const auto key = set.unpack(ids[i]);
             CHECK(key.size() == 10);
             CHECK(std::equal(test.begin(), test.end(), key.begin()));
         }
@@ -281,14 +288,11 @@ TEST_CASE("Complex Type2 Vector")
         auto ids = std::vector<size_t>{};
         auto scratchpad = std::vector<type_t>(10);
         for (size_t i = 0; i < 1024 * 10; ++i) {
-            srand(i + seed);
-            auto test = std::vector<type_t>(10);
-            for (size_t i = 0; i < 10; ++i)
-                test[i] = type_t{(char)rand(), (int)rand(), (char)rand(), (int)rand()};
-            auto res = set.insert(test);
-            REQUIRE(res.first);
-            ids.push_back(res.second);
-            auto size = set.unpack(res.second, scratchpad.data());
+            const auto test = type_t::rand_vec(i + seed, 10);
+            const auto [res, id] = set.insert(test);
+            REQUIRE(res);
+            ids.push_back(id);
+            const auto size = set.unpack(id, scratchpad.data());
 
             REQUIRE(size == 10);
             REQUIRE(test == scratchpad);
@@ -296,16 +300,13 @@ TEST_CASE("Complex Type2 Vector")
 
         // let us unwrap everything and check that it is there!
         for (size_t i = 0; i < 1024 * 10; ++i) {
-            srand(i + seed);
-            auto test = std::vector<type_t>(10);
-            for (size_t i = 0; i < 10; ++i)
-                test[i] = type_t{(char)rand(), (int)rand(), (char)rand(), (int)rand()};
-            auto size = set.unpack(ids[i], scratchpad.data());
+            const auto test = type_t::rand_vec(i + seed, 10);
+            const auto size = set.unpack(ids[i], scratchpad.data());
 
             CHECK(size == 10);
             CHECK(std::equal(test.begin(), test.end(), scratchpad.begin()));
 
-            auto key = set.unpack(ids[i]);
+            const auto key = set.unpack(ids[i]);
             CHECK(key.size() == 10);
             CHECK(test == key);
         }

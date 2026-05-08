@@ -36,17 +36,17 @@ size_t binarywrapper_t::overhead(uint size)
 
 binarywrapper_t::binarywrapper_t(uint size)
 {
-    _nbytes = (size + overhead(size)) / 8;
+    _nbytes = static_cast<uint16_t>((size + overhead(size)) / 8);
     _blob = zallocate(_nbytes);
 }
 
 binarywrapper_t::binarywrapper_t(uchar* raw, uint size)
 {
-    _nbytes = size / 8 + (size % 8 ? 1 : 0);
+    _nbytes = static_cast<uint16_t>(size / 8 + (size % 8 ? 1 : 0));
     _blob = raw;
 
-    if (_nbytes <= __BW_BSIZE__)
-        memcpy(const_raw(), raw, _nbytes);
+    if (_nbytes <= PTR_SIZE)
+        std::memcpy(const_raw(), raw, _nbytes);
 
     //        assert(raw[0] == const_raw()[0]);
 }
