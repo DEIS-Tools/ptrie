@@ -1,4 +1,6 @@
 # Ensures that Google Benchmark is installed
+option(BENCHMARK_PLOTS "Enable plotting of benchmark results" ON)
+
 include(FetchContent)
 
 FetchContent_Declare(benchmark
@@ -11,7 +13,7 @@ FetchContent_Declare(benchmark
 
 set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Enable testing of the benchmark library.")
 set(BENCHMARK_ENABLE_EXCEPTIONS ON CACHE BOOL "Enable the use of exceptions in the benchmark library.")
-set(BENCHMARK_ENABLE_LTO ON CACHE BOOL "Enable link time optimisation of the benchmark library.")
+set(BENCHMARK_ENABLE_LTO ON CACHE BOOL "Enable link time optimisation of the benchmark library.") # requires llvm-ar on macOS
 set(BENCHMARK_USE_LIBCXX OFF CACHE BOOL "Build and test using libc++ as the standard library.")
 set(BENCHMARK_ENABLE_WERROR OFF CACHE BOOL "Build Release candidates with -Werror.")
 set(BENCHMARK_FORCE_WERROR OFF CACHE BOOL "Build Release candidates with -Werror regardless of compiler issues.")
@@ -50,14 +52,18 @@ if (PYTHON)
     else (BENCHMARK_COMPARE_PY)
         message(STATUS "Failed to find compare.py: benchmark comparisons are disabled")
     endif (BENCHMARK_COMPARE_PY)
-    find_file(BENCHMARK_PLOT_PY NAMES plot.py PATHS ${CMAKE_SOURCE_DIR}/cmake)
-    if (BENCHMARK_PLOT_PY)
-        message(STATUS "Found plot.py: ${BENCHMARK_PLOT_PY}")
-        message(STATUS "    requires `pip install pandas matplotlib scipy pyqt6`")
-        set(BENCHMARK_PLOT ${PYTHON} ${BENCHMARK_PLOT_PY})
-    else (BENCHMARK_PLOT_PY)
-        message(STATUS "Failed to find plot.py: benchmark plots are disabled")
-    endif (BENCHMARK_PLOT_PY)
+    if (BENCHMARK_PLOTS)
+        find_file(BENCHMARK_PLOT_PY NAMES plot.py PATHS ${CMAKE_SOURCE_DIR}/cmake)
+        if (BENCHMARK_PLOT_PY)
+            message(STATUS "Found plot.py: ${BENCHMARK_PLOT_PY}")
+            message(STATUS "    requires `pip install pandas matplotlib scipy pyqt6`")
+            set(BENCHMARK_PLOT ${PYTHON} ${BENCHMARK_PLOT_PY})
+        else (BENCHMARK_PLOT_PY)
+            message(STATUS "Failed to find plot.py: benchmark plots are disabled")
+        endif (BENCHMARK_PLOT_PY)
+    else (BENCHMARK_PLOTS)
+        message(STATUS "Disabled benchmark plots")
+    endif (BENCHMARK_PLOTS)
 else (PYTHON)
     message(STATUS "Failed to find python: disabling benchmark comparisons and plots")
 endif (PYTHON)

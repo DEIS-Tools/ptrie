@@ -145,6 +145,16 @@ TEST_CASE("Simple Iterator")
     CHECK(cnt == size_t{100000});
 }
 
+TEST_CASE("Ranged-for-loop")
+{
+    auto set = ptrie::set<int>{};
+    for (auto i = -127; i < 128; ++i)
+        if (i % 3 == 0)
+            set.insert(i);
+    for (auto&& value : set)
+        CHECK(value % 3 == 0);
+}
+
 TEST_CASE("Simple RIterator")
 {
     auto set = ptrie::set<size_t>{};
