@@ -2,27 +2,27 @@
 name: Build for macOS-26
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - src/**
-      - test/**
-      - benchmark/**
-      - cmake/**
-      - CMakeLists.txt
-      - CMakePresets.json
-      - .github/workflows/build-macos-26.yml
-  pull_request:
-    branches: [main]
-    types: [synchronize, opened, reopened, ready_for_review]
-    paths:
-      - src/**
-      - test/**
-      - benchmark/**
-      - cmake/**
-      - CMakeLists.txt
-      - CMakePresets.json
-      - .github/workflows/build-macos-26.yml
+#  push:
+#    branches: [main]
+#    paths:
+#      - src/**
+#      - test/**
+#      - benchmark/**
+#      - cmake/**
+#      - CMakeLists.txt
+#      - CMakePresets.json
+#      - .github/workflows/build-macos-26.yml
+#  pull_request:
+#    branches: [main]
+#    types: [synchronize, opened, reopened, ready_for_review]
+#    paths:
+#      - src/**
+#      - test/**
+#      - benchmark/**
+#      - cmake/**
+#      - CMakeLists.txt
+#      - CMakePresets.json
+#      - .github/workflows/build-macos-26.yml
 
 jobs:
   macOS-26:
@@ -32,9 +32,9 @@ jobs:
       CTEST_OUTPUT_ON_FAILURE: 1
       BUILD_DIR: build
     steps:
-#      - uses: maxim-lobanov/setup-xcode@v1
-#        with:
-#          xcode-version: '26.2'
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '26.5'
       - name: Install Build Tools
         run: |
           brew update
