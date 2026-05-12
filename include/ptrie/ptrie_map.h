@@ -72,7 +72,15 @@ public:
         }
         T& operator*() const { return _entries[index()]._data; }
         T& operator->() const { return _entries[index()]._data; }
-
+        /* TODO: implement proper dereferencing interface just like std::map
+        std::pair<const key_t,T&> operator*() const
+        {
+            auto res = std::pair<const key_t,T&>{key_t{}, _entries[index()]._data};
+            unpack(&res.first);
+            return res;
+        }
+        std::pair<const key_t,T&> operator->() const { return operator*(); }
+        */
     private:
         entrylist_t& _entries;
     };

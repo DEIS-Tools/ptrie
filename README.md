@@ -1,11 +1,34 @@
 # ptrie
-A memory efficient hashfree hashmap implementation packaged as a header-only library.
+A memory efficient hashfree hashmap implementation packaged as a *header-only* library.
 
 Use CMake to install to `$PWD/local` (headers and CMake configuration):
 ```shell
-cmake --workflow --preset quick-release
+cmake --workflow --preset quick-release && \
 cmake --install build-quick --config Release --prefix=$PWD/local
 ```
+
+## Example Usage
+Directory [example](example) contains a sample project using ptrie.
+
+Test against the ptrie installed in [local](local) using [ptrie.cmake](cmake/ptrie.cmake):
+```shell
+cmake -S example -B build-example-local -DCMAKE_PREFIX_PATH=$PWD/local && \
+cmake --build build-example-local && \
+ctest --test-dir build-example-local --output-on-failure
+```
+
+Test by fetching ptrie from the repository using [ptrie.cmake](cmake/ptrie.cmake):
+```shell
+cmake -S example -B build-example && \
+cmake --build build-example && \
+ctest --test-dir build-example --output-on-failure
+```
+Clean all:
+```shell
+rm -Rf local build-quick build-example-local build-example
+```
+
+
 
 # Testing and Benchmarking
 

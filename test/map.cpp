@@ -23,6 +23,7 @@
 #include <doctest/doctest.h>
 
 #include <vector>
+#include <map>
 
 TEST_SUITE_BEGIN("PTrie Map");
 
@@ -224,3 +225,18 @@ TEST_CASE("Simple Iterator")
     }
     CHECK(cnt == x);
 }
+
+/* TODO: enable when implemented
+TEST_CASE("Ranged-for-loop")
+{
+    auto map = ptrie::map<int,const char*>{};
+    const auto* msg = "divisable by 3";
+    for (auto i = -127; i < 128; ++i)
+        if (i % 3 == 0)
+            map[i] = msg;
+    for (auto&& [key, value] : map) {
+        CHECK(key % 3 == 0);
+        CHECK(value = =msg);
+    }
+}
+*/

@@ -262,6 +262,14 @@ public:
         return cpy;
     }
 
+    key_t operator*() const
+    {
+        key_t key;
+        unpack(&key);
+        return key;
+    }
+    key_t operator->() const { return operator*(); }
+
     size_t unpack(key_t* dest) const
     {
         size_t ps, offset;

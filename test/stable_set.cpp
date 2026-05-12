@@ -58,6 +58,16 @@ TEST_CASE("Simple Iterator")
     CHECK(cnt == x);
 }
 
+TEST_CASE("Ranged-for-loop")
+{
+    auto set = ptrie::set_stable<int>{};
+    for (auto i = -127; i < 128; ++i)
+        if (i % 3 == 0)
+            set.insert(i);
+    for (auto&& value : set)
+        CHECK(value % 3 == 0);
+}
+
 TEST_CASE("Pseudo Rand1")
 {
     for (size_t seed = 1337; seed < (1337 + 10); ++seed) {
