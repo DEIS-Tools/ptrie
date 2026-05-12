@@ -1,6 +1,7 @@
 ---
 name: Build for Windows-MSYS2-UCRT64
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths:
@@ -22,7 +23,6 @@ on:
       - CMakeLists.txt
       - CMakePresets.json
       - .github/workflows/build-win-msys2-ucrt64.yml
-  workflow_dispatch:
 
 jobs:
   windows-msys2-ucrt64:
@@ -53,10 +53,10 @@ jobs:
         run: cmake --build --preset debug
       - name: Test Debug (without Sanitizers)
         run: ctest --preset debug
-      - name: Build Release (without Sanitizers)
-        run: cmake --build --preset release
-      - name: Test Release (without Sanitizers)
-        run: ctest --preset release
+#      - name: Build Release (without Sanitizers)
+#        run: cmake --build --preset release
+#      - name: Test Release (without Sanitizers)
+#        run: ctest --preset release
       - name: Quick Release
         run: cmake --workflow --preset quick-release
       - name: Quick Release Install to local

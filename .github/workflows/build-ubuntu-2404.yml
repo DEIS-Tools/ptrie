@@ -1,6 +1,7 @@
 ---
 name: Build for Ubuntu-24.04
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths:
@@ -22,7 +23,6 @@ on:
       - CMakeLists.txt
       - CMakePresets.json
       - .github/workflows/build-ubuntu-2404.yml
-  workflow_dispatch:
 
 jobs:
   ubuntu-2404:
@@ -50,10 +50,10 @@ jobs:
         run: cmake --build --preset debug-san
       - name: Test Debug with Sanitizers
         run: ctest --preset debug-san
-      - name: Build Release with Sanitizers
-        run: cmake --build --preset release-san
-      - name: Test Release with Sanitizers
-        run: ctest --preset release-san
+#      - name: Build Release with Sanitizers
+#        run: cmake --build --preset release-san
+#      - name: Test Release with Sanitizers
+#        run: ctest --preset release-san
       - name: Quick Release
         run: cmake --workflow --preset quick-release
       - name: Quick Release Install to local

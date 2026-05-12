@@ -89,6 +89,20 @@
       ]
     },
     {
+      "name": "quick-debug",
+      "displayName": "Configure and Build quick (no testing) for Debug",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "quick"
+        },
+        {
+          "type": "build",
+          "name": "quick-debug"
+        }
+      ]
+    },
+    {
       "name": "quick-san",
       "displayName": "Configure and Build quick (no testing) with Sanitizers for Debug and Release",
       "steps": [
@@ -117,6 +131,20 @@
         {
           "type": "build",
           "name": "quick-san-release"
+        }
+      ]
+    },
+    {
+      "name": "quick-san-debug",
+      "displayName": "Configure and Build quick (no testing) with Sanitizers for Debug",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "quick-san"
+        },
+        {
+          "type": "build",
+          "name": "quick-san-debug"
         }
       ]
     }
