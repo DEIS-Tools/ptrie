@@ -1,7 +1,15 @@
 # Ensures that ptrie is installed: find_package or fetch from source
+option(PTRIE_REPO "Repo to fetch ptrie if find_package fails" "https://github.com/DEIS-Tools/ptrie")
+option(PTRIE_BRANCH "Branch to fetch ptrie if find_package fails" "main")
+if (PTRIE_REPO STREQUAL "")
+    set(PTRIE_REPO "https://github.com/DEIS-Tools/ptrie" CACHE STRING "ptrie repository")
+    message(WARNING "PTRIE_REPO is blank, using ${PTRIE_REPO}")
+endif ()
+if (PTRIE_BRANCH STREQUAL "")
+    set(PTRIE_BRANCH "main" CACHE STRING "ptrie branch")
+    message(WARNING "PTRIE_BRANCH is blank, using ${PTRIE_BRANCH}")
+endif ()
 include(FetchContent)
-option(PTRIE_REPO "The repository to fetch PTRIE if find_package fails" https://github.com/DEIS-Tools/ptrie)
-option(PTRIE_BRANCH "The branch to fetch PTRIE if find_package fails" main)
 FetchContent_Declare(ptrie
     GIT_REPOSITORY ${PTRIE_REPO}
     GIT_TAG ${PTRIE_BRANCH}
