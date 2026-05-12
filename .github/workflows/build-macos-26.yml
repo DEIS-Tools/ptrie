@@ -30,7 +30,7 @@ jobs:
     env:
       CMAKE_GENERATOR: "Ninja Multi-Config"
       CTEST_OUTPUT_ON_FAILURE: 1
-      BUILD_DIR: build
+      PTRIE_BRANCH: ${{ github.head_ref || github.ref_name }}
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
@@ -73,7 +73,7 @@ jobs:
       - name: Test Example with local
         run: ctest --test-dir build-example-local -C Debug --verbose
       - name: Configure Example
-        run: cmake -S example -B build-example
+        run: cmake -S example -B build-example -DPTRIE_BRANCH=${PTRIE_BRANCH}
       - name: Build Example
         run: cmake --build build-example --config Debug
       - name: Test Example

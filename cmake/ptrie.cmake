@@ -1,8 +1,10 @@
 # Ensures that ptrie is installed: find_package or fetch from source
 include(FetchContent)
+option(PTRIE_REPO "The repository to fetch PTRIE if find_package fails" https://github.com/DEIS-Tools/ptrie)
+option(PTRIE_BRANCH "The branch to fetch PTRIE if find_package fails" main)
 FetchContent_Declare(ptrie
-    GIT_REPOSITORY https://github.com/DEIS-Tools/ptrie
-    GIT_TAG cmake
+    GIT_REPOSITORY ${PTRIE_REPO}
+    GIT_TAG ${PTRIE_BRANCH}
     GIT_SHALLOW TRUE  # download specific revision only (git clone --depth 1)
     GIT_PROGRESS TRUE # show download progress in Ninja
     USES_TERMINAL_DOWNLOAD TRUE

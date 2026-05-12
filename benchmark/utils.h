@@ -48,7 +48,7 @@ private:
         os << "Using " << s.type << "\n\tinserting " << s.elements << " items of " << s.bytes << " bytes"
            << "\n\tproduced via seed " << s.seed << "\n\tOf those " << (s.deletes * 100.0) << "% are deleted at random,"
            << "\n\tand for each insert, on average " << s.read_rate << " extra reads will occur."
-           << "\nAll bytes in rand data are mod " << s.maxval << std::endl;
+           << "\n\tAll bytes in rand data are mod " << s.maxval << std::endl;
         return os;
     }
 };
