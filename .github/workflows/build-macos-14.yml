@@ -47,14 +47,30 @@ jobs:
         run: |
           brew update
           brew install cmake ninja google-sparsehash
-      - uses: actions/checkout@v4
-      - name: Configure Multi-Config
-        run: cmake -B "$BUILD_DIR" -DPTRIE_BuildTests=ON -DPTRIE_BuildBenchmark=OFF
-      - name: Build Debug
-        run: cmake --build "$BUILD_DIR" --config Debug
-      - name: Test Debug
-        run: ctest --test-dir "$BUILD_DIR" -C Debug
-      - name: Build Release
-        run: cmake --build "$BUILD_DIR" --config Release
-      - name: Test Release
-        run: ctest --test-dir "$BUILD_DIR" -C Release
+      - uses: actions/checkout@v5
+      - name: Configure Multi-Config with Sanitizers
+        run: cmake --preset multi-san
+      - name: Build Debug with Sanitizers
+        run: cmake --build --preset debug-san
+      - name: Test Debug with Sanitizers
+        run: ctest --preset debug-san
+      - name: Build Release with Sanitizers
+        run: cmake --build --preset release-san
+      - name: Test Release with Sanitizers
+        run: ctest --preset release-san
+      - name: Quick Release
+        run: cmake --workflow --preset quick-release
+      - name: Quick Release Install to local
+        run: cmake --install build-quick --config Release --prefix "$PWD/local"
+      - name: Configure Example with local
+        run: cmake -S example -B build-example-local -DCMAKE_PREFIX_PATH="$PWD/local"
+      - name: Build Example with local
+        run: cmake --build build-example-local
+      - name: Test Example with local
+        run: ctest --test-dir buld-example-local --verbose
+      - name: Configure Example
+        run: cmake -S example -B build-example
+      - name: Build Example
+        run: cmake --build build-example
+      - name: Test Example
+        run: ctest --test-dir buld-example --verbose
