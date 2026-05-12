@@ -32,9 +32,9 @@ jobs:
       CTEST_OUTPUT_ON_FAILURE: 1
       BUILD_DIR: build
     steps:
-      - uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: '26.2'
+#      - uses: maxim-lobanov/setup-xcode@v1
+#        with:
+#          xcode-version: '26.2'
       - name: Install Build Tools
         run: |
           brew update
