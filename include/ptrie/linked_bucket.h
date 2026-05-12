@@ -65,7 +65,6 @@ public:
         _index = new index_t;
         _index->_next = nullptr;
 
-        std::memset(&_begin->_data, 0, sizeof(T) * C);
         std::memset(&_index->_index, 0, sizeof(bucket_t*) * C);
         _index->_index[0] = _begin;
     }
@@ -144,7 +143,6 @@ public:
             next->_count = 0;
             next->_nbucket = nullptr;
             next->_offset = 0;
-            std::memset(&next->_data, 0, sizeof(T) * C);
 
             bucket_t* n = _tnext[thread];
             if (n == nullptr) {
