@@ -66,10 +66,10 @@ jobs:
       - name: Build Example with local
         run: cmake --build build-example-local
       - name: Test Example with local
-        run: ctest --test-dir buld-example-local --verbose
+        run: ctest --test-dir build-example-local --verbose
       - name: Configure Example
         run: cmake -S example -B build-example
       - name: Build Example
         run: cmake --build build-example
       - name: Test Example
-        run: ctest --test-dir buld-example --verbose
+        run: ctest --test-dir build-example --verbose
