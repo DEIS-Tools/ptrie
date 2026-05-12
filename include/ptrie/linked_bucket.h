@@ -27,45 +27,38 @@
 #include <atomic>
 #include <iostream>
 #include <vector>
+#include <array>
 
-#include <cstring>  // memset
 #include <cassert>
-// #include <cstdlib>
 
 template <typename T, size_t C>
 class linked_bucket_t
 {
     struct bucket_t
     {
-        std::atomic<bucket_t*> _nbucket;
-        std::atomic<size_t> _offset;
-        size_t _count{};
-        T _data[C]{};
+        std::atomic<bucket_t*> _nbucket{nullptr};
+        std::atomic<size_t> _offset{0};
+        size_t _count{0};
+        std::array<T, C> _data{};
     };
 
     struct index_t
     {
-        bucket_t* _index[C];
-        std::atomic<index_t*> _next;
+        std::array<bucket_t*, C> _index{};
+        std::atomic<index_t*> _next{nullptr};
     };
 
-    bucket_t* _begin{};
+    bucket_t* _begin{nullptr};
     std::vector<bucket_t*> _tnext;
-    index_t* _index{};
+    index_t* _index{nullptr};
 
 public:
     explicit linked_bucket_t(size_t threads): _tnext(threads, nullptr)
     {
-        _begin = new bucket_t;
-        _begin->_count = 0;
-        _begin->_offset = 0;
-        _begin->_nbucket = nullptr;
+        _begin = new bucket_t{};
         _tnext[0] = _begin;
 
-        _index = new index_t;
-        _index->_next = nullptr;
-
-        std::memset(&_index->_index, 0, sizeof(bucket_t*) * C);
+        _index = new index_t{};
         _index->_index[0] = _begin;
     }
 
@@ -75,14 +68,12 @@ public:
             bucket_t* n = _begin->_nbucket.load();
             delete _begin;
             _begin = n;
-
         } while (_begin != nullptr);
 
         do {
             index_t* n = _index->_next.load();
             delete _index;
             _index = n;
-
         } while (_index != nullptr);
     }
 
@@ -139,10 +130,7 @@ public:
     size_t next(size_t thread)
     {
         if (_tnext[thread] == nullptr || _tnext[thread]->_count == C) {
-            auto* next = new bucket_t;
-            next->_count = 0;
-            next->_nbucket = nullptr;
-            next->_offset = 0;
+            auto* next = new bucket_t{};
 
             bucket_t* n = _tnext[thread];
             if (n == nullptr) {
@@ -186,9 +174,8 @@ private:
             tmp = old->_next;
             if (tmp == nullptr) {
                 // extend index if needed
-                auto* nindex = new index_t;
-                std::memset(&nindex->_index, 0, sizeof(bucket_t*) * C);
-                nindex->_next = 0;
+                auto* nindex = new index_t{};
+                nindex->_next = nullptr;
                 if (!old->_next.compare_exchange_strong(tmp, nindex)) {
                     delete nindex;
                     tmp = old;
