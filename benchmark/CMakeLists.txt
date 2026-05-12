@@ -1,5 +1,8 @@
 add_library(murmur OBJECT MurmurHash2.h MurmurHash2.cpp)
+target_compile_features(murmur PRIVATE cxx_std_17)
+
 add_library(binarywrapper OBJECT binarywrapper.h binarywrapper.cpp)
+target_compile_features(binarywrapper PUBLIC cxx_std_17)
 target_link_libraries(binarywrapper PUBLIC sparsehash::sparsehash)
 
 add_executable(ptrie_insert_bm ptrie_insert_bm.cpp)
