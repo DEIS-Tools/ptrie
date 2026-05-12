@@ -56,7 +56,7 @@ template <typename T>
 T mem_load(const void* memory)
 {
     T res;
-    std::memcpy(&res, memory, sizeof(T));
+    std::memcpy(static_cast<void*>(&res), memory, sizeof(T));
     return res;
 }
 
@@ -64,14 +64,14 @@ T mem_load(const void* memory)
 template <typename T>
 void mem_store(void* memory, const T& value)
 {
-    std::memcpy(memory, &value, sizeof(T));
+    std::memcpy(memory, static_cast<const void*>(&value), sizeof(T));
 }
 
 /// Solves alignment warnings when writing into compressed storage
 template <typename T>
 void mem_copy(const T* src, T* dest, size_t count)
 {
-    std::memcpy(dest, src, sizeof(T) * count);
+    std::memcpy(static_cast<void*>(dest), static_cast<const void*>(src), sizeof(T) * count);
 }
 
 /// type-punning uint16_t with uchar
