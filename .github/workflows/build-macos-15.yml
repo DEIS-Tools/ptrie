@@ -38,7 +38,7 @@ jobs:
       - name: Install Build Tools
         run: |
           brew update
-          brew install cmake ninja gcc google-sparsehash python-matplotlib
+          brew install cmake ninja gcc google-sparsehash
       - name: Setup Runner Environment
         run: |
           uname -a
@@ -53,7 +53,7 @@ jobs:
           echo "CXX=${GCC_PREFIX}/bin/g++-${GCC_VERSION}" >> $GITHUB_ENV
       - uses: actions/checkout@v5
       - name: Configure Multi-Config (without Sanitizers)
-        run: cmake --preset multi
+        run: cmake --preset multi -DBENCHMARK_PLOTS=OFF
       - name: Build Debug (without Sanitizers)
         run: cmake --build --preset debug
       - name: Test Debug (without Sanitizers)
