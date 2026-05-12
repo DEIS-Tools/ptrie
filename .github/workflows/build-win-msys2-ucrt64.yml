@@ -38,7 +38,7 @@ jobs:
         with:
           msystem: UCRT64
           update: true
-          install: git cmake ninja mingw-w64-ucrt-x86_64-gcc
+          install: git cmake ninja mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-python-matplotlib mingw-w64-ucrt-x86_64-python-pandas mingw-w64-ucrt-x86_64-python-scipy
       - name: Setup Runner Environment
         run: |
           uname -a

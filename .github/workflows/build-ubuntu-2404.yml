@@ -42,7 +42,7 @@ jobs:
       - name: Install Build Tools
         run: |
           sudo apt-get -qq update
-          sudo apt-get -qq install cmake ninja-build g++ libsparsehash-dev
+          sudo apt-get -qq install cmake ninja-build g++ libsparsehash-dev python3-matplotlib python3-pandas python3-scipy
       - uses: actions/checkout@v5
       - name: Configure Multi-Config with Sanitizers
         run: cmake --preset multi-san
