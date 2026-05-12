@@ -69,12 +69,12 @@ jobs:
       - name: Configure Example with local
         run: cmake -S example -B build-example-local -DCMAKE_PREFIX_PATH="$PWD/local"
       - name: Build Example with local
-        run: cmake --build build-example-local
+        run: cmake --build build-example-local --config Debug
       - name: Test Example with local
-        run: ctest --test-dir build-example-local --verbose
+        run: ctest --test-dir build-example-local -C Debug --verbose
       - name: Configure Example
         run: cmake -S example -B build-example
       - name: Build Example
-        run: cmake --build build-example
+        run: cmake --build build-example --config Debug
       - name: Test Example
-        run: ctest --test-dir build-example --verbose
+        run: ctest --test-dir build-example -C Debug --verbose
