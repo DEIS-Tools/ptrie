@@ -12,11 +12,11 @@ if [ -n "$PTRIE_BuildTests" ]; then
   cmake --workflow --preset debug-san
 fi
 
-rm -Rf local build-quick build-example-local build-example
+rm -Rf local build-quick-san build-example-local build-example
 
 show "Create a quick release and install it into $PWD/local:"
-cmake --workflow --preset quick-release
-cmake --install build-quick --config Release --prefix=$PWD/local
+cmake --workflow --preset quick-san
+cmake --install build-quick-san --config Debug --prefix=$PWD/local
 
 show "Configure, build and run example against ptrie installed in $PWD/local:"
 cmake -S example -B build-example-local -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=$PWD/local
