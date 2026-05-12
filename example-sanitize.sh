@@ -32,6 +32,6 @@ fi
 git status -uno | grep -q "Your branch is up to date with " || show "WARNING: the branch is not up-to-date with the remote repo."
 PTRIE_REPO=$(git remote get-url "$REMOTE_NAME")
 show "Trying example against ptrie from branch '$PTRIE_BRANCH' at '$PTRIE_REPO':"
-cmake -S example -B build-example -DCMAKE_BUILD_TYPE=Debug -DPTRIE_REPO="$PTRIE_REPO" -DPTRIE_BRANCH="$PTRIE_BRANCH"
+cmake -S example -B build-example -DCMAKE_BUILD_TYPE=Debug -DPTRIE_REPO="$PTRIE_REPO" -DPTRIE_TAG="$PTRIE_BRANCH"
 cmake --build build-example --config Debug
 ctest --test-dir build-example -C Debug --output-on-failure

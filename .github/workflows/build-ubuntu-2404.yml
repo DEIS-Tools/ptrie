@@ -30,7 +30,7 @@ jobs:
     env:
       CMAKE_GENERATOR: "Ninja Multi-Config"
       CTEST_OUTPUT_ON_FAILURE: 1
-      PTRIE_BRANCH: ${{ github.head_ref || github.ref_name }}
+      PTRIE_TAG: ${{ github.head_ref || github.ref_name }}
     steps:
       - name: Install Build Tools
         run: |
@@ -55,18 +55,18 @@ jobs:
 #        run: cmake --build --preset release-san
 #      - name: Test Release with Sanitizers
 #        run: ctest --preset release-san
-      - name: Quick Release
-        run: cmake --workflow --preset quick-release
-      - name: Quick Release Install to local
-        run: cmake --install build-quick --config Release --prefix "$PWD/local"
+      - name: Quick Debug
+        run: cmake --workflow --preset quick-san-debug
+      - name: Quick Debug Install to local
+        run: cmake --install build-quick-san --config Debug --prefix "$PWD/local"
       - name: Configure Example with local
-        run: cmake -S example -B build-example-local -DCMAKE_PREFIX_PATH="$PWD/local"
+        run: cmake -S example -B build-example-local -DCMAKE_PREFIX_PATH="$PWD/local" -DCMAKE_CXX_FLAGS=-fsanitize=undefined,address -DCMAKE_EXE_LINKER_FLAGS=-fsanitize=undefined,address
       - name: Build Example with local
         run: cmake --build build-example-local --config Debug
       - name: Test Example with local
         run: ctest --test-dir build-example-local -C Debug --verbose
       - name: Configure Example
-        run: cmake -S example -B build-example -DPTRIE_BRANCH=${PTRIE_BRANCH}
+        run: cmake -S example -B build-example -DPTRIE_TAG=${PTRIE_TAG} -DCMAKE_CXX_FLAGS=-fsanitize=undefined,address -DCMAKE_EXE_LINKER_FLAGS=-fsanitize=undefined,address
       - name: Build Example
         run: cmake --build build-example --config Debug
       - name: Test Example
