@@ -38,7 +38,7 @@ jobs:
       - name: Install Build Tools
         run: |
           brew update
-          brew install cmake ninja google-sparsehash
+          brew install cmake ninja google-sparsehash llvm
       - name: Setup Runner Environment
         run: |
           uname -a
