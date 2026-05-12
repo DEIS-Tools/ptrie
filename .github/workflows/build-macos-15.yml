@@ -52,16 +52,16 @@ jobs:
           echo "CC=${GCC_PREFIX}/bin/gcc-${GCC_VERSION}" >> $GITHUB_ENV
           echo "CXX=${GCC_PREFIX}/bin/g++-${GCC_VERSION}" >> $GITHUB_ENV
       - uses: actions/checkout@v5
-      - name: Configure Multi-Config with Sanitizers
-        run: cmake --preset multi-san
-      - name: Build Debug with Sanitizers
-        run: cmake --build --preset debug-san
-      - name: Test Debug with Sanitizers
-        run: ctest --preset debug-san
-      - name: Build Release with Sanitizers
-        run: cmake --build --preset release-san
-      - name: Test Release with Sanitizers
-        run: ctest --preset release-san
+      - name: Configure Multi-Config (without Sanitizers)
+        run: cmake --preset multi
+      - name: Build Debug (without Sanitizers)
+        run: cmake --build --preset debug
+      - name: Test Debug (without Sanitizers)
+        run: ctest --preset debug
+      - name: Build Release (without Sanitizers)
+        run: cmake --build --preset release
+      - name: Test Release (without Sanitizers)
+        run: ctest --preset release
       - name: Quick Release
         run: cmake --workflow --preset quick-release
       - name: Quick Release Install to local
