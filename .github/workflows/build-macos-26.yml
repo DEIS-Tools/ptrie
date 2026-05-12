@@ -25,7 +25,7 @@ on:
       - .github/workflows/build-macos-26.yml
 
 jobs:
-  macOS-15:
+  macOS-26:
     runs-on: macos-26
     env:
       CMAKE_GENERATOR: "Ninja Multi-Config"
@@ -34,7 +34,7 @@ jobs:
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '26.4.1'
+          xcode-version: '26.2'
       - name: Install Build Tools
         run: |
           brew update
