@@ -31,6 +31,10 @@ jobs:
       CMAKE_GENERATOR: "Ninja Multi-Config"
       CTEST_OUTPUT_ON_FAILURE: 1
     steps:
+      - name: Install Build Tools
+        run: |
+          sudo apt-get -qq update
+          sudo apt-get -qq install cmake ninja-build g++ libsparsehash-dev python3-matplotlib python3-pandas python3-scipy
       - name: Setup Runner Environment
         run: |
           uname -a
@@ -39,10 +43,6 @@ jobs:
           echo "CMAKE_BUILD_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
           echo "CTEST_TEST_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
           echo "CTEST_TEST_LOAD=$CORES" >> $GITHUB_ENV
-      - name: Install Build Tools
-        run: |
-          sudo apt-get -qq update
-          sudo apt-get -qq install cmake ninja-build g++ libsparsehash-dev python3-matplotlib python3-pandas python3-scipy
       - uses: actions/checkout@v5
       - name: Configure Multi-Config with Sanitizers
         run: cmake --preset multi-san
