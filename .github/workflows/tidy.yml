@@ -1,0 +1,46 @@
+---
+name: Tidy formatting and linting
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - src/**
+      - test/**
+      - benchmark/**
+      - cmake/**
+      - CMakeLists.txt
+      - .github/workflows/tidying.yml
+  pull_request:
+    branches: [main]
+    types: [synchronize, opened, reopened, ready_for_review]
+    paths:
+      - src/**
+      - test/**
+      - benchmark/**
+      - cmake/**
+      - CMakeLists.txt
+      - .github/workflows/tidying.yml
+
+jobs:
+  tidy:
+    runs-on: ubuntu-latest
+    env:
+      CC: clang
+      CXX: clang++
+    steps:
+      - name: Install Build Tools
+        run: |
+          sudo apt-get -qq update
+          sudo apt-get -qq install cmake ninja-build clang llvm clang-format cmake-format clang-tidy
+      - uses: actions/checkout@v5
+      - name: C and C++ Code Formatting
+        run: find . -iregex '.*\.\(c\|h\|cpp\|hpp\|cc\|hh\|cxx\|hxx\)$' | xargs clang-format -n -Werror
+      - name: CMake Code Formatting
+        run: find . -name '(CMakeLists.txt|*.cmake)' | xargs cmake-format --check
+      - name: Configure with Sanitizers
+        run: cmake --preset multi-san -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+      - name: Link compile_commands.json
+        run: ln -s build-multi-san/compile_commands.json
+      - name: Linting with clang-tidy
+        run: run-clang-tidy -header-filter="$PWD/(include|src|test|benchmark)/.*" -source-filter="$PWD/(src|test|benchmark)/.*"
