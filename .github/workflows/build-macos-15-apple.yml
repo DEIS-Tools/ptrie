@@ -1,0 +1,79 @@
+---
+name: Build for macOS-15 with AppleClang
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - src/**
+      - test/**
+      - benchmark/**
+      - cmake/**
+      - CMakeLists.txt
+      - CMakePresets.json
+      - .github/workflows/build-macos-15-apple.yml
+  pull_request:
+    branches: [main]
+    types: [synchronize, opened, reopened, ready_for_review]
+    paths:
+      - src/**
+      - test/**
+      - benchmark/**
+      - cmake/**
+      - CMakeLists.txt
+      - CMakePresets.json
+      - .github/workflows/build-macos-15-apple.yml
+
+jobs:
+  macOS-15-apple:
+    runs-on: macos-15
+    env:
+      CMAKE_GENERATOR: "Ninja Multi-Config"
+      CTEST_OUTPUT_ON_FAILURE: 1
+      PTRIE_TAG: ${{ github.head_ref || github.ref_name }}
+    steps:
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.4.0'
+      - name: Install Build Tools
+        run: |
+          brew update
+          brew install cmake ninja llvm google-sparsehash
+      - name: Setup Runner Environment
+        run: |
+          uname -a
+          xcrun --show-sdk-version
+          CORES=$(sysctl -n hw.ncpu)
+          echo "CMAKE_BUILD_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
+          echo "CTEST_TEST_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
+          echo "CTEST_TEST_LOAD=$CORES" >> $GITHUB_ENV
+          LLVM_PREFIX=$(brew --prefix llvm)
+          PATH="$LLVM_PREFIX/bin:$PATH"
+          echo "PATH=$PATH" >> $GITHUB_ENV
+      - uses: actions/checkout@v5
+      - name: Configure Multi-Config with Sanitizers
+        run: cmake --preset multi-san -DBENCHMARK_PLOTS=OFF
+      - name: Build Debug with Sanitizers
+        run: cmake --build --preset debug-san
+      - name: Test Debug with Sanitizers
+        run: ctest --preset debug-san
+#      - name: Build Release with Sanitizers
+#        run: cmake --build --preset release-san
+#      - name: Test Release with Sanitizers
+#        run: ctest --preset release-san
+      - name: Quick Debug with Sanitizers
+        run: cmake --workflow --preset quick-san-debug
+      - name: Quick Debug Install to local with Sanitizers
+        run: cmake --install build-quick-san --config Debug --prefix "$PWD/local"
+      - name: Configure Example with local and Sanitizers
+        run: cmake -S example -B build-example-local -DCMAKE_PREFIX_PATH="$PWD/local" -DCMAKE_CXX_FLAGS=-fsanitize=undefined,address -DCMAKE_EXE_LINKER_FLAGS=-fsanitize=undefined,address
+      - name: Build Example with local and Sanitizers
+        run: cmake --build build-example-local --config Debug
+      - name: Test Example with local and Sanitizers
+        run: ctest --test-dir build-example-local -C Debug --verbose
+      - name: Configure Example with Sanitizers
+        run: cmake -S example -B build-example -DPTRIE_TAG=${PTRIE_TAG} -DCMAKE_CXX_FLAGS=-fsanitize=undefined,address -DCMAKE_EXE_LINKER_FLAGS=-fsanitize=undefined,address
+      - name: Build Example with Sanitizers
+        run: cmake --build build-example --config Debug
+      - name: Test Example with Sanitizers
+        run: ctest --test-dir build-example -C Debug --verbose

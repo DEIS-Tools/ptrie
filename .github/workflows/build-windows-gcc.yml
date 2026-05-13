@@ -1,5 +1,5 @@
 ---
-name: Build for macOS-15 with GCC
+name: Build for Windows using GCC
 on:
   workflow_dispatch:
   push:
@@ -11,7 +11,7 @@ on:
       - cmake/**
       - CMakeLists.txt
       - CMakePresets.json
-      - .github/workflows/build-macos-15-gcc.yml
+      - github/workflows/build-windows-gcc.yml
   pull_request:
     branches: [main]
     types: [synchronize, opened, reopened, ready_for_review]
@@ -22,30 +22,28 @@ on:
       - cmake/**
       - CMakeLists.txt
       - CMakePresets.json
-      - .github/workflows/build-macos-15-gcc.yml
+      - github/workflows/build-windows-gcc.yml
 
 jobs:
-  macOS-15-gcc:
-    runs-on: macos-15
+  windows-gcc:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
     env:
-      CC: gcc-15
-      CXX: g++-15
       CMAKE_GENERATOR: "Ninja Multi-Config"
       CTEST_OUTPUT_ON_FAILURE: 1
       PTRIE_TAG: ${{ github.head_ref || github.ref_name }}
     steps:
-      - uses: maxim-lobanov/setup-xcode@v1
+      - uses: msys2/setup-msys2@v2
         with:
-          xcode-version: '16.4.0'
-      - name: Install Build Tools
-        run: |
-          brew update
-          brew install cmake ninja gcc google-sparsehash
+          msystem: UCRT64
+          update: true
+          install: mingw-w64-ucrt-x86_64-git mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-sparsehash
       - name: Setup Runner Environment
         run: |
           uname -a
-          xcrun --show-sdk-version
-          CORES=$(sysctl -n hw.ncpu)
+          CORES=$(nproc)
           echo "CMAKE_BUILD_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
           echo "CTEST_TEST_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
           echo "CTEST_TEST_LOAD=$CORES" >> $GITHUB_ENV
