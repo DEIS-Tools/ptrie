@@ -15,12 +15,15 @@
 
 #include "MurmurHash2.h"
 
+#include <cstring>  // memcpy
+#include <cstdint>  // uint32_t
+
 //-----------------------------------------------------------------------------
 // Platform-specific functions and macros
 
 // Microsoft Visual Studio
 
-#if defined(_MSC_VER)
+#ifdef _MSC_VER
 
 #define BIG_CONSTANT(x) (x)
 
@@ -32,17 +35,29 @@
 
 #endif  // !defined(_MSC_VER)
 
+// NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast,cppcoreguidelines-macro-usage,bugprone-macro-parentheses,hicpp-signed-bitwise,cppcoreguidelines-pro-bounds-pointer-arithmetic,bugprone-easily-swappable-parameters)
+
 //-----------------------------------------------------------------------------
 
 using uchar = unsigned char;
 
-uint32_t MurmurHash2(const void* key, int len, uint32_t seed)
+namespace {
+template <typename T>
+T mem_load(const void* ptr)
+{
+    T res;
+    std::memcpy(static_cast<void*>(&res), ptr, sizeof(T));
+    return res;
+}
+}  // namespace
+
+uint32_t MurmurHash2(const void* key, unsigned len, uint32_t seed)
 {
     // 'm' and 'r' are mixing constants generated offline.
     // They're not really 'magic', they just happen to work well.
 
-    const uint32_t m = 0x5bd1e995;
-    const int r = 24;
+    constexpr uint32_t m = 0x5bd1e995;
+    constexpr unsigned r = 24;
 
     // Initialize the hash to a 'random' value
 
@@ -53,7 +68,7 @@ uint32_t MurmurHash2(const void* key, int len, uint32_t seed)
     const auto* data = static_cast<const uchar*>(key);
 
     while (len >= 4) {
-        uint32_t k = *(uint32_t*)data;
+        uint32_t k = mem_load<uint32_t>(data);
 
         k *= m;
         k ^= k >> r;
@@ -72,6 +87,7 @@ uint32_t MurmurHash2(const void* key, int len, uint32_t seed)
     case 3: h ^= data[2] << 16; [[fallthrough]];
     case 2: h ^= data[1] << 8; [[fallthrough]];
     case 1: h ^= data[0]; h *= m;
+    default:;
     }
 
     // Do a few final mixes of the hash to ensure the last few
@@ -94,8 +110,8 @@ uint32_t MurmurHash2(const void* key, int len, uint32_t seed)
 
 uint64_t MurmurHash64A(const void* key, unsigned len, uint64_t seed)
 {
-    const uint64_t m = BIG_CONSTANT(0xc6a4a7935bd1e995);
-    const int r = 47;
+    constexpr uint64_t m = 0xc6a4a7935bd1e995ull;
+    constexpr unsigned r = 47;
 
     uint64_t h = seed ^ (len * m);
 
@@ -116,13 +132,14 @@ uint64_t MurmurHash64A(const void* key, unsigned len, uint64_t seed)
     const auto* data2 = reinterpret_cast<const uchar*>(data);
 
     switch (len & 7) {
-    case 7: h ^= uint64_t(data2[6]) << 48; [[fallthrough]];
-    case 6: h ^= uint64_t(data2[5]) << 40; [[fallthrough]];
-    case 5: h ^= uint64_t(data2[4]) << 32; [[fallthrough]];
-    case 4: h ^= uint64_t(data2[3]) << 24; [[fallthrough]];
-    case 3: h ^= uint64_t(data2[2]) << 16; [[fallthrough]];
-    case 2: h ^= uint64_t(data2[1]) << 8; [[fallthrough]];
-    case 1: h ^= uint64_t(data2[0]); h *= m;
+    case 7: h ^= static_cast<uint64_t>(data2[6]) << 48; [[fallthrough]];
+    case 6: h ^= static_cast<uint64_t>(data2[5]) << 40; [[fallthrough]];
+    case 5: h ^= static_cast<uint64_t>(data2[4]) << 32; [[fallthrough]];
+    case 4: h ^= static_cast<uint64_t>(data2[3]) << 24; [[fallthrough]];
+    case 3: h ^= static_cast<uint64_t>(data2[2]) << 16; [[fallthrough]];
+    case 2: h ^= static_cast<uint64_t>(data2[1]) << 8; [[fallthrough]];
+    case 1: h ^= static_cast<uint64_t>(data2[0]); h *= m;
+    default:;
     }
 
     h ^= h >> r;
@@ -136,8 +153,8 @@ uint64_t MurmurHash64A(const void* key, unsigned len, uint64_t seed)
 
 uint64_t MurmurHash64B(const void* key, unsigned len, uint64_t seed)
 {
-    const uint32_t m = 0x5bd1e995;
-    const int r = 24;
+    constexpr uint32_t m = 0x5bd1e995;
+    constexpr unsigned r = 24;
 
     uint32_t h1 = static_cast<uint32_t>(seed) ^ len;
     auto h2 = static_cast<uint32_t>(seed >> 32);
@@ -177,6 +194,7 @@ uint64_t MurmurHash64B(const void* key, unsigned len, uint64_t seed)
     case 3: h2 ^= ucdata[2] << 16; [[fallthrough]];
     case 2: h2 ^= ucdata[1] << 8; [[fallthrough]];
     case 1: h2 ^= ucdata[0]; h2 *= m;
+    default:;
     }
 
     h1 ^= h2 >> 18;
@@ -215,10 +233,10 @@ uint64_t MurmurHash64B(const void* key, unsigned len, uint64_t seed)
         h ^= k;      \
     }
 
-uint32_t MurmurHash2A(const void* key, int len, uint32_t seed)
+uint32_t MurmurHash2A(const void* key, unsigned len, uint32_t seed)
 {
-    const uint32_t m = 0x5bd1e995;
-    const int r = 24;
+    constexpr uint32_t m = 0x5bd1e995;
+    constexpr unsigned r = 24;
     uint32_t l = len;
 
     const auto* data = static_cast<const uchar*>(key);
@@ -226,7 +244,7 @@ uint32_t MurmurHash2A(const void* key, int len, uint32_t seed)
     uint32_t h = seed;
 
     while (len >= 4) {
-        uint32_t k = *reinterpret_cast<const uint32_t*>(data);
+        uint32_t k = mem_load<uint32_t>(data);
 
         mmix(h, k);
 
@@ -240,6 +258,7 @@ uint32_t MurmurHash2A(const void* key, int len, uint32_t seed)
     case 3: t ^= data[2] << 16; [[fallthrough]];
     case 2: t ^= data[1] << 8; [[fallthrough]];
     case 1: t ^= data[0];
+    default:;
     }
 
     mmix(h, t);
@@ -268,25 +287,18 @@ uint32_t MurmurHash2A(const void* key, int len, uint32_t seed)
 // hasher.Add(dataN,sizeN);
 // uint32_t hash = hasher.End()
 
-class CMurmurHash2A
+struct CMurmurHash2A
 {
-public:
-    void Begin(uint32_t seed = 0)
-    {
-        m_hash = seed;
-        m_tail = 0;
-        m_count = 0;
-        m_size = 0;
-    }
+    explicit CMurmurHash2A(uint32_t seed = 0): m_hash{seed} {}
 
-    void Add(const unsigned char* data, int len)
+    void Add(const unsigned char* data, unsigned len)
     {
         m_size += len;
 
         MixTail(data, len);
 
         while (len >= 4) {
-            uint32_t k = *reinterpret_cast<const uint32_t*>(data);
+            uint32_t k = mem_load<uint32_t>(data);
 
             mmix(m_hash, k);
 
@@ -297,7 +309,7 @@ public:
         MixTail(data, len);
     }
 
-    uint32_t End(void)
+    uint32_t End()
     {
         mmix(m_hash, m_tail);
         mmix(m_hash, m_size);
@@ -310,12 +322,12 @@ public:
     }
 
 private:
-    static const uint32_t m = 0x5bd1e995;
-    static const int r = 24;
+    static constexpr uint32_t m = 0x5bd1e995;
+    static constexpr unsigned r = 24;
 
-    void MixTail(const unsigned char*& data, int& len)
+    void MixTail(const unsigned char*& data, unsigned& len)
     {
-        while (len && ((len < 4) || m_count)) {
+        while (len > 0 && (len < 4 || m_count > 0)) {
             m_tail |= (*data++) << (m_count * 8);
 
             m_count++;
@@ -329,10 +341,10 @@ private:
         }
     }
 
-    uint32_t m_hash;
-    uint32_t m_tail;
-    uint32_t m_count;
-    uint32_t m_size;
+    uint32_t m_hash{};
+    uint32_t m_tail{};
+    uint32_t m_count{};
+    uint32_t m_size{};
 };
 
 //-----------------------------------------------------------------------------
@@ -341,19 +353,17 @@ private:
 // Same as MurmurHash2, but endian- and alignment-neutral.
 // Half the speed though, alas.
 
-uint32_t MurmurHashNeutral2(const void* key, int len, uint32_t seed)
+uint32_t MurmurHashNeutral2(const void* key, unsigned len, uint32_t seed)
 {
-    const uint32_t m = 0x5bd1e995;
-    const int r = 24;
+    constexpr uint32_t m = 0x5bd1e995;
+    constexpr unsigned r = 24;
 
     uint32_t h = seed ^ len;
 
     const auto* data = static_cast<const uchar*>(key);
 
     while (len >= 4) {
-        uint32_t k;
-
-        k = data[0];
+        uint32_t k = data[0];
         k |= data[1] << 8;
         k |= data[2] << 16;
         k |= data[3] << 24;
@@ -373,6 +383,7 @@ uint32_t MurmurHashNeutral2(const void* key, int len, uint32_t seed)
     case 3: h ^= data[2] << 16; [[fallthrough]];
     case 2: h ^= data[1] << 8; [[fallthrough]];
     case 1: h ^= data[0]; h *= m;
+    default:;
     }
 
     h ^= h >> 13;
@@ -399,26 +410,28 @@ uint32_t MurmurHashNeutral2(const void* key, int len, uint32_t seed)
         h ^= k;      \
     }
 
-uint32_t MurmurHashAligned2(const void* key, int len, uint32_t seed)
+uint32_t MurmurHashAligned2(const void* key, unsigned len, uint32_t seed)
 {
-    const uint32_t m = 0x5bd1e995;
-    const int r = 24;
+    constexpr uint32_t m = 0x5bd1e995;
+    constexpr unsigned r = 24;
 
     const auto* data = static_cast<const uchar*>(key);
 
     uint32_t h = seed ^ len;
 
-    int align = reinterpret_cast<uint64_t>(data) & 3;
+    const unsigned align = reinterpret_cast<uint64_t>(data) & 3;
 
-    if (align && (len >= 4)) {
-        // Pre-load the temp registers
+    if (align > 0 && len >= 4) {
+        // Preload the temp registers
 
-        uint32_t t = 0, d = 0;
+        uint32_t t = 0;
+        uint32_t d = 0;
 
         switch (align) {
         case 1: t |= data[2] << 16; [[fallthrough]];
         case 2: t |= data[1] << 8; [[fallthrough]];
         case 3: t |= data[0];
+        default:;
         }
 
         t <<= (8 * align);
@@ -426,13 +439,13 @@ uint32_t MurmurHashAligned2(const void* key, int len, uint32_t seed)
         data += 4 - align;
         len -= 4 - align;
 
-        int sl = 8 * (4 - align);
-        int sr = 8 * align;
+        const int sl = 8 * (4 - static_cast<int>(align));
+        const unsigned sr = 8 * align;
 
         // Mix
 
         while (len >= 4) {
-            d = *reinterpret_cast<const uint32_t*>(data);
+            d = mem_load<uint32_t>(data);
             t = (t >> sr) | (d << sl);
 
             uint32_t k = t;
@@ -454,6 +467,7 @@ uint32_t MurmurHashAligned2(const void* key, int len, uint32_t seed)
             case 3: d |= data[2] << 16; [[fallthrough]];
             case 2: d |= data[1] << 8; [[fallthrough]];
             case 1: d |= data[0];
+            default:;
             }
 
             uint32_t k = (t >> sr) | (d << sl);
@@ -469,6 +483,7 @@ uint32_t MurmurHashAligned2(const void* key, int len, uint32_t seed)
             case 3: h ^= data[2] << 16; [[fallthrough]];
             case 2: h ^= data[1] << 8; [[fallthrough]];
             case 1: h ^= data[0]; h *= m;
+            default:;
             }
         } else {
             switch (len) {
@@ -476,6 +491,7 @@ uint32_t MurmurHashAligned2(const void* key, int len, uint32_t seed)
             case 2: d |= data[1] << 8; [[fallthrough]];
             case 1: d |= data[0]; [[fallthrough]];
             case 0: h ^= (t >> sr) | (d << sl); h *= m;
+            default:;
             }
         }
 
@@ -484,31 +500,32 @@ uint32_t MurmurHashAligned2(const void* key, int len, uint32_t seed)
         h ^= h >> 15;
 
         return h;
-    } else {
-        while (len >= 4) {
-            uint32_t k = *reinterpret_cast<const uint32_t*>(data);
-
-            MIX(h, k, m);
-
-            data += 4;
-            len -= 4;
-        }
-
-        //----------
-        // Handle tail bytes
-
-        switch (len) {
-        case 3: h ^= data[2] << 16; [[fallthrough]];
-        case 2: h ^= data[1] << 8; [[fallthrough]];
-        case 1: h ^= data[0]; h *= m;
-        };
-
-        h ^= h >> 13;
-        h *= m;
-        h ^= h >> 15;
-
-        return h;
     }
+
+    while (len >= 4) {
+        uint32_t k = mem_load<uint32_t>(data);
+
+        MIX(h, k, m);
+
+        data += 4;
+        len -= 4;
+    }
+
+    //----------
+    // Handle tail bytes
+    switch (len) {
+    case 3: h ^= data[2] << 16; [[fallthrough]];
+    case 2: h ^= data[1] << 8; [[fallthrough]];
+    case 1: h ^= data[0]; h *= m;
+    default:;
+    }
+
+    h ^= h >> 13;
+    h *= m;
+    h ^= h >> 15;
+
+    return h;
 }
 
 //-----------------------------------------------------------------------------
+// NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast,cppcoreguidelines-macro-usage,bugprone-macro-parentheses,hicpp-signed-bitwise,cppcoreguidelines-pro-bounds-pointer-arithmetic,bugprone-easily-swappable-parameters)

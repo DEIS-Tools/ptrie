@@ -12,8 +12,8 @@
 inline size_t reorder(size_t el, const std::vector<size_t>& order, size_t seed)
 {
     el = el ^ seed;
-    auto s = ptrie::binarywrapper_t{(ptrie::uchar*)&el, sizeof(size_t) * 8};
-    auto t = ptrie::binarywrapper_t{sizeof(size_t) * 8};
+    auto s = ptrie::binarywrapper_t{(ptrie::uchar*)&el, ptrie::Bits{sizeof(size_t) * 8}};
+    auto t = ptrie::binarywrapper_t{ptrie::Bits{sizeof(size_t) * 8}};
 
     size_t& target = *(size_t*)t.raw();
     bool flip[8];

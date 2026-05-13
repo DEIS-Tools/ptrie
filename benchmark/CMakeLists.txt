@@ -1,9 +1,8 @@
-add_library(murmur OBJECT MurmurHash2.h MurmurHash2.cpp)
+add_library(murmur OBJECT MurmurHash2.cpp)
 target_compile_features(murmur PRIVATE cxx_std_17)
 
-add_library(binarywrapper OBJECT binarywrapper.h binarywrapper.cpp)
-target_compile_features(binarywrapper PUBLIC cxx_std_17)
-target_link_libraries(binarywrapper PUBLIC sparsehash::sparsehash)
+add_library(binarywrapper INTERFACE)
+target_compile_features(binarywrapper INTERFACE cxx_std_17)
 
 add_executable(ptrie_insert_bm ptrie_insert_bm.cpp)
 target_link_libraries(ptrie_insert_bm PRIVATE binarywrapper ptrie murmur benchmark::benchmark_main)
@@ -22,8 +21,8 @@ add_test(NAME std COMMAND ptrie_insert std ${ELEMENT_COUNT})
 add_test(NAME sparse COMMAND ptrie_insert sparse ${ELEMENT_COUNT})
 add_test(NAME dense COMMAND ptrie_insert dense ${ELEMENT_COUNT})
 
-add_executable(int_ptrie_insert int_ptrie_insert.cpp utils.h binarywrapper.cpp)
-target_link_libraries(int_ptrie_insert PRIVATE sparsehash::sparsehash ptrie murmur)
+add_executable(int_ptrie_insert int_ptrie_insert.cpp utils.h)
+target_link_libraries(int_ptrie_insert PRIVATE binarywrapper sparsehash::sparsehash ptrie murmur)
 
 add_test(NAME int_ptrie COMMAND int_ptrie_insert ptrie ${ELEMENT_COUNT})
 add_test(NAME int_stable COMMAND int_ptrie_insert ptrie-stable ${ELEMENT_COUNT})

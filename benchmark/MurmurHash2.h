@@ -20,7 +20,7 @@ typedef unsigned __int64 uint64_t;
 
 #else  // defined(_MSC_VER)
 
-#include <stdint.h>
+#include <stdint.h>  // NOLINT(modernize-deprecated-headers)
 
 #endif  // !defined(_MSC_VER)
 

@@ -48,34 +48,30 @@ class linked_bucket_t
         std::atomic<index_t*> _next{nullptr};
     };
 
-    bucket_t* _begin{nullptr};
+    bucket_t* _begin{new bucket_t{}};                  // NOLINT(cppcoreguidelines-owning-memory)
+    index_t* _index{new index_t{._index = {_begin}}};  // NOLINT(cppcoreguidelines-owning-memory)
     std::vector<bucket_t*> _tnext;
-    index_t* _index{nullptr};
 
 public:
-    explicit linked_bucket_t(size_t threads): _tnext(threads, nullptr)
-    {
-        _begin = new bucket_t{};
-        _tnext[0] = _begin;
-
-        _index = new index_t{};
-        _index->_index[0] = _begin;
-    }
+    explicit linked_bucket_t(size_t threads): _tnext(threads, nullptr) { _tnext[0] = _begin; }
 
     ~linked_bucket_t()
     {
-        do {
+        while (_begin != nullptr) {
             bucket_t* n = _begin->_nbucket.load();
-            delete _begin;
+            delete _begin;  // NOLINT(cppcoreguidelines-owning-memory)
             _begin = n;
-        } while (_begin != nullptr);
-
-        do {
+        }
+        while (_index != nullptr) {
             index_t* n = _index->_next.load();
-            delete _index;
+            delete _index;  // NOLINT(cppcoreguidelines-owning-memory)
             _index = n;
-        } while (_index != nullptr);
+        }
     }
+    linked_bucket_t(const linked_bucket_t&) = delete;
+    linked_bucket_t& operator=(const linked_bucket_t&) = delete;
+    linked_bucket_t(linked_bucket_t&&) = delete;
+    linked_bucket_t& operator=(linked_bucket_t&&) = delete;
 
     T& operator[](size_t i)
     {
@@ -90,7 +86,7 @@ public:
             b += C;
             n = n->_nbucket.load();
             if (n == nullptr)
-                std::cerr << "FAILED FETCHING ID: " << i << std::endl;
+                std::cerr << "FAILED FETCHING ID: " << i << std::endl;  // NOLINT(performance-avoid-endl)
             assert(n != nullptr);
         }
 
@@ -130,7 +126,7 @@ public:
     size_t next(size_t thread)
     {
         if (_tnext[thread] == nullptr || _tnext[thread]->_count == C) {
-            auto* next = new bucket_t{};
+            auto* next = new bucket_t{};  // NOLINT(cppcoreguidelines-owning-memory)
 
             bucket_t* n = _tnext[thread];
             if (n == nullptr) {
@@ -174,10 +170,10 @@ private:
             tmp = old->_next;
             if (tmp == nullptr) {
                 // extend index if needed
-                auto* nindex = new index_t{};
+                auto* nindex = new index_t{};  // NOLINT(cppcoreguidelines-owning-memory)
                 nindex->_next = nullptr;
                 if (!old->_next.compare_exchange_strong(tmp, nindex)) {
-                    delete nindex;
+                    delete nindex;  // NOLINT(cppcoreguidelines-owning-memory)
                     tmp = old;
                     continue;
                 }

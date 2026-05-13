@@ -80,19 +80,19 @@ union puint16_t
     uint16_t u{0};
     uchar c[2];
     puint16_t() = default;
-    puint16_t(uint16_t u): u{u} {}
-    puint16_t(size_t s): u{static_cast<uint16_t>(s)} {}
+    explicit puint16_t(uint16_t u): u{u} {}
+    explicit puint16_t(size_t s): u{static_cast<uint16_t>(s)} {}
 };
 
 inline uchar* new_uchar2(std::size_t size, const std::string& src [[maybe_unused]], std::size_t line [[maybe_unused]])
 {
-    auto res = new uchar[size];
+    auto* res = new uchar[size];  // NOLINT(cppcoreguidelines-owning-memory)
     return res;
 }
 
 #define new_uchar(ptr) new_uchar2(ptr, __FILE__, __LINE__)
 
-inline void delete_uchar(const uchar* data) { delete[] data; }
+inline void delete_uchar(const uchar* data) { delete[] data; }  // NOLINT(cppcoreguidelines-owning-memory)
 
 template <typename D, typename N>
 struct __ptrie_el_t
@@ -2097,7 +2097,7 @@ void __write_data(KEY* dest, const N* node, std::stack<uchar>& path, size_t bind
                 byte_iterator<KEY>::access(dest, ps + i) = src[i];
     }
 
-    puint16_t first = node->_data.first(0, bindex);
+    auto first = puint16_t{node->_data.first(0, bindex)};
 
     size_t pos = 0;
     while (path.size() >= BDIV) {
