@@ -5,15 +5,15 @@ add_library(binarywrapper INTERFACE)
 target_compile_features(binarywrapper INTERFACE cxx_std_17)
 
 add_executable(ptrie_insert_bm ptrie_insert_bm.cpp)
-target_link_libraries(ptrie_insert_bm PRIVATE binarywrapper ptrie murmur benchmark::benchmark_main)
+target_link_libraries(ptrie_insert_bm PRIVATE binarywrapper ptrie murmur sparsehash::sparsehash benchmark::benchmark_main)
 add_benchmark(ptrie_insert_bm --logx --logy)
 
 add_executable(int_ptrie_insert_bm int_ptrie_insert_bm.cpp)
-target_link_libraries(int_ptrie_insert_bm PRIVATE binarywrapper ptrie murmur benchmark::benchmark_main)
+target_link_libraries(int_ptrie_insert_bm PRIVATE binarywrapper ptrie murmur sparsehash::sparsehash benchmark::benchmark_main)
 add_benchmark(int_ptrie_insert_bm --logx --logy)
 
 add_executable(ptrie_insert ptrie_insert.cpp utils.h)
-target_link_libraries(ptrie_insert PRIVATE binarywrapper ptrie murmur)
+target_link_libraries(ptrie_insert PRIVATE binarywrapper ptrie murmur sparsehash::sparsehash)
 
 set(ELEMENT_COUNT 1000000)
 add_test(NAME ptrie COMMAND ptrie_insert ptrie ${ELEMENT_COUNT})
