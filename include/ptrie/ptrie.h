@@ -27,18 +27,7 @@
 
 #include "ptrie_internal.hpp"
 
-#include <functional>
-#include <algorithm>
-#include <limits>
-#include <memory>
-#include <stack>
-#include <map>
-#include <tuple>
 #include <fstream>
-#include <iomanip>
-
-#include <cassert>
-#include <cstring>
 
 // direct 2lvl indexing in chunks of ~ 2^32
 // takes up ~ 512k (256k on 32bit) for the index.

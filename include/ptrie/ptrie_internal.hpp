@@ -5,6 +5,8 @@
 
 #include <stack>
 #include <algorithm>
+#include <memory>
+#include <limits>
 
 #include <cstdint>
 #include <cstring>  // memcpy
