@@ -27,21 +27,19 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CMAKE_GENERATOR: "Ninja Multi-Config"
-      CC: clang
-      CXX: clang++
+      CC: clang-20
+      CXX: clang++-20
     steps:
       - name: Install Build Tools
         run: |
           sudo apt-get -qq update
-          sudo apt-get -qq install cmake ninja-build clang llvm libsparsehash-dev clang-format cmake-format clang-tidy
+          sudo apt-get -qq install cmake ninja-build clang-20 llvm-20 libsparsehash-dev clang-format-20 cmake-format clang-tidy-20
       - uses: actions/checkout@v5
       - name: C and C++ Code Formatting
-        run: find . -iregex '.*\.\(c\|h\|cpp\|hpp\|cc\|hh\|cxx\|hxx\)$' | xargs clang-format -n -Werror
+        run: find . -iregex '.*\.\(c\|h\|cpp\|hpp\|cc\|hh\|cxx\|hxx\)$' | xargs clang-format-20 -n -Werror
       - name: CMake Code Formatting
         run: find . -name '(CMakeLists.txt|*.cmake)' | xargs cmake-format --check
       - name: Configure with Sanitizers
         run: cmake --preset multi-san -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-      - name: Link compile_commands.json
-        run: ln -s build-multi-san/compile_commands.json
       - name: Linting with clang-tidy
-        run: run-clang-tidy -header-filter="$PWD/(include|src|test|benchmark)/.*" -source-filter="$PWD/(src|test|benchmark)/.*"
+        run: run-clang-tidy-20 -p build-multi-san -header-filter="$PWD/(include|src|test|benchmark)/.*" -source-filter="$PWD/(src|test|benchmark)/.*"
