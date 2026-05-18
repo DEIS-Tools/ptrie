@@ -32,10 +32,10 @@ namespace ptrie {
 
 template <typename KEY, typename T, uint16_t HEAPBOUND = 17, uint16_t SPLITBOUND = 128, uint8_t BSIZE = 8,
           size_t ALLOCSIZE = (1024 * 64), typename I = size_t>
-class map : __set_stable<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, T, I>
+class map : internal::__set_stable<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, T, I>
 {
     static_assert(!std::is_same_v<void, T>, "T (map-to-type) must not be void");
-    using pt = __set_stable<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, T, I>;
+    using pt = internal::__set_stable<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, T, I>;
     using entrylist_t = typename pt::entrylist_t;
 
 public:
@@ -60,11 +60,11 @@ public:
     T& operator[](std::pair<const KEY*, size_t> key) { return get_data(pt::insert(key.first, key.second).second); }
     T& operator[](const std::vector<KEY>& key) { return get_data(pt::insert(key.data(), key.size()).second); }
 
-    class iterator : public __iterator<map, iterator>
+    class iterator : public internal::__iterator<map, iterator>
     {
     public:
-        iterator(const __base_t* base, int16_t index, entrylist_t& entries):
-            __iterator<map, iterator>(base, index), _entries(entries)
+        iterator(const internal::__base_t* base, int16_t index, entrylist_t& entries):
+            internal::__iterator<map, iterator>(base, index), _entries(entries)
         {}
         I index() const
         {

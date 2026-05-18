@@ -26,18 +26,19 @@
 #ifndef PTRIE_MAP_H
 #define PTRIE_MAP_H
 
-#include "ptrie.h"
+#include "ptrie_internal.hpp"
 
 namespace ptrie {
 
+namespace internal {
 #define SPTRIETPL \
     typename KEY, uint16_t HEAPBOUND, uint16_t SPLITBOUND, uint8_t BSIZE, size_t ALLOCSIZE, typename T, typename I
 #define SPTRIETPLA KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, T, I
 template <typename KEY = unsigned char, uint16_t HEAPBOUND = 17, uint16_t SPLITBOUND = 128, uint8_t BSIZE = 8,
           size_t ALLOCSIZE = (1024 * 64), typename T = void, typename I = size_t>
-class __set_stable : protected __ptrie<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, T, I, true>
+class __set_stable : protected internal::__ptrie<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, T, I, true>
 {
-    using pt = __ptrie<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, T, I, true>;
+    using pt = internal::__ptrie<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, T, I, true>;
     static_assert(std::is_integral_v<I>, "I (index-type) must be an integral");
 
 public:
@@ -60,10 +61,12 @@ public:
     std::vector<KEY> unpack(I index) const;
     void unpack(I index, std::vector<KEY>& destination) const;
 
-    class siterator : public __iterator<__set_stable, siterator>
+    class siterator : public internal::__iterator<__set_stable, siterator>
     {
     public:
-        siterator(const __base_t* base, int16_t index): __iterator<__set_stable, siterator>(base, index) {}
+        siterator(const internal::__base_t* base, int16_t index):
+            internal::__iterator<__set_stable, siterator>(base, index)
+        {}
         I index() const { return mem_load<I>(static_cast<const node_t*>(this->_node)->entries() + this->_index); }
     };
 
@@ -126,12 +129,13 @@ void __set_stable<SPTRIETPLA>::unpack(I index, std::vector<KEY>& dest) const
     auto node = find_metadata(index, bindex);
     return siterator(node, bindex).unpack(dest);
 }
+}  // namespace internal
 
 template <typename KEY = unsigned char, typename I = size_t, uint16_t HEAPBOUND = 17, uint16_t SPLITBOUND = 128,
           uint8_t BSIZE = 8, size_t ALLOCSIZE = (1024 * 64)>
-class set_stable : private __set_stable<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, void, I>
+class set_stable : private internal::__set_stable<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, void, I>
 {
-    using pt = __set_stable<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, void, I>;
+    using pt = internal::__set_stable<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, void, I>;
     using iterator = typename pt::siterator;
 
 public:
