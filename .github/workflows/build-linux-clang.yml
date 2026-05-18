@@ -31,13 +31,13 @@ jobs:
       CMAKE_GENERATOR: "Ninja Multi-Config"
       CTEST_OUTPUT_ON_FAILURE: 1
       PTRIE_TAG: ${{ github.head_ref || github.ref_name }}
-      CC: clang
-      CXX: clang++
+      CC: clang-20
+      CXX: clang++-20
     steps:
       - name: Install Build Tools
         run: |
           sudo apt-get -qq update
-          sudo apt-get -qq install cmake ninja-build clang libsparsehash-dev
+          sudo apt-get -qq install cmake ninja-build clang-20 libsparsehash-dev
       - name: Setup Runner Environment
         run: |
           uname -a
