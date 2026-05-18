@@ -26,13 +26,14 @@ jobs:
   tidy:
     runs-on: ubuntu-latest
     env:
+      CMAKE_GENERATOR: "Ninja Multi-Config"
       CC: clang
       CXX: clang++
     steps:
       - name: Install Build Tools
         run: |
           sudo apt-get -qq update
-          sudo apt-get -qq install cmake ninja-build clang llvm clang-format cmake-format clang-tidy
+          sudo apt-get -qq install cmake ninja-build clang llvm libsparsehash-dev clang-format cmake-format clang-tidy
       - uses: actions/checkout@v5
       - name: C and C++ Code Formatting
         run: find . -iregex '.*\.\(c\|h\|cpp\|hpp\|cc\|hh\|cxx\|hxx\)$' | xargs clang-format -n -Werror
