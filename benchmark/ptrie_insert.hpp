@@ -13,7 +13,7 @@ namespace ptrie {
 inline binarywrapper_t rand_data(size_t seed, size_t maxsize, size_t minsize = sizeof(size_t), size_t mv = 256)
 {
     assert(minsize >= sizeof(size_t));
-    auto gen = std::default_random_engine{seed};
+    auto gen = std::default_random_engine(seed);
     auto size_dist = std::uniform_int_distribution{minsize, maxsize};
     const size_t size = size_dist(gen);
 
@@ -64,7 +64,7 @@ struct equal_o
 template <typename T>
 void set_insert(T& set, const Settings& s)
 {
-    auto read_generator = std::default_random_engine{s.seed};
+    auto read_generator = std::default_random_engine(s.seed);
     auto read_dist = std::normal_distribution<double>{s.read_rate, s.read_rate / 2.0};
     auto read_el = std::uniform_int_distribution<size_t>{0, s.elements};
 
@@ -112,7 +112,7 @@ void set_insert(T& set, const Settings& s)
 template <typename T>
 void set_insert_ptrie(T& set, const Settings& s)
 {
-    auto read_generator = std::default_random_engine{s.seed};
+    auto read_generator = std::default_random_engine(s.seed);
     auto read_dist = std::normal_distribution<double>{s.read_rate, s.read_rate / 2.0};
     auto read_el = std::uniform_int_distribution<size_t>{0, s.elements};
 
