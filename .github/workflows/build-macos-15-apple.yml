@@ -38,7 +38,7 @@ jobs:
       - name: Install Build Tools
         run: |
           brew update
-          brew install cmake ninja llvm google-sparsehash
+          brew install cmake ninja google-sparsehash
       - name: Setup Runner Environment
         run: |
           uname -a
@@ -47,9 +47,6 @@ jobs:
           echo "CMAKE_BUILD_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
           echo "CTEST_TEST_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
           echo "CTEST_TEST_LOAD=$CORES" >> $GITHUB_ENV
-          LLVM_PREFIX=$(brew --prefix llvm)
-          PATH="$LLVM_PREFIX/bin:$PATH"
-          echo "PATH=$PATH" >> $GITHUB_ENV
       - uses: actions/checkout@v5
       - name: Configure Multi-Config with Sanitizers
         run: cmake --preset multi-san -DBENCHMARK_PLOTS=OFF
