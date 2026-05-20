@@ -194,6 +194,74 @@ TEST_CASE("Dealloc")
     }
 }
 
+TEST_CASE("New Node At Depth One")
+{
+    // Exercises ptrie_internal.hpp:1252 where node = new node_t{} is allocated
+    // with byte == 1, i.e. base == fwd at a depth-1 fwd node.
+    //
+    // Setup (SPLITBOUND=6, HEAPBOUND=17, BSIZE=8):
+    //   Six 128-byte keys share the same root slot (lengthc[1]=0) and fill one
+    //   leaf.  In split_fwd at p_byte=0, each key has f[0]=0x80 (low byte of
+    //   length=128), so b = 0x80 & 0x80 = 0x80 > 0: all go to the HIGH
+    //   partition (lcnt=0).  split_fwd therefore places the existing leaf in
+    //   fwd_n->_children[128..255] and stores self-loops in
+    //   fwd_n->_children[0..127].
+    //
+    //   The 7th insert has length 5 (nitemsize = 5-1 = 4 < HEAPBOUND=17,
+    //   copyval=true).  fast_forward traverses root -> fwd_n and finds
+    //   fwd_n->_children[5] = fwd_n (self-loop), so base == fwd, byte == 1.
+    //   The do-while at line 1265 finds an occupied sibling in the high half
+    //   and narrows min=max=5; the for loop at 1281 runs once and stores the
+    //   new node at fwd_n->_children[5].  ASAN confirms the node is freed.
+    auto set = ptrie::set<uchar, 17, 6>{};
+
+    for (uchar i = 0; i < 6; ++i) {
+        const auto key = std::vector<uchar>(128, i);
+        REQUIRE(set.insert(key.data(), key.size()).first);
+    }
+    const auto short_key = std::vector<uchar>(5, static_cast<uchar>(0x42));
+    REQUIRE(set.insert(short_key.data(), short_key.size()).first);
+
+    for (uchar i = 0; i < 6; ++i) {
+        const auto key = std::vector<uchar>(128, i);
+        REQUIRE(set.exists(key.data(), key.size()).first);
+    }
+    REQUIRE(set.exists(short_key.data(), short_key.size()).first);
+}
+
+TEST_CASE("Split Node Both Partitions")
+{
+    // Exercises split_node at ptrie_internal.hpp:1154 where h_node is allocated
+    // because both the low and high partitions of a split are non-empty.
+    //
+    // How the mixed split arises (SPLITBOUND=6, HEAPBOUND=17, BSIZE=8):
+    //   The six keys all have lengthc[1]=0 so they share one root leaf.
+    //   The 6th insert (length-4, nitemsize=4 < HEAPBOUND, copyval=true)
+    //   brings count to SPLITBOUND and triggers split_node at p_byte=0.
+    //   At p_byte=0 all keys have f[1]=0 so every split bit is 0; after 8
+    //   single-partition recursions split_fwd fires and creates a fwd at
+    //   p_byte=0 with node->_type reset to 1.  The recursive split_node at
+    //   p_byte=1 (r_pos=1) tests bit 6 of f[1]=length:
+    //     length-64 keys: f[1]=0x40, (0x40 & _masks[1]=0x40) > 0 -> HIGH (hcnt=5)
+    //     length-4  key:  f[1]=0x04, (0x04 & 0x40) == 0           -> LOW  (lcnt=1)
+    //   Both non-zero => else-branch => h_node = new node_t{} (line 1154).
+    //   h_node is linked into jumppar->_children; ASAN confirms it is freed.
+    auto set = ptrie::set<uchar, 17, 6>{};
+
+    for (uchar i = 0; i < 5; ++i) {
+        const auto key = std::vector<uchar>(64, i);
+        REQUIRE(set.insert(key.data(), key.size()).first);
+    }
+    const auto short_key = std::vector<uchar>(4, static_cast<uchar>(0x99));
+    REQUIRE(set.insert(short_key.data(), short_key.size()).first);
+
+    for (uchar i = 0; i < 5; ++i) {
+        const auto key = std::vector<uchar>(64, i);
+        REQUIRE(set.exists(key.data(), key.size()).first);
+    }
+    REQUIRE(set.exists(short_key.data(), short_key.size()).first);
+}
+
 TEST_CASE("Heap Key Lifecycle")
 {
     // Exercises ptrie_internal.hpp:1386 where nenc_size >= HEAPBOUND causes the
