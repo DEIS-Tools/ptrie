@@ -281,3 +281,31 @@ TEST_CASE("Heap Key Lifecycle")
         10);
     // Destructor of set frees the 10 heap-allocated key suffixes.
 }
+
+TEST_CASE("Iterator Dereference Value")
+{
+    // Exercises iterator_base::operator* at ptrie_internal.hpp:197 via
+    // write_data<..., int, 1, 8, 17>.  clang-tidy flags operator* as a
+    // potential uninitialized return: in the ps=1 branch of build_path,
+    // size is recovered as (stored_uint16 >> 8), and the analyzer admits
+    // size=0 in its symbolic model.  With size=0 both writes inside
+    // `if (ps > 0)` are guarded by `pos < size` which evaluates false,
+    // leaving *dest unwritten and key returned as garbage (line 197).
+    //
+    // In practice the stored uint16 for an int key encodes the key length
+    // (always 4), so (stored >> 8) == 0x04 after one fwd level and write_data
+    // always writes all four key bytes.  Inserting 200 ints (> default
+    // SPLITBOUND=129) forces two fwd splits, producing nodes at ps=2 that
+    // exercise the write_data code path.  UBSAN catches any garbage read via
+    // the set.exists() call on each dereferenced value.
+    auto set = ptrie::set<int>{};
+    constexpr int N = 200;
+    for (int i = 0; i < N; ++i)
+        set.insert(i);
+    size_t cnt = 0;
+    for (auto&& value : set) {
+        CHECK(set.exists(value).first);
+        ++cnt;
+    }
+    CHECK(cnt == size_t{N});
+}
