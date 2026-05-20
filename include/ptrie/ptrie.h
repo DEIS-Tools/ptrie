@@ -26,8 +26,7 @@
 #define PTRIE_H
 
 #include "ptrie_internal.hpp"
-
-#include <fstream>
+#include "ptrie_memory.hpp"
 
 // direct 2lvl indexing in chunks of ~ 2^32
 // takes up ~ 512k (256k on 32bit) for the index.
@@ -38,15 +37,15 @@ namespace ptrie {
 
 template <typename KEY = uchar, uint16_t HEAPBOUND = 17, uint16_t SPLITBOUND = 129, uint8_t BSIZE = 8,
           size_t ALLOCSIZE = (1024 * 64)>
-class set : internal::__ptrie<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, void, size_t, false>
+class set : internal::ptrie_base<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, void, size_t, false>
 {
-    using pt = internal::__ptrie<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, void, size_t, false>;
+    using pt = internal::ptrie_base<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, void, size_t, false>;
 
 public:
     using pt::erase;
     using pt::exists;
     using pt::insert;
-    using typename pt::__ptrie;
+    using typename pt::ptrie_base;
 
     using node_t = typename pt::node_t;
     using fwdnode_t = typename pt::fwdnode_t;
@@ -56,10 +55,10 @@ public:
     static constexpr auto bdiv = pt::bdiv;
     static constexpr auto heapbound = HEAPBOUND;
 
-    class iterator : public internal::__iterator<set, iterator>
+    class iterator : public internal::iterator_base<set, iterator>
     {
     public:
-        using internal::__iterator<set, iterator>::__iterator;
+        using internal::iterator_base<set, iterator>::iterator_base;
     };
 
     iterator begin() const { return ++iterator(&this->_root, 0); }

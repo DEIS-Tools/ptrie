@@ -32,10 +32,10 @@ namespace ptrie {
 
 template <typename KEY, typename T, uint16_t HEAPBOUND = 17, uint16_t SPLITBOUND = 128, uint8_t BSIZE = 8,
           size_t ALLOCSIZE = (1024 * 64), typename I = size_t>
-class map : internal::__set_stable<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, T, I>
+class map : internal::set_stable_base<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, T, I>
 {
     static_assert(!std::is_same_v<void, T>, "T (map-to-type) must not be void");
-    using pt = internal::__set_stable<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, T, I>;
+    using pt = internal::set_stable_base<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, T, I>;
     using entrylist_t = typename pt::entrylist_t;
 
 public:
@@ -44,7 +44,7 @@ public:
     using pt::insert;
     using pt::size;
     using pt::unpack;
-    using typename pt::__set_stable;
+    using typename pt::set_stable_base;
 
     using node_t = typename pt::node_t;
     using fwdnode_t = typename pt::fwdnode_t;
@@ -60,29 +60,29 @@ public:
     T& operator[](std::pair<const KEY*, size_t> key) { return get_data(pt::insert(key.first, key.second).second); }
     T& operator[](const std::vector<KEY>& key) { return get_data(pt::insert(key.data(), key.size()).second); }
 
-    class iterator : public internal::__iterator<map, iterator>
+    class iterator : public internal::iterator_base<map, iterator>
     {
     public:
-        iterator(const internal::__base_t* base, int16_t index, entrylist_t& entries):
-            internal::__iterator<map, iterator>(base, index), _entries(entries)
+        iterator(const internal::base_t* base, int16_t index, entrylist_t& entries):
+            internal::iterator_base<map, iterator>{base, index}, _entries{&entries}
         {}
         I index() const
         {
             return mem_load<I>(static_cast<const typename pt::node_t*>(this->_node)->entries() + this->_index);
         }
-        T& operator*() const { return _entries[index()]._data; }
-        T& operator->() const { return _entries[index()]._data; }
+        T& operator*() const { return (*_entries)[index()]._data; }
+        T& operator->() const { return (*_entries)[index()]._data; }
         /* TODO: implement proper dereferencing interface just like std::map
         std::pair<const key_t,T&> operator*() const
         {
-            auto res = std::pair<const key_t,T&>{key_t{}, _entries[index()]._data};
+            auto res = std::pair<const key_t,T&>{key_t{}, (*_entries)[index()]._data};
             unpack(&res.first);
             return res;
         }
         std::pair<const key_t,T&> operator->() const { return operator*(); }
         */
     private:
-        entrylist_t& _entries;
+        entrylist_t* _entries;
     };
 
     friend class iterator;

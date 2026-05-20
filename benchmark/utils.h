@@ -24,6 +24,21 @@
 
 #include <chrono>
 
+#include <cstdlib>  // srand, rand
+
+template <typename T>
+static auto rand_gen(unsigned int seed)
+{
+    srand(seed);                                        // NOLINT(cert-msc30-c,cert-msc50-cpp)
+    return [] { return static_cast<T>(std::rand()); };  // NOLINT(cert-msc30-c,cert-msc50-cpp,concurrency-mt-unsafe)
+}
+
+template <typename T>
+static auto rand_gen()
+{
+    return [] { return static_cast<T>(std::rand()); };  // NOLINT(cert-msc30-c,cert-msc50-cpp,concurrency-mt-unsafe)
+}
+
 template <typename T>
 T read_arg(T default_value, const char* arg, const char* name)
 {

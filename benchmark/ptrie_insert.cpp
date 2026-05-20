@@ -32,7 +32,6 @@
 
 #include <cstdint>  // uint64_t
 
-using ptrie::uchar;
 using ptrie::wrapper_t;
 using ptrie::hasher_o;
 using ptrie::equal_o;

@@ -18,10 +18,15 @@
 
 #include "utils.h"
 #include <ptrie/ptrie.h>
+#include <ptrie/ptrie_memory.hpp>
 
 #include <doctest/doctest.h>
 
 #include <vector>
+#include <limits>
+
+#include <cstring>  // memcpy
+#include <cstddef>  // size_t
 
 TEST_SUITE_BEGIN("PTrie Set");
 
@@ -52,7 +57,7 @@ TEST_CASE("Heap Test")
         set,
         [](size_t i) {
             auto data = std::vector<uchar>(sizeof(size_t));
-            memcpy(std::data(data), &i, sizeof(size_t));
+            std::memcpy(std::data(data), &i, sizeof(size_t));
             return data;
         },
         1024);
@@ -65,17 +70,17 @@ TEST_CASE("Insert Mill")
         set,
         [](size_t i) {
             auto data = std::vector<uchar>(sizeof(size_t));
-            memcpy(std::data(data), &i, sizeof(size_t));
+            std::memcpy(std::data(data), &i, sizeof(size_t));
             return data;
         },
-        1024 * 1024);
+        1024_uz * 1024);
 }
 
 TEST_CASE("Pseudo Rand1")
 {
     for (size_t seed = 0; seed < 10; ++seed) {
         auto set = ptrie::set<>{};
-        try_insert(set, [seed](size_t i) { return rand_data(seed + i, 256); }, 1024 * 10);
+        try_insert(set, [seed](size_t i) { return rand_data(seed + i, 256); }, 1024_uz * 10u);
     }
 }
 
@@ -83,7 +88,7 @@ TEST_CASE("Pseudo Rand2")
 {
     for (size_t seed = 0; seed < 10; ++seed) {
         auto set = ptrie::set<>{};
-        try_insert(set, [seed](size_t i) { return rand_data(seed + i, 16); }, 1024 * 10);
+        try_insert(set, [seed](size_t i) { return rand_data(seed + i, 16); }, 1024_uz * 10u);
     }
 }
 
@@ -91,18 +96,18 @@ TEST_CASE("Pseudo Rand Split Heap")
 {
     for (size_t seed = 42; seed < (42 + 10); ++seed) {
         auto set = ptrie::set<uchar, sizeof(size_t) + 1, 6>{};
-        try_insert(set, [seed](size_t i) { return rand_data(seed + i, 16); }, 1024 * 10);
+        try_insert(set, [seed](size_t i) { return rand_data(seed + i, 16); }, 1024_uz * 10u);
     }
 }
 
 TEST_CASE("Simple Copy")
 {
     auto set = ptrie::set<size_t>{};
-    for (size_t i = 0; i < 100000; ++i) {
+    for (size_t i = 0; i < 100000; ++i)
         set.insert(i);
-    }
     {
-        const auto cpy = set;
+        // NOLINTNEXTLINE(performance-unnecessary-copy-initialization)
+        const auto cpy = set;  // copy on purpose
         size_t i = 0;
         for (; i < 100000; ++i)
             REQUIRE(cpy.exists(i).first);
@@ -113,14 +118,17 @@ TEST_CASE("Simple Copy")
 
 TEST_CASE("Simple Iterator Invariant")
 {
-    auto set = ptrie::set<size_t>{};
+    const auto set = ptrie::set<size_t>{};
     REQUIRE(set.begin() == set.end());
 }
 
 TEST_CASE("Single Iterator")
 {
-    auto set = ptrie::set<size_t>{};
-    set.insert(1);
+    const auto set = [] {
+        auto res = ptrie::set<size_t>{};
+        res.insert(1);
+        return res;
+    }();
     auto b = set.begin();
     auto e = set.end();
     REQUIRE(b != e);
@@ -136,9 +144,12 @@ TEST_CASE("Single Iterator")
 
 TEST_CASE("Simple Iterator")
 {
-    auto set = ptrie::set<size_t>{};
-    for (size_t i = 0; i < 100000; ++i)
-        set.insert(i);
+    const auto set = [] {
+        auto res = ptrie::set<size_t>{};
+        for (size_t i = 0; i < 100000; ++i)
+            res.insert(i);
+        return res;
+    }();
     size_t cnt = 0;
     for (auto b = set.begin(); b != set.end(); ++b)
         ++cnt;
@@ -147,19 +158,25 @@ TEST_CASE("Simple Iterator")
 
 TEST_CASE("Ranged-for-loop")
 {
-    auto set = ptrie::set<int>{};
-    for (auto i = -127; i < 128; ++i)
-        if (i % 3 == 0)
-            set.insert(i);
+    const auto set = [] {
+        auto res = ptrie::set<int>{};
+        for (auto i = -127; i < 128; ++i)
+            if (i % 3 == 0)
+                res.insert(i);
+        return res;
+    }();
     for (auto&& value : set)
         CHECK(value % 3 == 0);
 }
 
 TEST_CASE("Simple RIterator")
 {
-    auto set = ptrie::set<size_t>{};
-    for (size_t i = 0; i < 100000; ++i)
-        set.insert(i);
+    const auto set = [] {
+        auto res = ptrie::set<size_t>{};
+        for (size_t i = 0; i < 100000; ++i)
+            res.insert(i);
+        return res;
+    }();
     size_t cnt = 0;
     for (auto b = --set.end(); b != set.begin(); --b)
         ++cnt;

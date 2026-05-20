@@ -20,8 +20,9 @@
 
 #include "utils.h"
 
-#include <ptrie/ptrie.h>
 #include <ptrie/ptrie_map.h>
+#include <ptrie/ptrie_stable.h>
+#include <ptrie/ptrie.h>
 
 #include <sparsehash/dense_hash_set>
 #include <sparsehash/sparse_hash_set>
@@ -31,16 +32,20 @@
 #include <set>
 #include <unordered_set>
 #include <vector>
+#include <limits>
+#include <numeric>    // iota
+#include <algorithm>  // shuffle
+#include <exception>
 
-#include <cstdlib>
+#include <cstdlib>  // rand
+#include <cstdint>  // uint32_t
 
 int main(int argc, const char** argv)
 try {
     if (argc < 3 || argc > 8) {
-        std::cerr << "Wrong number of arguments, expected 2-8" << std::endl;
-        std::cout << "Usage: (ptrie|std|sparse|dense) (number elements) ?(seed) ?(delete ratio) ?(read rate)"
-                  << std::endl;
-        std::exit(EXIT_FAILURE);
+        std::cerr << "Wrong number of arguments, expected 2-8\n";
+        std::cout << "Usage: (ptrie|std|sparse|dense) (number elements) ?(seed) ?(delete ratio) ?(read rate)\n";
+        return 1;
     }
     auto settings = cli_settings(argc, argv);
     auto order = std::vector<size_t>(sizeof(size_t) * 8);
@@ -76,7 +81,7 @@ try {
         const auto sw = Timer{};
         set_insert(set, settings, order);
     } else if (settings.type == "dense") {
-        settings.seed = std::rand();
+        settings.seed = std::random_device{}();
         auto set = google::dense_hash_set<size_t, hasher_o, equal_o>(settings.elements / 10);
         const auto sw = Timer{};
         set.set_empty_key(reorder(0, order, settings.seed));
@@ -88,7 +93,9 @@ try {
             "ERROR IN TYPE, ALLOWED VALUES: ptrie, ptrie-stable, ptrie-map, std, sparse, dense, tbb"};
     return 0;
 } catch (std::exception& e) {
-    std::cerr << e.what() << std::endl;
+    std::cerr << e.what() << "\n";
+    return 1;
 } catch (...) {
-    std::cerr << "Caught unknown exception" << std::endl;
+    std::cerr << "Caught unknown exception\n";
+    return 1;
 }

@@ -19,11 +19,18 @@
 #include "utils.h"
 
 #include <ptrie/ptrie_map.h>
+#include <ptrie/ptrie_memory.hpp>
 
 #include <doctest/doctest.h>
 
+#include <iostream>
 #include <vector>
 #include <map>
+#include <type_traits>  // std::has_unique_object_representations_v
+
+#include <cstdint>  // size_t, int32_t
+#include <cstdlib>  // srand, rand
+#include <cassert>
 
 TEST_SUITE_BEGIN("PTrie Map");
 
@@ -34,7 +41,7 @@ TEST_CASE("Pseudo Rand1")
     for (size_t seed = 314; seed < (314 + 10); ++seed) {
         auto set = ptrie::map<ptrie::uchar, size_t>{};
 
-        for (size_t i = 0; i < 1024 * 10; ++i) {
+        for (size_t i = 0; i < 1024_uz * 10; ++i) {
             const auto data = rand_data(i + seed, 20);
             const auto [res, id] = set.insert(std::data(data), std::size(data));
             CHECK(res);
@@ -43,7 +50,7 @@ TEST_CASE("Pseudo Rand1")
 
         // let us unwrap everything and check that it is there!
 
-        for (size_t i = 0; i < 1024 * 10; ++i) {
+        for (size_t i = 0; i < 1024_uz * 10; ++i) {
             const auto data = rand_data(i + seed, 20);
             const auto [res, id] = set.exists(std::data(data), std::size(data));
             CHECK(res);
@@ -54,16 +61,16 @@ TEST_CASE("Pseudo Rand1")
 
 TEST_CASE("Pseudo Rand1 Key")
 {
+    using Int = int32_t;
     constexpr auto mx = 5;
-    auto data = std::vector<int32_t>(mx);
-    auto unpack = std::vector<int32_t>(mx);
+    auto data = std::vector<Int>(mx);
+    auto unpack = std::vector<Int>(mx);
     for (size_t seed = 314; seed < (314 + 10); ++seed) {
-        auto set = ptrie::map<int32_t, size_t>{};
-
-        for (size_t i = 0; i < 1024 * 10; ++i) {
-            srand(seed + i);
+        auto set = ptrie::map<Int, size_t>{};
+        for (size_t i = 0; i < 1024_uz * 10; ++i) {
+            auto gen = rand_gen<Int>(seed + i);
             for (auto& d : data)
-                d = rand();
+                d = gen();
             const auto [res, id] = set.insert(std::data(data), mx);
             CHECK(res);
             set.get_data(id) = i;
@@ -74,10 +81,10 @@ TEST_CASE("Pseudo Rand1 Key")
 
         // let us unwrap everything and check that it is there!
 
-        for (size_t i = 0; i < 1024 * 10; ++i) {
-            srand(seed + i);
+        for (size_t i = 0; i < 1024_uz * 10; ++i) {
+            auto gen = rand_gen<Int>(seed + i);
             for (auto& d : data)
-                d = rand();
+                d = gen();
             const auto [res, id] = set.exists(std::data(data), mx);
             CHECK(res);
             CHECK(set.get_data(id) == i);
@@ -90,9 +97,9 @@ TEST_CASE("Pseudo Rand1 Key")
 
 TEST_CASE("Pseudo Rand Split Heap")
 {
-    for (size_t seed = 512; seed < (512 + 10); ++seed) {
+    for (size_t seed = 512; seed < 512_uz + 10; ++seed) {
         auto set = ptrie::map<uchar, size_t, sizeof(size_t) + 1, 6>{};
-        for (size_t i = 0; i < 1024 * 10; ++i) {
+        for (size_t i = 0; i < 1024_uz * 10; ++i) {
             const auto data = rand_data(i + seed, 20);
             const auto [res, id] = set.insert(std::data(data), std::size(data));
             CHECK(res);
@@ -101,7 +108,7 @@ TEST_CASE("Pseudo Rand Split Heap")
 
         // let us unwrap everything and check that it is there!
 
-        for (size_t i = 0; i < 1024 * 10; ++i) {
+        for (size_t i = 0; i < 1024_uz * 10; ++i) {
             const auto data = rand_data(i + seed, 20);
             const auto [res, id] = set.exists(std::data(data), std::size(data));
             CHECK(res);
@@ -112,21 +119,19 @@ TEST_CASE("Pseudo Rand Split Heap")
     }
 }
 
+/// Input type for byte_iterator which contains padding.
 struct type_t
 {
     char _a;
     int _b;
     char _c;
     int _d;
-    bool operator==(const type_t& other) const
-    {
-        return _a == other._a && _b == other._b && _c == other._c && _d == other._d;
-    }
+    bool operator==(const type_t& other) const noexcept = default;
     static type_t rand(unsigned int seed)
     {
         auto char_gen = rand_gen<char>();
         auto int_gen = rand_gen<int>(seed);
-        return {char_gen(), int_gen(), char_gen(), int_gen()};
+        return {._a = char_gen(), ._b = int_gen(), ._c = char_gen(), ._d = int_gen()};
     }
     static std::vector<type_t> rand_vec(unsigned int seed, std::size_t size)
     {
@@ -134,7 +139,7 @@ struct type_t
         auto int_gen = rand_gen<int>(seed);
         auto res = std::vector<type_t>(size);
         for (auto& t : res)
-            t = type_t{char_gen(), int_gen(), char_gen(), int_gen()};
+            t = type_t{._a = char_gen(), ._b = int_gen(), ._c = char_gen(), ._d = int_gen()};
         return res;
     }
     friend std::ostream& operator<<(std::ostream& os, const type_t& el)
@@ -142,9 +147,10 @@ struct type_t
         return os << +el._a << ", " << el._b << ", " << +el._c << ", " << el._d;
     }
 };
+static_assert(!std::has_unique_object_representations_v<type_t>);
 
 template <>
-struct ptrie::byte_iterator<type_t>
+struct ptrie::byte_iterator<type_t>  // NOLINT(misc-include-cleaner)
 {
     static constexpr uchar& access(type_t* data, size_t id)
     {
@@ -153,13 +159,13 @@ struct ptrie::byte_iterator<type_t>
         assert(id < element_size());
         id = id % element_size();
         switch (id) {
-        case 0: return (uchar&)data[el]._a;
+        case 0: return *as_array(&data[el]._a);
         case 1:
         case 2:
         case 3:
-        case 4: return ((uchar*)&data[el]._b)[id - 1];
-        case 5: return (uchar&)data[el]._c;
-        default: return ((uchar*)&data[el]._d)[id - 6];
+        case 4: return as_array(&data[el]._b)[id - 1];
+        case 5: return *as_array(&data[el]._c);
+        default: return as_array(&data[el]._d)[id - 6];
         }
     }
 
@@ -168,18 +174,21 @@ struct ptrie::byte_iterator<type_t>
         return access(const_cast<type_t*>(data), id);
     }
 
-    static constexpr size_t element_size() { return sizeof(char) * 2 + sizeof(int) * 2; }
+    static constexpr size_t element_size()
+    {
+        return sizeof(type_t::_a) + sizeof(type_t::_b) + sizeof(type_t::_c) + sizeof(type_t::_d);
+    }
 
     static constexpr bool continious() { return false; }
 };
 
 TEST_CASE("Complex Type1")
 {
-    for (size_t seed = 1337; seed < (1337 + 10); ++seed) {
+    for (size_t seed = 1337; seed < 1337_uz + 10; ++seed) {
         auto cont = ptrie::map<type_t, size_t>{};
         auto ids = std::vector<size_t>{};
         auto scratchpad = type_t{};
-        for (size_t i = 0; i < 1024 * 10; ++i) {
+        for (size_t i = 0; i < 1024_uz * 10; ++i) {
             const auto test = type_t::rand(i + seed);
             cont[test] = i;
             CHECK(cont[test] == i);
@@ -194,7 +203,7 @@ TEST_CASE("Complex Type1")
         }
 
         // let us unwrap everything and check that it is there!
-        for (size_t i = 0; i < 1024 * 10; ++i) {
+        for (size_t i = 0; i < 1024_uz * 10; ++i) {
             const auto test = type_t::rand(i + seed);
             CHECK(cont[test] == i);
             const auto size = cont.unpack(ids[i], &scratchpad);
@@ -211,11 +220,14 @@ TEST_CASE("Complex Type1")
 
 TEST_CASE("Simple Iterator")
 {
-    std::cerr << "SimpleIterator" << std::endl;
+    std::cerr << "SimpleIterator\n";
     constexpr size_t x = 10000;
-    auto set = ptrie::map<size_t, size_t>{};
-    for (size_t i = 0; i < x; ++i)
-        set[i] = i;
+    const auto set = [] {
+        auto res = ptrie::map<size_t, size_t>{};
+        for (size_t i = 0; i < x; ++i)
+            res[i] = i;
+        return res;
+    }();
     size_t cnt = 0;
     for (auto b = set.begin(); b != set.end(); ++b) {
         REQUIRE(b.index() == *b);

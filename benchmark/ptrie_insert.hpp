@@ -18,7 +18,7 @@ inline binarywrapper_t rand_data(size_t seed, size_t maxsize, size_t minsize = s
     const size_t size = size_dist(gen);
 
     auto data_dist = std::uniform_int_distribution<size_t>{0, mv - 1};
-    auto data = binarywrapper_t{Bits{size * BYTE_BITS}};
+    auto data = binarywrapper_t{BitSize<>::of_bytes(size)};
     // fill in random data
     for (size_t j = 0; j < size; ++j)
         data.raw()[j] = static_cast<uchar>(data_dist(gen));

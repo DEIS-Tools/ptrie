@@ -18,16 +18,20 @@
 
 #include "utils.h"
 #include <ptrie/ptrie_stable.h>
+#include <ptrie/ptrie_memory.hpp>
 
 #include <doctest/doctest.h>
 
 #include <vector>
+#include <algorithm>  // std::max
+
+#include <cstddef>  // size_t
 
 TEST_SUITE_BEGIN("PTrie Delete");
 
 using ptrie::uchar;
 
-auto one_uchar_gen = [](size_t i) { return std::vector{static_cast<uchar>(i)}; };
+const auto one_uchar_gen = [](size_t i) { return std::vector{static_cast<uchar>(i)}; };
 
 TEST_CASE("Insert Delete Byte")
 {
@@ -225,7 +229,7 @@ TEST_CASE("Insert Delete Large2")
         CHECK_MESSAGE(!exists1, "FAILED ON DELETE, STILL EXISTS " << i);
         for (int j = std::max(0, i - 100); j < std::min(i + 100, max); ++j) {
             int s2 = 0;
-            if (j % 2)
+            if (j % 2 != 0)
                 s2 = ((max / 2) - 1) - (j / 2);
             else
                 s2 = (max / 2) + (j / 2);
