@@ -192,7 +192,7 @@ public:
 
     key_t operator*() const
     {
-        key_t key;
+        auto key = key_t{};
         unpack(&key);
         return key;
     }
