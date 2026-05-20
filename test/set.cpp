@@ -279,6 +279,32 @@ TEST_CASE("Heap Key Lifecycle")
     // Destructor of set frees the 10 heap-allocated key suffixes.
 }
 
+TEST_CASE("New Node Count Field Init")
+{
+    // Exercises ptrie_internal.hpp:1293 where node->_count + 1 is evaluated
+    // on a freshly-allocated node_t.  clang-tidy flags this as a garbage-value
+    // operation because its symbolic model treats new node_t{} (line 1252) as
+    // leaving _count uninitialized — it does not track the in-class initializer
+    // `uint16_t _count = 0` at line 321.  The do-while at 1265 exits with
+    // stop=true (an occupied sibling was found), and the analyzer then assumes
+    // the for loop at 1281 does not run (symbolic min > max), so nothing between
+    // the allocation and line 1293 is seen to write _count.
+    //
+    // In practice new node_t{} zero-initialises _count via the in-class
+    // initializer, nbucketcount is always 1 on a fresh node, and the bucket is
+    // allocated and filled correctly.  ASAN/UBSAN on the debug-san preset catch
+    // any arithmetic overflow or out-of-bounds access that would result from a
+    // genuinely garbage _count.
+    //
+    // Every insert where the target fwd slot is a self-loop (base==fwd) takes
+    // this path; here we drive it with the first insert into an empty set and
+    // then verify the element can be found and is not re-inserted as a duplicate.
+    auto set = ptrie::set<size_t>{};
+    REQUIRE(set.insert(size_t{42}).first);
+    REQUIRE(set.exists(size_t{42}).first);
+    REQUIRE(!set.insert(size_t{42}).first);
+}
+
 TEST_CASE("Iterator Dereference Value")
 {
     // Exercises iterator_base::operator* at ptrie_internal.hpp:197 via
