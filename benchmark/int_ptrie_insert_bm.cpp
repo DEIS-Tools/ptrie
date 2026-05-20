@@ -23,8 +23,8 @@
 
 // NOLINTBEGIN(misc-use-anonymous-namespace,clang-analyzer-deadcode.DeadStores,cert-err58-cpp)
 
-static size_t seed =
-    std::random_device{}();  // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
+// NOLINTNEXTLINE(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
+static size_t seed = std::random_device{}();
 constexpr double deletes = 0.0;
 constexpr double read_rate = 2.0;
 

@@ -275,10 +275,7 @@ TEST_CASE("Heap Key Lifecycle")
     // Inserting 10 distinct keys drives the heap path at b_index 0 through 9.
     constexpr size_t key_len = 20;
     auto set = ptrie::set<>{};
-    try_insert(
-        set,
-        [](size_t i) { return std::vector<uchar>(key_len, static_cast<uchar>(i)); },
-        10);
+    try_insert(set, [](size_t i) { return std::vector<uchar>(key_len, static_cast<uchar>(i)); }, 10);
     // Destructor of set frees the 10 heap-allocated key suffixes.
 }
 
