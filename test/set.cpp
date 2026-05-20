@@ -193,3 +193,23 @@ TEST_CASE("Dealloc")
         set.insert(tmp, i);
     }
 }
+
+TEST_CASE("Heap Key Lifecycle")
+{
+    // Exercises ptrie_internal.hpp:1386 where nenc_size >= HEAPBOUND causes the
+    // key suffix to be heap-allocated via new_uchar and its raw pointer to be
+    // embedded inside the node bucket via mem_store (line 1396).  The destructor
+    // must recover every such allocation; ASAN on the debug-san preset will catch
+    // any leak.  Keys of 20 bytes exceed the default HEAPBOUND of 17.
+    //
+    // All 20-byte keys share the same root fwd-slot (the second byte of the
+    // encoded length is 0x00 for lengths 0-255), so they land in one leaf node.
+    // Inserting 10 distinct keys drives the heap path at b_index 0 through 9.
+    constexpr size_t key_len = 20;
+    auto set = ptrie::set<>{};
+    try_insert(
+        set,
+        [](size_t i) { return std::vector<uchar>(key_len, static_cast<uchar>(i)); },
+        10);
+    // Destructor of set frees the 10 heap-allocated key suffixes.
+}
