@@ -35,7 +35,7 @@ jobs:
       - name: Install Build Tools
         run: |
           sudo apt-get -qq update
-          sudo apt-get -qq install cmake ninja-build g++ libsparsehash-dev
+          sudo apt-get -qq install cmake ninja-build g++ libsparsehash-dev clang-format-20 clang-tidy-20
       - name: Setup Runner Environment
         run: |
           uname -a
@@ -45,12 +45,16 @@ jobs:
           echo "CTEST_TEST_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
           echo "CTEST_TEST_LOAD=$CORES" >> $GITHUB_ENV
       - uses: actions/checkout@v5
+      - name: Code Formatting
+        run: find . -iregex '.*\.\(c\|h\|cpp\|hpp\|cc\|hh\|cxx\|hxx\)$' | xargs clang-format-20 -n -Werror
       - name: Configure Multi-Config with Sanitizers
         run: cmake --preset multi-san -DBENCHMARK_PLOTS=OFF
       - name: Build Debug with Sanitizers
         run: cmake --build --preset debug-san
       - name: Test Debug with Sanitizers
         run: ctest --preset debug-san
+      - name: Tidy
+        run: run-clang-tidy-20 -p build-multi-san -header-filter="$PWD/(include|src|test|benchmark)/.*" -source-filter="$PWD/(src|test|benchmark)/.*"
 #      - name: Build Release with Sanitizers
 #        run: cmake --build --preset release-san
 #      - name: Test Release with Sanitizers
