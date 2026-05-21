@@ -12,6 +12,7 @@ add_executable(int_ptrie_insert_bm int_ptrie_insert_bm.cpp)
 target_link_libraries(int_ptrie_insert_bm PRIVATE binarywrapper ptrie murmur sparsehash::sparsehash benchmark::benchmark_main)
 add_benchmark(int_ptrie_insert_bm --logx --logy)
 
+# Below are old benchmarks, obsoleted by the above
 #add_executable(ptrie_insert ptrie_insert.cpp utils.h)
 #target_link_libraries(ptrie_insert PRIVATE binarywrapper ptrie murmur sparsehash::sparsehash)
 #
