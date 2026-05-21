@@ -30,15 +30,16 @@
 #include <array>
 
 #include <cassert>
+#include <cstddef>  // size_t
 
-template <typename T, size_t C>
+template <typename T, std::size_t C>
 class linked_bucket_t
 {
     struct bucket_t
     {
         std::atomic<bucket_t*> _nbucket{nullptr};
         std::atomic<size_t> _offset{0};
-        size_t _count{0};
+        std::size_t _count{0};
         std::array<T, C> _data{};
     };
 

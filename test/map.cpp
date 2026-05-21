@@ -38,10 +38,10 @@ using ptrie::uchar;
 
 TEST_CASE("Pseudo Rand1")
 {
-    for (size_t seed = 314; seed < (314 + 10); ++seed) {
+    for (std::size_t seed = 314; seed < (314 + 10); ++seed) {
         auto set = ptrie::map<ptrie::uchar, size_t>{};
 
-        for (size_t i = 0; i < 1024_uz * 10; ++i) {
+        for (std::size_t i = 0; i < 1024_uz * 10; ++i) {
             const auto data = rand_data(i + seed, 20);
             const auto [res, id] = set.insert(std::data(data), std::size(data));
             CHECK(res);
@@ -50,7 +50,7 @@ TEST_CASE("Pseudo Rand1")
 
         // let us unwrap everything and check that it is there!
 
-        for (size_t i = 0; i < 1024_uz * 10; ++i) {
+        for (std::size_t i = 0; i < 1024_uz * 10; ++i) {
             const auto data = rand_data(i + seed, 20);
             const auto [res, id] = set.exists(std::data(data), std::size(data));
             CHECK(res);
@@ -179,7 +179,8 @@ struct ptrie::byte_iterator<type_t>  // NOLINT(misc-include-cleaner)
         return sizeof(type_t::_a) + sizeof(type_t::_b) + sizeof(type_t::_c) + sizeof(type_t::_d);
     }
 
-    static constexpr bool continious() { return false; }
+    static constexpr bool continuous() { return false; }
+    [[deprecated("wrong spelling")]] static constexpr bool continious() { return false; }
 };
 
 TEST_CASE("Complex Type1")

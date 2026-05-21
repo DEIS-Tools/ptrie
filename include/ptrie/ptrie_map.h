@@ -28,10 +28,13 @@
 
 #include "ptrie_stable.h"
 
+#include <cstddef>  // size_t
+#include <cstdint>  // uint16_t
+
 namespace ptrie {
 
 template <typename KEY, typename T, uint16_t HEAPBOUND = 17, uint16_t SPLITBOUND = 128, uint8_t BSIZE = 8,
-          size_t ALLOCSIZE = (1024 * 64), typename I = size_t>
+          std::size_t ALLOCSIZE = (1024 * 64), typename I = std::size_t>
 class map : internal::set_stable_base<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, T, I>
 {
     static_assert(!std::is_same_v<void, T>, "T (map-to-type) must not be void");

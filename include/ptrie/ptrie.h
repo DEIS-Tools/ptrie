@@ -28,6 +28,9 @@
 #include "ptrie_internal.hpp"
 #include "ptrie_memory.hpp"
 
+#include <cstddef>  // size_t
+#include <cstdint>  // uint16_t
+
 // direct 2lvl indexing in chunks of ~ 2^32
 // takes up ~ 512k (256k on 32bit) for the index.
 // when to keep data in bucket or send to heap - just make sure bucket does not
@@ -36,7 +39,7 @@
 namespace ptrie {
 
 template <typename KEY = uchar, uint16_t HEAPBOUND = 17, uint16_t SPLITBOUND = 129, uint8_t BSIZE = 8,
-          size_t ALLOCSIZE = (1024 * 64)>
+          std::size_t ALLOCSIZE = (1024 * 64)>
 class set : internal::ptrie_base<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, void, size_t, false>
 {
     using pt = internal::ptrie_base<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, void, size_t, false>;

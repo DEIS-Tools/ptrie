@@ -31,7 +31,7 @@ TEST_SUITE_BEGIN("PTrie Delete");
 
 using ptrie::uchar;
 
-const auto one_uchar_gen = [](size_t i) { return std::vector{static_cast<uchar>(i)}; };
+const auto one_uchar_gen = [](std::size_t i) { return std::vector{static_cast<uchar>(i)}; };
 
 TEST_CASE("Insert Delete Byte")
 {

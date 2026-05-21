@@ -4,6 +4,8 @@
 #include "linked_bucket.h"
 #include "ptrie_memory.hpp"
 
+#include <string>
+#include <vector>
 #include <stack>
 #include <algorithm>
 #include <memory>
@@ -777,7 +779,7 @@ bool ptrie_base<PTRIETLPA>::bucket_search(const KEY* target, const size_t length
                 // else continue search
             } else {
                 const uchar* ptr = mem_load<const uchar*>(data + offset);
-                if constexpr (byte_iterator<KEY>::continious()) {
+                if constexpr (byte_iterator<KEY>::continuous()) {
                     const int cmp = std::memcmp(ptr, &byte_iterator<KEY>::const_access(target, byte), encsize);
                     if (cmp > 0) {
                         found = false;
@@ -1373,7 +1375,7 @@ returntype_t ptrie_base<PTRIETLPA>::insert(const KEY* data, size_t length)
     // copy over new data
     if (copyval) {
         if (nenc_size > 0) {
-            if constexpr (byte_iterator<KEY>::continious()) {
+            if constexpr (byte_iterator<KEY>::continuous()) {
                 auto* src = &byte_iterator<KEY>::const_access(data, byte);
                 auto* end = src + std::max(nenc_size, 0);
                 std::copy(src, end, nbucket.data(nbucketcount) + tmpsize);
@@ -1386,7 +1388,7 @@ returntype_t ptrie_base<PTRIETLPA>::insert(const KEY* data, size_t length)
         // alloc space; ownership transfers into nbucket via mem_store below, freed in cleanup
         auto* dest = new_uchar(std::max(nenc_size, 0));
         // copy data to heap
-        if constexpr (byte_iterator<KEY>::continious()) {
+        if constexpr (byte_iterator<KEY>::continuous()) {
             auto* dp = &byte_iterator<KEY>::const_access(data, byte);
             std::copy_n(dp, std::max(nenc_size, 0), dest);
         } else
@@ -1978,7 +1980,7 @@ void write_data(KEY* dest, const N* node, std::stack<uchar>& path, size_t bindex
             src = &(node->_data.data(node->_count)[offset]);
         }
 
-        if constexpr (byte_iterator<KEY>::continious())
+        if constexpr (byte_iterator<KEY>::continuous())
             std::copy_n(src, size - ps, &byte_iterator<KEY>::access(dest, ps));
         else
             for (size_t i = 0; i < (size - ps); ++i)

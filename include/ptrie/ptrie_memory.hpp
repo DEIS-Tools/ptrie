@@ -5,6 +5,7 @@
 #include <bit>          // bit_cast
 #include <type_traits>  // is_void
 
+#include <cstddef>  // size_t
 #include <cstdint>  // uint32_t
 #include <cassert>
 
@@ -75,7 +76,7 @@ struct byte_iterator
     }
 
     static constexpr bool continuous() { return std::has_unique_object_representations_v<KEY>; }
-    [[deprecated]] static constexpr bool continious() { return continuous(); }
+    [[deprecated("wrong spelling")]] static constexpr bool continious() { return continuous(); }
     // add read_blob, write_blob
 };
 }  // namespace ptrie

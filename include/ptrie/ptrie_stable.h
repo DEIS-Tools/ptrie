@@ -28,14 +28,20 @@
 
 #include "ptrie_internal.hpp"
 
+#include <vector>
+
+#include <cassert>
+#include <cstddef>  // size_t
+#include <cstdint>  // uint16_t
+
 namespace ptrie {
 
 namespace internal {
 #define SPTRIETPL \
     typename KEY, uint16_t HEAPBOUND, uint16_t SPLITBOUND, uint8_t BSIZE, size_t ALLOCSIZE, typename T, typename I
 #define SPTRIETPLA KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, T, I
-template <typename KEY = unsigned char, uint16_t HEAPBOUND = 17, uint16_t SPLITBOUND = 128, uint8_t BSIZE = 8,
-          size_t ALLOCSIZE = (1024 * 64), typename T = void, typename I = size_t>
+template <typename KEY = unsigned char, std::uint16_t HEAPBOUND = 17, std::uint16_t SPLITBOUND = 128, uint8_t BSIZE = 8,
+          std::size_t ALLOCSIZE = (1024 * 64), typename T = void, typename I = std::size_t>
 class set_stable_base : protected ptrie_base<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, T, I, true>
 {
     using pt = ptrie_base<KEY, HEAPBOUND, SPLITBOUND, BSIZE, ALLOCSIZE, T, I, true>;

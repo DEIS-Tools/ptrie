@@ -203,7 +203,8 @@ struct ptrie::byte_iterator<type_t>
         return sizeof(type_t::_a) + sizeof(type_t::_b) + sizeof(type_t::_c) + sizeof(type_t::_d);
     }
 
-    static constexpr bool continious() { return false; }
+    static constexpr bool continuous() { return false; }
+    [[deprecated("wrong spelling")]] static constexpr bool continious() { return false; }
 };
 
 TEST_CASE("Complex Type1")
