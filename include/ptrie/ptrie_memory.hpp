@@ -74,7 +74,8 @@ struct byte_iterator
         return sizeof(KEY);
     }
 
-    static constexpr bool continious() { return std::has_unique_object_representations_v<KEY>; }
+    static constexpr bool continuous() { return std::has_unique_object_representations_v<KEY>; }
+    [[deprecated]] static constexpr bool continious() { return continuous(); }
     // add read_blob, write_blob
 };
 }  // namespace ptrie
