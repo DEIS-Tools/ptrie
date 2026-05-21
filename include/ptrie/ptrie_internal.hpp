@@ -1250,6 +1250,7 @@ returntype_t ptrie_base<PTRIETLPA>::insert(const KEY* data, size_t length)
     const auto byte = p_byte / BDIV;
     if (base == fwd) {
         node = new node_t{};
+        node->_count = 0;  // in-class initializer; explicit for clang-analyzer
         node->_parent = fwd;
 
         auto* sc = as_array(&size);
@@ -1382,7 +1383,7 @@ returntype_t ptrie_base<PTRIETLPA>::insert(const KEY* data, size_t length)
             }
         }
     } else {
-        // alloc space
+        // alloc space; ownership transfers into nbucket via mem_store below, freed in cleanup
         auto* dest = new_uchar(std::max(nenc_size, 0));
         // copy data to heap
         if constexpr (byte_iterator<KEY>::continious()) {
@@ -1397,6 +1398,7 @@ returntype_t ptrie_base<PTRIETLPA>::insert(const KEY* data, size_t length)
     }
 
     // if needed, split the node
+    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) -- dest embedded in nbucket via mem_store
     node->_data = std::move(nbucket);
     node->_count = nbucketcount;
     node->_totsize = nbucketsize;
