@@ -37,6 +37,7 @@
 #include <algorithm>  // shuffle
 #include <exception>
 
+#include <cstdio>   // fclose
 #include <cstdlib>  // rand
 #include <cstdint>  // uint32_t
 
@@ -91,6 +92,8 @@ try {
     } else
         throw std::invalid_argument{
             "ERROR IN TYPE, ALLOWED VALUES: ptrie, ptrie-stable, ptrie-map, std, sparse, dense, tbb"};
+    fclose(stdout);  // deallocate buffers to prevent memory leak reports
+    fclose(stderr);
     return 0;
 } catch (std::exception& e) {
     std::cerr << e.what() << "\n";

@@ -35,7 +35,7 @@ jobs:
       - name: Install Build Tools
         run: |
           sudo apt-get -qq update
-          sudo apt-get -qq install cmake ninja-build g++ libsparsehash-dev clang-format-20 clang-tidy-20
+          sudo apt-get -qq install cmake ninja-build g++ libsparsehash-dev heaptrack clang-format-20 clang-tidy-20
       - name: Setup Runner Environment
         run: |
           uname -a
@@ -53,12 +53,18 @@ jobs:
         run: cmake --build --preset debug-san
       - name: Test Debug with Sanitizers
         run: ctest --preset debug-san
-      - name: Tidy
-        run: run-clang-tidy-20 -p build-multi-san -header-filter="$PWD/(include|src|test|benchmark)/.*" -source-filter="$PWD/(src|test|benchmark)/.*"
+      - name: Configure Multi-Config (without Sanitizers)
+        run: cmake --preset multi -DBENCHMARK_PLOTS=OFF
+      - name: Build Release with Debug info (without Sanitizers)
+        run: cmake --build --preset release-deb
+      - name: Test Release with Debug info (without Sanitizers)
+        run: ctest --preset release-deb
 #      - name: Build Release with Sanitizers
 #        run: cmake --build --preset release-san
 #      - name: Test Release with Sanitizers
 #        run: ctest --preset release-san
+      - name: Tidy
+        run: run-clang-tidy-20 -p build-multi-san -header-filter="$PWD/(include|src|test|benchmark)/.*" -source-filter="$PWD/(src|test|benchmark)/.*"
       - name: Quick Debug with Sanitizers
         run: cmake --workflow --preset quick-san-debug
       - name: Quick Debug Install to local with Sanitizers

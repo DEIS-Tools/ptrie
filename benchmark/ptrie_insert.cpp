@@ -30,6 +30,7 @@
 #include <unordered_set>
 #include <limits>
 
+#include <cstdio>   // fclose
 #include <cstdint>  // uint64_t
 
 using ptrie::wrapper_t;
@@ -69,6 +70,8 @@ try {
         ptrie::set_insert(set, s);
     } else
         throw std::logic_error{"ERROR IN TYPE, ONLY VALUES ALLOWED: ptrie, std, sparse, dense"};
+    fclose(stdout);  // deallocate buffers to prevent memory leak reports
+    fclose(stderr);
     return 0;
 } catch (std::exception& e) {
     std::cerr << e.what() << '\n';

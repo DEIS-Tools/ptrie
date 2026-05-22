@@ -1,0 +1,4 @@
+leak:_dl_start_user
+leak:__static_initialization_and_destruction_0
+leak:benchmark::Benchmark::ComputeStatistics
+leak:doctest::ConsoleReporter::printIntro

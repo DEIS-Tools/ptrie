@@ -10,6 +10,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include(cmake/warnings.cmake)
 include(cmake/sanitizers.cmake) # CMake options: SSP, UBSAN, ASAN, LSAN, TSAN, etc
+include(cmake/heaptrack.cmake) # tracks dynamic memory for `add_heaptrack` tests
 include(GNUInstallDirs) # CMAKE_INSTALL_BINDIR, CMAKE_INSTALL_LIBDIR, CMAKE_INSTALL_INCLUDEDIR etc
 
 # Header-only library
