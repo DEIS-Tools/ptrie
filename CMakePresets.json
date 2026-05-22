@@ -33,25 +33,25 @@
       "name": "quick-release",
       "inherits": "release",
       "configurePreset": "quick",
-      "displayName": "Build quick for Debug"
+      "displayName": "Build quick (no testing) for Release"
     },
     {
       "name": "quick-debug",
       "inherits": "debug",
       "configurePreset": "quick",
-      "displayName": "Build quick (no testing) for Release"
+      "displayName": "Build quick (no testing) for Debug"
     },
     {
       "name": "quick-san-release",
       "inherits": "release",
       "configurePreset": "quick-san",
-      "displayName": "Build quick (no testing) with Sanitizers and Debug"
+      "displayName": "Build quick (no testing) with Sanitizers and Release"
     },
     {
       "name": "quick-san-debug",
       "inherits": "debug",
       "configurePreset": "quick-san",
-      "displayName": "Build quick (no testing) with Sanitizers and Release"
+      "displayName": "Build quick (no testing) with Sanitizers and Debug"
     }
   ],
   "testPresets": [],
