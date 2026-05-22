@@ -120,6 +120,9 @@ def read_data(args):
                 f'Could not parse {fpath}. Did you forget "--benchmark_format=[csv|json] when running the benchmark"?'
             )
             exit(1)
+        # skip aggregate data like BigO complexity and RMS:
+        if "aggregate_name" in data.columns:
+            data = data[data["aggregate_name"].isna()]
         data["label"] = data["name"].apply(lambda x: x.split("/")[0])
         data["input"] = data["name"].apply(parse_input_size)
         data[args.metric] = data[args.metric].apply(TRANSFORMS[args.transform])

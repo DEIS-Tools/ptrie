@@ -42,8 +42,9 @@ static void ptrie_bm(benchmark::State& state)
         benchmark::DoNotOptimize(set);
         benchmark::ClobberMemory();
     }
+    state.SetComplexityN(state.range(0));
 }
-BENCHMARK(ptrie_bm)->Name("ptrie")->Arg(ELEM1)->Arg(ELEM2)->Arg(ELEM3)->Arg(ELEM4);
+BENCHMARK(ptrie_bm)->Name("ptrie")->Arg(ELEM1)->Arg(ELEM2)->Arg(ELEM3)->Arg(ELEM4)->Complexity();
 
 static void std_bm(benchmark::State& state)
 {
@@ -61,8 +62,9 @@ static void std_bm(benchmark::State& state)
         benchmark::DoNotOptimize(set);
         benchmark::ClobberMemory();
     }
+    state.SetComplexityN(state.range(0));
 }
-BENCHMARK(std_bm)->Name("std")->Arg(ELEM1)->Arg(ELEM2)->Arg(ELEM3)->Arg(ELEM4);
+BENCHMARK(std_bm)->Name("std")->Arg(ELEM1)->Arg(ELEM2)->Arg(ELEM3)->Arg(ELEM4)->Complexity();
 
 static void sparse_bm(benchmark::State& state)
 {
@@ -80,8 +82,9 @@ static void sparse_bm(benchmark::State& state)
         benchmark::DoNotOptimize(set);
         benchmark::ClobberMemory();
     }
+    state.SetComplexityN(state.range(0));
 }
-BENCHMARK(sparse_bm)->Name("sparse")->Arg(ELEM1)->Arg(ELEM2)->Arg(ELEM3)->Arg(ELEM4);
+BENCHMARK(sparse_bm)->Name("sparse")->Arg(ELEM1)->Arg(ELEM2)->Arg(ELEM3)->Arg(ELEM4)->Complexity();
 
 static void dense_bm(benchmark::State& state)
 {
@@ -104,7 +107,8 @@ static void dense_bm(benchmark::State& state)
         benchmark::DoNotOptimize(set);
         benchmark::ClobberMemory();
     }
+    state.SetComplexityN(state.range(0));
 }
-BENCHMARK(dense_bm)->Name("dense")->Arg(ELEM1)->Arg(ELEM2)->Arg(ELEM3)->Arg(ELEM4);
+BENCHMARK(dense_bm)->Name("dense")->Arg(ELEM1)->Arg(ELEM2)->Arg(ELEM3)->Arg(ELEM4)->Complexity();
 
 // NOLINTEND(misc-use-anonymous-namespace,clang-analyzer-deadcode.DeadStores,cert-err58-cpp)
