@@ -1,39 +1,53 @@
 find_program(HEAPTRACK NAMES heaptrack)
 if (HEAPTRACK)
-    find_program(HEAPTRACK_PRINT NAMES heaptrack_print)
-    if (HEAPTRACK_PRINT)
-        message(STATUS "Found heaptrack and heaptrack_print, enabling heap tracking tests")
-    else (HEAPTRACK_PRINT)
-        message(STATUS "Failed to find heaptrack_print, heap tracking is going to be disabled")
+    if (ASAN OR LSAN)
+        message(STATUS "Disabled heaptrack (incompatible with sanitizers")
         set(HEAPTRACK OFF)
-    endif (HEAPTRACK_PRINT)
+    else ()
+        find_program(HEAPTRACK_PRINT NAMES heaptrack_print)
+        if (HEAPTRACK_PRINT)
+            message(STATUS "Found heaptrack and heaptrack_print, enabling heap tracking tests")
+        else (HEAPTRACK_PRINT)
+            message(STATUS "Failed to find heaptrack_print, heap tracking is going to be disabled")
+            set(HEAPTRACK OFF)
+        endif (HEAPTRACK_PRINT)
+    endif ()
 else (HEAPTRACK)
     message(STATUS "Failed to find heaptrack, heap tracking is going to be disabled")
 endif (HEAPTRACK)
 
-# Adds heaptrack test with given name and command
+# Adds heaptracking test with arguments just like add_test
 macro(add_heaptrack)
-    cmake_parse_arguments(ARG "" "NAME" "COMMAND" ${ARGN})
-    message(STATUS "add_heaptrack(NAME ${ARG_NAME} COMMAND ${ARG_COMMAND})")
     if (HEAPTRACK)
-        add_test(NAME ${ARG_NAME}_run COMMAND ${HEAPTRACK} --record-only -o ${ARG_NAME}.ht ${ARG_COMMAND})
+        #message(STATUS "add_heaptrack(${ARGN}")
+        cmake_parse_arguments(ARG "" "NAME" "COMMAND" "CONFIGURATIONS" "WORKING_DIRECTORY" "COMMAND_EXPAND_LISTS" ${ARGN})
+        add_test(NAME ${ARG_NAME} COMMAND ${HEAPTRACK} --record-only -o ${ARG_NAME} ${ARG_COMMAND})
         if (HEAPTRACK_PRINT)
             add_test(NAME ${ARG_NAME}_heap COMMAND
-                ${HEAPTRACK_PRINT} --print-peaks=0 --print-allocators=0 --print-temporary=0 --print-leaks=1 --suppressions ${PROJECT_SOURCE_DIR}/cmake/heaptrack_suppress.txt ${ARG_NAME}.ht.zst)
-            set_tests_properties(${ARG_NAME}_heap PROPERTIES DEPENDS ${ARG_NAME}_run COST 50
+                ${HEAPTRACK_PRINT} --print-peaks=0 --print-allocators=0 --print-temporary=0 --print-leaks=1 --suppressions ${PROJECT_SOURCE_DIR}/cmake/heaptrack_suppress.txt ${ARG_NAME}.zst
+                 CONFIGURATIONS ${ARG_CONFIGURATIONS}
+                 WORKING_DIRECTORY ${ARG_WORKING_DIRECTORY}
+                 COMMAND_EXPAND_LISTS ${ARG_COMMAND_EXPAND_LISTS}
+            )
+            set_tests_properties(${ARG_NAME}_heap PROPERTIES DEPENDS ${ARG_NAME}
                 PASS_REGULAR_EXPRESSION "total memory leaked: 0B")
         endif (HEAPTRACK_PRINT)
     endif (HEAPTRACK)
 endmacro()
 
-# Adds heaptrack tests for given tests (reuses their COMMAND property)
-macro(add_heaptrack_for_tests)
-    message(STATUS "add_heaptrack_for_tests(${ARGN})")
+# Adds heaptracking test if heaptracking is available, otherwise falls back to simple add_test
+macro(add_heaptrack_test)
+    #message(STATUS "add_heaptrack_test(${ARGN})")
+    cmake_parse_arguments(ARG "" "NAME" "COMMAND" "CONFIGURATIONS" "WORKING_DIRECTORY" "COMMAND_EXPAND_LISTS" ${ARGN})
     if (HEAPTRACK)
-        set(_names ${ARGN})
-        foreach(_name IN LISTS _names)
-            get_property(_command TEST ${_name} PROPERTY COMMAND DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-            add_heaptrack(NAME ${_name} COMMAND ${_command})
-        endforeach()
+        add_heaptrack(NAME ${ARG_NAME} COMMAND ${ARG_COMMAND}
+            CONFIGURATIONS ${ARG_CONFIGURATIONS}
+            WORKING_DIRECTORY ${ARG_WORKING_DIRECTORY}
+            COMMAND_EXPAND_LISTS ${ARG_COMMAND_EXPAND_LISTS})
+    else()
+        add_test(NAME ${ARG_NAME} COMMAND ${ARG_COMMAND}
+                CONFIGURATIONS ${ARG_CONFIGURATIONS}
+                WORKING_DIRECTORY ${ARG_WORKING_DIRECTORY}
+                COMMAND_EXPAND_LISTS ${ARG_COMMAND_EXPAND_LISTS})
     endif (HEAPTRACK)
 endmacro()
