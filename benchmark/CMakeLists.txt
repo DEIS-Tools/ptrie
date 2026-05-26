@@ -40,19 +40,6 @@ add_test(NAME int_dense COMMAND int_ptrie_insert dense ${ELEMENT_COUNT})
 
 set_tests_properties(ptrie std sparse dense int_ptrie int_std int_sparse int_dense PROPERTIES RUN_SERIAL ON DISABLED ON)
 
-# Adds heaptrack tests for given tests (reuses their COMMAND property)
-macro(add_heaptrack_for_tests)
-    message(STATUS "add_heaptrack_for_tests(${ARGN})")
-    if (HEAPTRACK)
-        set(_names ${ARGN})
-        foreach(_name IN LISTS _names)
-            get_property(_command TEST ${_name} PROPERTY COMMAND DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-            add_heaptrack(NAME ${_name} COMMAND ${_command})
-        endforeach()
-    endif (HEAPTRACK)
-endmacro()
-
-
 if (NOT ASAN AND NOT LSAN)
     add_heaptrack_for_tests(int_ptrie int_stable int_map int_std int_redblack int_sparse int_dense)
 endif ()
