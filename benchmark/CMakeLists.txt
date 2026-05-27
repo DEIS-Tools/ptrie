@@ -3,6 +3,7 @@ target_compile_features(murmur PRIVATE cxx_std_17)
 
 add_library(binarywrapper INTERFACE)
 target_compile_features(binarywrapper INTERFACE cxx_std_17)
+target_compile_options(binarywrapper INTERFACE ${PTRIE_WARNINGS})
 
 add_executable(ptrie_insert_bm ptrie_insert_bm.cpp)
 target_link_libraries(ptrie_insert_bm PRIVATE binarywrapper ptrie murmur sparsehash::sparsehash benchmark::benchmark_main)

@@ -70,8 +70,10 @@ try {
         ptrie::set_insert(set, s);
     } else
         throw std::logic_error{"ERROR IN TYPE, ONLY VALUES ALLOWED: ptrie, std, sparse, dense"};
-    fclose(stdout);  // deallocate buffers to prevent memory leak reports
-    fclose(stderr);
+    if (auto err = fclose(stdout); err != 0)  // deallocate buffers to prevent memory leak reports
+        throw std::system_error{err, std::system_category(), "fclose(stdout)"};
+    if (auto err = fclose(stderr); err != 0)
+        throw std::system_error{err, std::system_category(), "fclose(stderr)"};
     return 0;
 } catch (std::exception& e) {
     std::cerr << e.what() << '\n';

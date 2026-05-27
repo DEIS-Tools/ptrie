@@ -6,6 +6,8 @@
 #include "binarywrapper.h"
 #include "MurmurHash2.h"
 
+#include <ptrie/ptrie_memory.hpp>
+
 #include <random>
 
 namespace ptrie {
@@ -24,9 +26,8 @@ inline binarywrapper_t rand_data(size_t seed, size_t maxsize, size_t minsize = s
         data.raw()[j] = static_cast<uchar>(data_dist(gen));
 
     // make sure everything is unique
-    for (size_t j = 1; j <= sizeof(size_t); ++j) {
-        data.raw()[size - j] = ((uchar*)&seed)[j - 1];  // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
-    }
+    for (size_t j = 1; j <= sizeof(size_t); ++j)
+        data.raw()[size - j] = as_array<const uchar>(&seed)[j - 1];
     return data;
 }
 

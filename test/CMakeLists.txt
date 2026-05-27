@@ -1,7 +1,12 @@
-add_executable (Delete delete.cpp)
-add_executable (Set set.cpp)
-add_executable (Map map.cpp)
-add_executable (StableSet stable_set.cpp)
+add_executable(Delete delete.cpp)
+add_executable(Set set.cpp)
+add_executable(Map map.cpp)
+add_executable(StableSet stable_set.cpp)
+
+target_compile_options(Delete PRIVATE ${PTRIE_WARNINGS})
+target_compile_options(Set PRIVATE ${PTRIE_WARNINGS})
+target_compile_options(Map PRIVATE ${PTRIE_WARNINGS})
+target_compile_options(StableSet PRIVATE ${PTRIE_WARNINGS})
 
 target_link_libraries(Set       PRIVATE ptrie doctest::doctest_with_main)
 target_link_libraries(Delete    PRIVATE ptrie doctest::doctest_with_main)

@@ -1,7 +1,7 @@
 find_program(HEAPTRACK NAMES heaptrack)
 if (HEAPTRACK)
     if (ASAN OR LSAN)
-        message(STATUS "Disabled heaptrack (incompatible with sanitizers")
+        message(STATUS "Disabled heaptrack (incompatible with sanitizers)")
         set(HEAPTRACK OFF)
     else ()
         find_program(HEAPTRACK_PRINT NAMES heaptrack_print)
