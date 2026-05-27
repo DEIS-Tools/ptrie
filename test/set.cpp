@@ -116,6 +116,88 @@ TEST_CASE("Simple Copy")
     }
 }
 
+TEST_CASE("Copy Heap Keys Shallow")
+{
+    // A handful of long keys with distinct first bytes stay in shallow nodes
+    // (depth < 2) but exceed HEAPBOUND, so their suffixes live on the heap. Copying
+    // exercises the shallow heap-duplication path in node_t::clone.
+    auto set = ptrie::set<>{};  // default HEAPBOUND=17
+    const auto gen = [](size_t i) {
+        std::vector<uchar> d(24, 0xAB);  // 24 bytes > HEAPBOUND -> heap stored
+        d[0] = static_cast<uchar>(i);    // distinct first byte
+        for (size_t j = 1; j <= sizeof(size_t); ++j)
+            d[d.size() - j] = static_cast<uchar>(i >> (8 * (j - 1)));  // unique tail
+        return d;
+    };
+    constexpr size_t N = 5;  // < SPLITBOUND, so no split: one shallow node
+    try_insert(set, gen, N);
+
+    const auto cpy = set;  // copy on purpose
+    for (size_t i = 0; i < N; ++i) {
+        auto d = gen(i);
+        REQUIRE_MESSAGE(cpy.exists(std::data(d), std::size(d)).first, "MISSING " << i);
+    }
+}
+
+TEST_CASE("Copy Heap Keys Deep")
+{
+    // Long keys exceed HEAPBOUND (suffixes on the heap) while a small SPLITBOUND and
+    // many keys build nodes several bytes deep. Copying exercises the deep heap path
+    // in node_t::clone, and an independent erase on the original confirms the copy is
+    // a deep copy (no shared heap blocks).
+    auto set = ptrie::set<uchar, sizeof(size_t) + 1, 6>{};  // HEAPBOUND=9, SPLITBOUND=6
+    constexpr size_t N = 4000;
+    const auto gen = [](size_t i) { return rand_data(i, 32, 32); };  // fixed 32-byte keys
+    try_insert(set, gen, N);
+
+    const auto cpy = set;  // copy on purpose
+    for (size_t i = 0; i < N; ++i) {
+        auto d = gen(i);
+        REQUIRE_MESSAGE(cpy.exists(std::data(d), std::size(d)).first, "MISSING " << i);
+    }
+
+    // erasing from the original must not affect the copy (deep-copy independence)
+    for (size_t i = 0; i < N; i += 2) {
+        auto d = gen(i);
+        REQUIRE(set.erase(std::data(d), std::size(d)));
+    }
+    for (size_t i = 0; i < N; ++i) {
+        auto d = gen(i);
+        REQUIRE_MESSAGE(cpy.exists(std::data(d), std::size(d)).first, "COPY DAMAGED " << i);
+    }
+}
+
+TEST_CASE("Copy Inline Keys")
+{
+    {  // Several short keys with distinct first bytes share one shallow node with
+       // inline-stored suffixes; copying exercises clone's depth<2 inline-copy branch
+       // across multiple entries (a regression guard for the per-entry offset).
+        auto set = ptrie::set<uchar, 17, 6>{};  // HEAPBOUND=17, SPLITBOUND=6
+        const auto gen = [](size_t i) { return std::vector<uchar>{static_cast<uchar>(i), 0x11, 0x22, 0x33}; };
+        constexpr size_t N = 5;  // < SPLITBOUND -> a single depth-0 node
+        try_insert(set, gen, N);
+
+        const auto cpy = set;  // copy on purpose
+        for (size_t i = 0; i < N; ++i) {
+            auto d = gen(i);
+            REQUIRE_MESSAGE(cpy.exists(std::data(d), std::size(d)).first, "MISSING " << i);
+        }
+    }
+    {  // Same copy path under a non-default bit width (BSIZE=4): regression guard that
+       // clone reconstructs suffixes correctly when a byte spans several trie levels.
+        auto set = ptrie::set<uchar, 17, 6, 4>{};  // HEAPBOUND=17, SPLITBOUND=6, BSIZE=4
+        const auto gen = [](size_t i) { return std::vector<uchar>{static_cast<uchar>(i), 0x55}; };
+        constexpr size_t N = 256;
+        try_insert(set, gen, N);
+
+        const auto cpy = set;  // copy on purpose
+        for (size_t i = 0; i < N; ++i) {
+            auto d = gen(i);
+            REQUIRE_MESSAGE(cpy.exists(std::data(d), std::size(d)).first, "MISSING " << i);
+        }
+    }
+}
+
 TEST_CASE("Simple Iterator Invariant")
 {
     const auto set = ptrie::set<size_t>{};

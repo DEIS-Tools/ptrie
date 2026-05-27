@@ -634,11 +634,11 @@ constexpr void ptrie_base<PTRIETLPA>::node_t::clone(const node_t& other, entryli
         std::copy_n(other.data(), other._totsize, data());
     } else if (bdepth >= 2) {
         // everything is allocated on heap
-        auto** ptr = as_array<uchar*>(data());
-        auto* const* optr = as_array<uchar* const>(other.data());
         for (size_t i = 0; i < _count; ++i) {
-            ptr[i] = new_uchar(encsize - bdepth);
-            std::copy_n(optr[i], encsize, ptr[i]);
+            auto* dst = new_uchar(encsize - bdepth);
+            const auto* src = mem_load<const uchar*>(other.data() + i * sizeof(uchar*));
+            std::copy_n(src, encsize - bdepth, dst);
+            mem_store(data() + i * sizeof(uchar*), dst);
         }
     } else {
         size_t offset = 0;
@@ -648,12 +648,12 @@ constexpr void ptrie_base<PTRIETLPA>::node_t::clone(const node_t& other, entryli
                 lencsize = ((encsize & 0xFF00) | (lencsize >> 8));
             }
             if (lencsize > bdepth && (lencsize - bdepth) >= HEAPBOUND) {
-                auto** ptr = as_array<uchar*>(&data()[offset]);
-                auto* const* optr = as_array<uchar* const>(&other.data()[offset]);
-                ptr[0] = new_uchar(lencsize);
-                std::copy_n(optr[0], lencsize - bdepth, ptr[0]);
+                auto* dst = new_uchar(lencsize);
+                const auto* src = mem_load<const uchar*>(&other.data()[offset]);
+                std::copy_n(src, lencsize - bdepth, dst);
+                mem_store(&data()[offset], dst);
             } else {
-                std::copy(other.data() + offset, other.data() + (lencsize - bdepth), data() + offset);
+                std::copy(other.data() + offset, other.data() + offset + (lencsize - bdepth), data() + offset);
             }
             offset += bytes(lencsize >= bdepth ? lencsize - bdepth : 0);
         }
