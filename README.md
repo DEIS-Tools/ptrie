@@ -85,3 +85,29 @@ cmake --preset multi-san
 cmake --build --preset debug-san
 ctest --preset debug-san
 ```
+
+## Code Coverage
+Configure with `-DPTRIE_COVERAGE=ON` and build the `coverage` target. It runs the
+instrumented tests and produces an HTML report under `<build>/coverage-html` plus a
+textual summary on the console. The tooling is selected by the compiler:
+**gcov/lcov** for GCC, **llvm-cov** for Clang/AppleClang.
+```shell
+cmake --preset multi -DPTRIE_COVERAGE=ON
+cmake --build --preset release-deb --target coverage
+xdg-open build-multi/coverage-html/index.html  # or open ... on macOS
+```
+Coverage instrumentation is incompatible with the sanitizers, so use a non-sanitized
+preset (e.g. `multi` / `release-deb`).
+
+Extra tools are needed for the report (instrumentation alone works without them):
+```shell
+sudo apt install lcov          # GCC: lcov + genhtml
+# Clang: llvm-cov and llvm-profdata ship with the LLVM toolchain
+```
+
+With Clang, `llvm-cov` prints `warning: N functions have mismatched data`. This is
+benign: the library is header-only, so a templated function that is present but never
+called in one test binary keeps a different structural hash than the instantiation
+exercised in another. It therefore matches by name but not by hash when the merged
+profile is applied across all test binaries. Coverage counts stay correct, and
+`llvm-cov` has no flag to silence just this message (`--no-warn` does not affect it).

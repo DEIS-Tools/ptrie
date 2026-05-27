@@ -71,7 +71,11 @@ function(ptrie_add_coverage_report)
         # lcov >= 2.0 treats a --remove pattern that matches nothing as a fatal error
         # (e.g. */benchmark/* never appears because benchmarks are not instrumented),
         # so downgrade that to a warning where the option is supported.
+        # geninfo_unexecuted_blocks=1 silences the "unexecuted block ... with non-zero
+        # hit count" warnings that newer gcov emits for inlined/templated code by
+        # treating such blocks as count zero.
         set(_lcov_ignore)
+        set(_lcov_capture_rc --rc geninfo_unexecuted_blocks=1)
         execute_process(COMMAND ${LCOV} --version OUTPUT_VARIABLE _lcov_ver ERROR_QUIET)
         string(REGEX MATCH "([0-9]+)\\.([0-9]+)" _lcov_ver "${_lcov_ver}")
         if (_lcov_ver AND _lcov_ver VERSION_GREATER_EQUAL "2.0")
@@ -84,7 +88,7 @@ function(ptrie_add_coverage_report)
         add_custom_target(coverage
             ${_run_cmds}
             COMMAND ${LCOV} --quiet --gcov-tool ${_gcov} --directory ${CMAKE_BINARY_DIR}
-                    --capture --output-file coverage.info
+                    ${_lcov_capture_rc} --capture --output-file coverage.info
             COMMAND ${LCOV} --quiet --remove coverage.info ${_lcov_ignore}
                     "/usr/*" "*/_deps/*" "*/test/*" "*/benchmark/*"
                     --output-file coverage.info
@@ -103,6 +107,7 @@ function(ptrie_add_coverage_report)
             return()
         endif ()
         # Run each executable so it writes its own raw profile, then merge.
+        # (See README.md "Code Coverage" for the benign "mismatched data" warning.)
         set(_run_cmds)
         set(_profraws)
         set(_objects)
