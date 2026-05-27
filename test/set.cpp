@@ -198,6 +198,31 @@ TEST_CASE("Copy Inline Keys")
     }
 }
 
+TEST_CASE("Split Heap Key Migration")
+{
+    // Many long (> HEAPBOUND) keys that share their first byte force that byte to
+    // split fully and advance to the next byte. Because the suffixes are heap-stored,
+    // the bucket split must migrate heap pointers rather than inline bytes, exercising
+    // split_fwd's move_data heap path. The second byte spans the 0x80 split bit so the
+    // advance produces two non-empty children.
+    auto set = ptrie::set<uchar, 17, 8>{};  // HEAPBOUND=17, SPLITBOUND=8
+    const auto gen = [](size_t i) {
+        std::vector<uchar> d(24, 0xCC);    // 24 bytes > HEAPBOUND -> heap stored
+        d[0] = 0x00;                       // shared first byte -> byte-0 advance
+        d[1] = static_cast<uchar>(i * 5);  // diverge on byte 1, across 0x80
+        for (size_t j = 1; j <= sizeof(size_t); ++j)
+            d[d.size() - j] = static_cast<uchar>(i >> (8 * (j - 1)));  // unique tail
+        return d;
+    };
+    constexpr size_t N = 50;  // > SPLITBOUND -> byte 0 splits and advances to byte 1
+    try_insert(set, gen, N);
+
+    for (size_t i = 0; i < N; ++i) {
+        auto d = gen(i);
+        REQUIRE_MESSAGE(set.exists(std::data(d), std::size(d)).first, "MISSING " << i);
+    }
+}
+
 TEST_CASE("Simple Iterator Invariant")
 {
     const auto set = ptrie::set<size_t>{};
