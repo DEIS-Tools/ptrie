@@ -11,6 +11,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include(cmake/warnings.cmake)
 include(cmake/sanitizers.cmake) # CMake options: SSP, UBSAN, ASAN, LSAN, TSAN, etc
 include(cmake/heaptrack.cmake) # tracks dynamic memory for `add_heaptrack` tests
+include(cmake/coverage.cmake) # CMake option: PTRIE_COVERAGE (gcov/lcov for GCC, llvm-cov for Clang)
 include(GNUInstallDirs) # CMAKE_INSTALL_BINDIR, CMAKE_INSTALL_LIBDIR, CMAKE_INSTALL_INCLUDEDIR etc
 
 # Header-only library
@@ -30,6 +31,9 @@ if(PTRIE_BuildTests)
     include(cmake/doctest.cmake)
     add_subdirectory(test)
 endif(PTRIE_BuildTests)
+
+# Create the `coverage` report target once all instrumented targets are registered.
+ptrie_add_coverage_report()
 
 if(PTRIE_BuildBenchmark)
     include(cmake/benchmark.cmake)

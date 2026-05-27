@@ -8,6 +8,11 @@ target_compile_options(Set PRIVATE ${PTRIE_WARNINGS})
 target_compile_options(Map PRIVATE ${PTRIE_WARNINGS})
 target_compile_options(StableSet PRIVATE ${PTRIE_WARNINGS})
 
+target_enable_coverage(Delete)
+target_enable_coverage(Set)
+target_enable_coverage(Map)
+target_enable_coverage(StableSet)
+
 target_link_libraries(Set       PRIVATE ptrie doctest::doctest_with_main)
 target_link_libraries(Delete    PRIVATE ptrie doctest::doctest_with_main)
 target_link_libraries(StableSet PRIVATE ptrie doctest::doctest_with_main)
