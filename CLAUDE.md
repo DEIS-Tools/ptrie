@@ -13,7 +13,7 @@ All public headers live in `include/ptrie/`. There is no source to compile for t
 
 ## Build Commands
 
-The project uses CMake presets. The presets are split between `CMakePresets.json` (top-level, includes `cmake/CMakePresets.json` and `cmake/CommonPresets.json`).
+The project uses CMake presets. The top-level `CMakePresets.json` adds the `quick`/`quick-san` presets (header-only, no tests/benchmarks) and includes `cmake/CommonPresets.json`, which defines the main `multi` / `multi-san` configure presets and the `debug`, `release`, `release-deb` (Release with Debug info), `debug-san`, `release-san`, and `release-san-deb` build/test/workflow presets.
 
 ```bash
 # Full build with sanitizers (ASAN + UBSAN + SSP) — typical dev workflow
@@ -46,9 +46,11 @@ ctest --preset debug-san --output-on-failure
 ./build-multi-san/Debug/StableSet
 ```
 
+If `heaptrack` and `heaptrack_print` are installed, `cmake/heaptrack.cmake` registers additional heap-tracking variants of the tests (`add_heaptrack`). These are automatically disabled when sanitizers are active (ASAN/LSAN are incompatible with heaptrack), so they only run under non-sanitized presets like `multi` / `release-deb`.
+
 ## Linting and Formatting
 
-CI uses **clang-tidy-20**, **clang-format-20**, and **cmake-format**. To replicate locally:
+CI uses **clang-format-20** and **clang-tidy-20**, both run as steps inside the Linux GCC workflow (there is no separate tidy workflow). To replicate locally:
 
 ```bash
 # Check formatting (fails on any diff)
@@ -57,9 +59,13 @@ find . -iregex '.*\.\(c\|h\|cpp\|hpp\|cc\|hh\|cxx\|hxx\)$' | xargs clang-format-
 # Apply formatting
 find . -iregex '.*\.\(c\|h\|cpp\|hpp\|cc\|hh\|cxx\|hxx\)$' | xargs clang-format-20 -i
 
-# Run clang-tidy (requires a build with compile commands)
-run-clang-tidy-20 -p build-multi-san -header-filter="$PWD/(include|src|test|benchmark)/.*"
+# Run clang-tidy (requires a build with compile commands, e.g. build-multi-san)
+run-clang-tidy-20 -p build-multi-san \
+  -header-filter="$PWD/(include|src|test|benchmark)/.*" \
+  -source-filter="$PWD/(src|test|benchmark)/.*"
 ```
+
+clang-tidy needs the files generated during an actual compilation, which is why it runs in the GCC build job rather than standalone.
 
 Format rules (`.clang-format`): Google style, 120-column limit, 4-space indent, K&R braces.
 
@@ -106,6 +112,8 @@ Internal implementation details live in the `ptrie::internal` namespace. Symbols
 
 ## CI
 
-Ten GitHub Actions workflows cover: Linux (GCC + Clang), macOS 14/15/26 (Apple Clang + GCC), and Windows (MSYS2 UCRT64). All builds use the `multi-san` preset (ASAN + UBSAN + SSP). A separate `tidy.yml` workflow enforces clang-format, clang-tidy, and cmake-format.
+Ten GitHub Actions workflows cover: Linux (GCC-14 + Clang-20), macOS 14/15/26 (Apple Clang + GCC), and Windows MSYS2 UCRT64 (Clang + GCC). Each job builds and tests both the `multi-san` preset (ASAN + UBSAN + SSP, via `debug-san`) and the non-sanitized `multi` preset (via `release-deb`).
 
-Each CI job also verifies the library can be consumed two ways: (1) via local install prefix, and (2) via CMake `FetchContent`.
+Linting is not a separate workflow: the Linux GCC job (`build-linux-gcc.yml`) runs the `clang-format-20` check first, then `run-clang-tidy-20` against the `build-multi-san` compilation database after building.
+
+Each CI job also verifies the library can be consumed two ways via the `example/` project: (1) against a local install prefix (`cmake --install` + `CMAKE_PREFIX_PATH`), and (2) via CMake `FetchContent` (parameterized by `PTRIE_TAG`).
