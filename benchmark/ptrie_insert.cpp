@@ -27,6 +27,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <exception>
+#include <system_error>  // system_category
 #include <unordered_set>
 #include <limits>
 

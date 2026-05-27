@@ -636,9 +636,9 @@ constexpr void ptrie_base<PTRIETLPA>::node_t::clone(const node_t& other, entryli
         // everything is allocated on heap
         for (size_t i = 0; i < _count; ++i) {
             auto* dst = new_uchar(encsize - bdepth);
-            const auto* src = mem_load<const uchar*>(other.data() + i * sizeof(uchar*));
+            const auto* src = mem_load<const uchar*>(other.data() + (i * sizeof(uchar*)));
             std::copy_n(src, encsize - bdepth, dst);
-            mem_store(data() + i * sizeof(uchar*), dst);
+            mem_store(data() + (i * sizeof(uchar*)), dst);
         }
     } else {
         size_t offset = 0;

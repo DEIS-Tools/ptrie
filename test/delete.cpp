@@ -359,7 +359,7 @@ TEST_CASE("Erase Deep Subtree Collapse")
     // Erase row by row so that whole second-byte subtrees empty while others remain.
     for (size_t row = 0; row < SIDE; ++row) {
         for (size_t col = 0; col < SIDE; ++col) {
-            auto d = gen(row * SIDE + col);
+            auto d = gen((row * SIDE) + col);
             REQUIRE_MESSAGE(set.erase(std::data(d), std::size(d)), "FAILED ERASE " << row << "," << col);
         }
         for (size_t k = (row + 1) * SIDE; k < N; ++k) {  // not-yet-erased keys survive

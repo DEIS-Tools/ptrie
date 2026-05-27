@@ -36,6 +36,7 @@
 #include <numeric>    // iota
 #include <algorithm>  // shuffle
 #include <exception>
+#include <system_error>  // system_category
 
 #include <cstdio>   // fclose
 #include <cstdlib>  // rand
