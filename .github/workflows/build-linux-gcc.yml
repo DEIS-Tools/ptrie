@@ -28,6 +28,8 @@ jobs:
   linux-gcc:
     runs-on: ubuntu-latest
     env:
+      CC: gcc-14
+      CXX: g++-14
       CMAKE_GENERATOR: "Ninja Multi-Config"
       CTEST_OUTPUT_ON_FAILURE: 1
       PTRIE_TAG: ${{ github.head_ref || github.ref_name }}
@@ -35,7 +37,7 @@ jobs:
       - name: Install Build Tools
         run: |
           sudo apt-get -qq update
-          sudo apt-get -qq install cmake ninja-build g++ libsparsehash-dev heaptrack clang-format-20 clang-tidy-20
+          sudo apt-get -qq install cmake ninja-build g++-14 libsparsehash-dev heaptrack clang-format-20 clang-tidy-20
       - name: Setup Runner Environment
         run: |
           uname -a
