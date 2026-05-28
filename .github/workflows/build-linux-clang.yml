@@ -50,7 +50,7 @@ jobs:
       - name: Code Formatting
         run: find . -iregex '.*\.\(c\|h\|cpp\|hpp\|cc\|hh\|cxx\|hxx\)$' | xargs clang-format-20 -n -Werror
       - name: Configure Multi-Config with Sanitizers
-        run: cmake --preset multi-san -DBENCHMARK_PLOTS=OFF
+        run: cmake --preset multi-san -DBENCHMARK_PLOTS=OFF -DCMAKE_CXX_SCAN_FOR_MODULES=OFF
       - name: Build Debug with Sanitizers
         run: cmake --build --preset debug-san
       - name: Test Debug with Sanitizers
