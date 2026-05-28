@@ -34,31 +34,43 @@
     {
       "name": "default",
       "configurePreset": "default",
-      "displayName": "Build using default configuration"
+      "displayName": "Build for default configuration"
     },
     {
       "name": "debug",
       "configurePreset": "multi",
       "configuration": "Debug",
-      "displayName": "Build with Debug"
-    },
-    {
-      "name": "debug-san",
-      "inherits": "debug",
-      "configurePreset": "multi-san",
-      "displayName": "Build with Debug and Sanitizers"
+      "displayName": "Build for Debug"
     },
     {
       "name": "release",
       "configurePreset": "multi",
       "configuration": "Release",
-      "displayName": "Build with Release"
+      "displayName": "Build for Release"
+    },
+    {
+      "name": "release-deb",
+      "configurePreset": "multi",
+      "configuration": "RelWithDebInfo",
+      "displayName": "Build for Release with Debug info"
+    },
+    {
+      "name": "debug-san",
+      "inherits": "debug",
+      "configurePreset": "multi-san",
+      "displayName": "Build for Debug with Sanitizers"
     },
     {
       "name": "release-san",
       "inherits": "release",
       "configurePreset": "multi-san",
-      "displayName": "Build with Release and Sanitizers"
+      "displayName": "Build for Release with Sanitizers"
+    },
+    {
+      "name": "release-san-deb",
+      "inherits": "release-deb",
+      "configurePreset": "multi-san",
+      "displayName": "Build for Release with Sanitizers and Debug info"
     }
   ],
   "testPresets": [
@@ -77,12 +89,6 @@
       "displayName": "Test the Debug"
     },
     {
-      "name": "debug-san",
-      "inherits": "debug",
-      "configurePreset": "multi-san",
-      "displayName": "Test the Debug with Sanitizers"
-    },
-    {
       "name": "release",
       "inherits": "default",
       "configurePreset": "multi",
@@ -90,10 +96,29 @@
       "displayName": "Test the Release"
     },
     {
+      "name": "release-deb",
+      "inherits": "default",
+      "configurePreset": "multi",
+      "configuration": "RelWithDebInfo",
+      "displayName": "Test the Release with Debug info"
+    },
+    {
+      "name": "debug-san",
+      "inherits": "debug",
+      "configurePreset": "multi-san",
+      "displayName": "Test the Debug with Sanitizers"
+    },
+    {
       "name": "release-san",
       "inherits": "release",
       "configurePreset": "multi-san",
       "displayName": "Test the Release with Sanitizers"
+    },
+    {
+      "name": "release-san-deb",
+      "inherits": "release-deb",
+      "configurePreset": "multi-san",
+      "displayName": "Test the Release with Sanitizers and Debug info"
     }
   ],
   "workflowPresets": [
@@ -134,24 +159,6 @@
       ]
     },
     {
-      "name": "debug-san",
-      "displayName": "Configure, Build and Test with Debug and Sanitizers",
-      "steps": [
-        {
-          "type": "configure",
-          "name": "multi-san"
-        },
-        {
-          "type": "build",
-          "name": "debug-san"
-        },
-        {
-          "type": "test",
-          "name": "debug-san"
-        }
-      ]
-    },
-    {
       "name": "release",
       "displayName": "Configure, Build and Test with Release",
       "steps": [
@@ -166,6 +173,42 @@
         {
           "type": "test",
           "name": "release"
+        }
+      ]
+    },
+    {
+      "name": "release-deb",
+      "displayName": "Configure, Build and Test Release with Debug info",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "multi"
+        },
+        {
+          "type": "build",
+          "name": "release-deb"
+        },
+        {
+          "type": "test",
+          "name": "release-deb"
+        }
+      ]
+    },
+    {
+      "name": "debug-san",
+      "displayName": "Configure, Build and Test with Debug and Sanitizers",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "multi-san"
+        },
+        {
+          "type": "build",
+          "name": "debug-san"
+        },
+        {
+          "type": "test",
+          "name": "debug-san"
         }
       ]
     },
@@ -188,6 +231,24 @@
       ]
     },
     {
+      "name": "release-san-deb",
+      "displayName": "Configure, Build and Test Release with Sanitizers and Debug info",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "multi-san"
+        },
+        {
+          "type": "build",
+          "name": "release-san-deb"
+        },
+        {
+          "type": "test",
+          "name": "release-san-deb"
+        }
+      ]
+    },
+    {
       "name": "multi",
       "displayName": "Configure, Build and Test with Debug and Release",
       "steps": [
@@ -205,11 +266,11 @@
         },
         {
           "type": "build",
-          "name": "release"
+          "name": "release-deb"
         },
         {
           "type": "test",
-          "name": "release"
+          "name": "release-deb"
         }
       ]
     },
@@ -231,11 +292,11 @@
         },
         {
           "type": "build",
-          "name": "release-san"
+          "name": "release-san-deb"
         },
         {
           "type": "test",
-          "name": "release-san"
+          "name": "release-san-deb"
         }
       ]
     }

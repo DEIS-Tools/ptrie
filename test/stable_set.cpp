@@ -19,9 +19,18 @@
 #include "utils.h"
 
 #include <ptrie/ptrie_stable.h>
+#include <ptrie/ptrie_memory.hpp>  // uchar
 
 #include <doctest/doctest.h>
+
+#include <iostream>
 #include <vector>
+#include <algorithm>    // equal
+#include <type_traits>  // has_unique_object_representations_v
+
+#include <cstring>  // memcmp
+#include <cassert>
+#include <cstddef>  // size_t
 
 TEST_SUITE_BEGIN("PTrie Stable Set");
 
@@ -74,7 +83,7 @@ TEST_CASE("Pseudo Rand1")
         auto set = ptrie::set_stable<>{};
         auto ids = std::vector<size_t>{};
         auto scratchpad = std::vector<uchar>(20 + sizeof(size_t));
-        for (size_t i = 0; i < 1024 * 10; ++i) {
+        for (size_t i = 0; i < 1024_uz * 10; ++i) {
             const auto data = rand_data(i + seed, 20);
             const auto [res, id] = set.insert(std::data(data), std::size(data));
             CHECK(res);
@@ -86,7 +95,7 @@ TEST_CASE("Pseudo Rand1")
         }
 
         // let us unwrap everything and check that it is there!
-        for (size_t i = 0; i < 1024 * 10; ++i) {
+        for (size_t i = 0; i < 1024_uz * 10; ++i) {
             const auto data = rand_data(i + seed, 20);
             const auto size = set.unpack(ids[i], std::data(scratchpad));
 
@@ -107,7 +116,7 @@ TEST_CASE("Pseudo Rand Split Heap")
         auto ids = std::vector<size_t>{};
         auto scratchpad = std::vector<uchar>(20 + sizeof(size_t));
 
-        for (size_t i = 0; i < 1024 * 10; ++i) {
+        for (size_t i = 0; i < 1024_uz * 10; ++i) {
             const auto data = rand_data(i + seed, 20);
             const auto [res, id] = set.insert(std::data(data), std::size(data));
             CHECK(res);
@@ -119,7 +128,7 @@ TEST_CASE("Pseudo Rand Split Heap")
         }
 
         // let us unwrap everything and check that it is there!
-        for (size_t i = 0; i < 1024 * 10; ++i) {
+        for (size_t i = 0; i < 1024_uz * 10; ++i) {
             const auto data = rand_data(i + seed, 20);
             const auto size = set.unpack(ids[i], std::data(scratchpad));
 
@@ -133,21 +142,19 @@ TEST_CASE("Pseudo Rand Split Heap")
     }
 }
 
+/// Input type to byte_iterator with padding
 struct type_t
 {
     char _a;
     int _b;
     char _c;
     int _d;
-    bool operator==(const type_t& other) const
-    {
-        return _a == other._a && _b == other._b && _c == other._c && _d == other._d;
-    }
+    bool operator==(const type_t& other) const noexcept = default;
     static type_t rand(unsigned int seed)
     {
         auto char_gen = rand_gen<char>();
         auto int_gen = rand_gen<int>(seed);
-        return {char_gen(), int_gen(), char_gen(), int_gen()};
+        return {._a = char_gen(), ._b = int_gen(), ._c = char_gen(), ._d = int_gen()};
     }
     static std::vector<type_t> rand_vec(unsigned int seed, std::size_t size)
     {
@@ -155,15 +162,16 @@ struct type_t
         auto int_gen = rand_gen<int>(seed);
         auto res = std::vector<type_t>(size);
         for (auto& t : res)
-            t = type_t{char_gen(), int_gen(), char_gen(), int_gen()};
+            t = type_t{._a = char_gen(), ._b = int_gen(), ._c = char_gen(), ._d = int_gen()};
         return res;
     }
     friend std::ostream& operator<<(std::ostream& os, const type_t& el)
     {
-        std::cerr << (int)el._a << ", " << el._b << ", " << (int)el._c << ", " << el._d;
+        std::cerr << +el._a << ", " << el._b << ", " << +el._c << ", " << el._d;
         return os;
     }
 };
+static_assert(!std::has_unique_object_representations_v<type_t>);
 
 template <>
 struct ptrie::byte_iterator<type_t>
@@ -175,13 +183,13 @@ struct ptrie::byte_iterator<type_t>
         assert(id < element_size());
 
         switch (id) {
-        case 0: return (uchar&)data[el]._a;
+        case 0: return *as_array(&data[el]._a);
         case 1:
         case 2:
         case 3:
-        case 4: return ((uchar*)&data[el]._b)[id - 1];
-        case 5: return (uchar&)data[el]._c;
-        default: return ((uchar*)&data[el]._d)[id - 6];
+        case 4: return as_array(&data[el]._b)[id - 1];
+        case 5: return *as_array(&data[el]._c);
+        default: return as_array(&data[el]._d)[id - 6];
         }
     }
 
@@ -190,9 +198,13 @@ struct ptrie::byte_iterator<type_t>
         return access(const_cast<type_t*>(data), id);
     }
 
-    static constexpr size_t element_size() { return sizeof(char) * 2 + sizeof(int) * 2; }
+    static constexpr size_t element_size()
+    {
+        return sizeof(type_t::_a) + sizeof(type_t::_b) + sizeof(type_t::_c) + sizeof(type_t::_d);
+    }
 
-    static constexpr bool continious() { return false; }
+    static constexpr bool continuous() { return false; }
+    [[deprecated("wrong spelling")]] static constexpr bool continious() { return false; }
 };
 
 TEST_CASE("Complex Type1")
@@ -201,7 +213,7 @@ TEST_CASE("Complex Type1")
         auto set = ptrie::set_stable<type_t>{};
         auto ids = std::vector<size_t>{};
         auto scratchpad = type_t{};
-        for (size_t i = 0; i < 1024 * 10; ++i) {
+        for (size_t i = 0; i < 1024_uz * 10; ++i) {
             const auto test = type_t::rand(i + seed);
             const auto [res, id] = set.insert(test);
             CHECK(res);
@@ -213,7 +225,7 @@ TEST_CASE("Complex Type1")
         }
 
         // let us unwrap everything and check that it is there!
-        for (size_t i = 0; i < 1024 * 10; ++i) {
+        for (size_t i = 0; i < 1024_uz * 10; ++i) {
             const auto test = type_t::rand(i + seed);
             const auto size = set.unpack(ids[i], &scratchpad);
 
@@ -233,7 +245,7 @@ TEST_CASE("Complex Type2")
         auto set = ptrie::set_stable<type_t, size_t, 9>{};
         auto ids = std::vector<size_t>{};
         auto scratchpad = type_t{};
-        for (size_t i = 0; i < 1024 * 10; ++i) {
+        for (size_t i = 0; i < 1024_uz * 10; ++i) {
             const auto test = type_t::rand(i + seed);
             const auto [res, id] = set.insert(test);
             REQUIRE(res);
@@ -245,7 +257,7 @@ TEST_CASE("Complex Type2")
         }
 
         // let us unwrap everything and check that it is there!
-        for (size_t i = 0; i < 1024 * 10; ++i) {
+        for (size_t i = 0; i < 1024_uz * 10; ++i) {
             const auto test = type_t::rand(i + seed);
             const auto size = set.unpack(ids[i], &scratchpad);
 
@@ -265,7 +277,7 @@ TEST_CASE("Complex Type1 Vector")
         auto set = ptrie::set_stable<type_t>{};
         auto ids = std::vector<size_t>{};
         auto scratchpad = std::vector<type_t>(10);
-        for (size_t i = 0; i < 1024 * 10; ++i) {
+        for (size_t i = 0; i < 1024_uz * 10; ++i) {
             const auto test = type_t::rand_vec(i + seed, 10);
             const auto [res, id] = set.insert(test);
             REQUIRE(res);
@@ -277,7 +289,7 @@ TEST_CASE("Complex Type1 Vector")
         }
 
         // let us unwrap everything and check that it is there!
-        for (size_t i = 0; i < 1024 * 10; ++i) {
+        for (size_t i = 0; i < 1024_uz * 10; ++i) {
             const auto test = type_t::rand_vec(i + seed, 10);
             const auto size = set.unpack(ids[i], scratchpad.data());
 
@@ -297,7 +309,7 @@ TEST_CASE("Complex Type2 Vector")
         auto set = ptrie::set_stable<type_t, size_t, 9>{};
         auto ids = std::vector<size_t>{};
         auto scratchpad = std::vector<type_t>(10);
-        for (size_t i = 0; i < 1024 * 10; ++i) {
+        for (size_t i = 0; i < 1024_uz * 10; ++i) {
             const auto test = type_t::rand_vec(i + seed, 10);
             const auto [res, id] = set.insert(test);
             REQUIRE(res);
@@ -309,7 +321,7 @@ TEST_CASE("Complex Type2 Vector")
         }
 
         // let us unwrap everything and check that it is there!
-        for (size_t i = 0; i < 1024 * 10; ++i) {
+        for (size_t i = 0; i < 1024_uz * 10; ++i) {
             const auto test = type_t::rand_vec(i + seed, 10);
             const auto size = set.unpack(ids[i], scratchpad.data());
 
@@ -329,6 +341,7 @@ TEST_CASE("Simple Copy")
     for (size_t i = 0; i < 100000; ++i)
         set.insert(i);
     {
+        // NOLINTNEXTLINE(performance-unnecessary-copy-initialization)
         const auto cpy = set;  // copy on purpose
         size_t i = 0;
         for (; i < 100000; ++i)

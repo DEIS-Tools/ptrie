@@ -13,16 +13,29 @@ FetchContent_Declare(benchmark
 
 set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Enable testing of the benchmark library.")
 set(BENCHMARK_ENABLE_EXCEPTIONS ON CACHE BOOL "Enable the use of exceptions in the benchmark library.")
-set(BENCHMARK_ENABLE_LTO ON CACHE BOOL "Enable link time optimisation of the benchmark library.") # requires llvm-ar on macOS
+# Link-Time-Optimization (LTO) requires llvm tools on macOS and -fuse-ld=lld on clang/Linux, disabled for simplicity
+set(BENCHMARK_ENABLE_LTO OFF CACHE BOOL "Enable link time optimisation of the benchmark library.")
 set(BENCHMARK_USE_LIBCXX OFF CACHE BOOL "Build and test using libc++ as the standard library.")
 set(BENCHMARK_ENABLE_WERROR OFF CACHE BOOL "Build Release candidates with -Werror.")
 set(BENCHMARK_FORCE_WERROR OFF CACHE BOOL "Build Release candidates with -Werror regardless of compiler issues.")
+set(BENCHMARK_BUILD_32_BITS OFF CACHE BOOL "Build a 32 bit version of the library (non-MSVC).")
 set(BENCHMARK_ENABLE_INSTALL OFF CACHE BOOL "Enable installation of benchmark. (Projects embedding benchmark may want to turn this OFF.)")
 set(BENCHMARK_ENABLE_DOXYGEN OFF CACHE BOOL "Build documentation with Doxygen.")
 set(BENCHMARK_INSTALL_DOCS OFF CACHE BOOL "Enable installation of documentation.")
+set(BENCHMARK_INSTALL_TOOLS OFF CACHE BOOL "Enable installation of tools.")
 set(BENCHMARK_DOWNLOAD_DEPENDENCIES ON CACHE BOOL "Allow the downloading and in-tree building of unmet dependencies")
 set(BENCHMARK_ENABLE_GTEST_TESTS OFF CACHE BOOL "Enable building the unit tests which depend on gtest")
 set(BENCHMARK_USE_BUNDLED_GTEST OFF CACHE BOOL "Use bundled GoogleTest. If disabled, the find_package(GTest) will be used.")
+
+# report linux-perf hardware counters: see `perf list hardware`, `perf list software`, `perf list cache`, `
+# e.g. --benchmark_perf_counters=INSTRUCTIONS,CYCLES
+# Cache behavior: CACHE-MISSES,LLC-LOAD-MISSES,L1-DCACHE-LOADS,L1-DCACHE-LOAD-MISSES,LLC-LOADS,LLC-LOAD-MISSES
+# Memory bandwidth: LLC-LOAD-MISSES,LLC-STORE-MISSES
+# Branch prediction: BRANCH-INSTRUCTIONS,BRANCH-MISSES
+# TLB (virtual memory pressure): DTLB-LOADS,DTLB-LOAD-MISSES
+# Verify options: `perf stat -e LLC-LOAD-MISSES,L1-DCACHE-LOAD-MISSES ./my_benchmark`
+set(BENCHMARK_ENABLE_LIBPFM OFF CACHE BOOL "Enable performance counters provided by libpfm")
+set(BENCHMARK_ENABLE_ASSEMBLY_TESTS OFF CACHE BOOL "Enable building and running the assembly tests")
 
 FetchContent_MakeAvailable(benchmark)
 

@@ -25,11 +25,15 @@
 #include <sparsehash/sparse_hash_set>
 
 #include <iostream>
-#include <random>
+#include <stdexcept>
+#include <exception>
+#include <system_error>  // system_category
 #include <unordered_set>
+#include <limits>
 
-using ptrie::binarywrapper_t;
-using ptrie::uchar;
+#include <cstdio>   // fclose
+#include <cstdint>  // uint64_t
+
 using ptrie::wrapper_t;
 using ptrie::hasher_o;
 using ptrie::equal_o;
@@ -37,11 +41,10 @@ using ptrie::equal_o;
 int main(int argc, const char** argv)
 try {
     if (argc < 3 || argc > 8) {
-        std::cerr << "Wrong number of arguments, expected 2-7" << std::endl;
-        std::cout << "Usage: (ptrie|std|sparse|dense) (number elements) ?(seed) "
-                     "?(number of bytes) ?(delete ratio) ?(read rate) ?(max byte val)"
-                  << std::endl;
-        std::exit(EXIT_FAILURE);
+        std::cerr << "Wrong number of arguments, expected 2-7\n"
+                     "Usage: (ptrie|std|sparse|dense) (number elements) ?(seed) "
+                     "?(number of bytes) ?(delete ratio) ?(read rate) ?(max byte val)\n";
+        return 1;
     }
     auto s = cli_settings(argc, argv);
     std::cout << s;
@@ -68,11 +71,15 @@ try {
         ptrie::set_insert(set, s);
     } else
         throw std::logic_error{"ERROR IN TYPE, ONLY VALUES ALLOWED: ptrie, std, sparse, dense"};
-    return EXIT_SUCCESS;
+    if (auto err = fclose(stdout); err != 0)  // deallocate buffers to prevent memory leak reports
+        throw std::system_error{err, std::system_category(), "fclose(stdout)"};
+    if (auto err = fclose(stderr); err != 0)
+        throw std::system_error{err, std::system_category(), "fclose(stderr)"};
+    return 0;
 } catch (std::exception& e) {
-    std::cerr << e.what() << std::endl;
-    return EXIT_FAILURE;
+    std::cerr << e.what() << '\n';
+    return 1;
 } catch (...) {
-    std::cerr << "Caught unknown exception!" << std::endl;
-    return EXIT_FAILURE;
+    std::cerr << "Caught unknown exception!\n";
+    return 1;
 }

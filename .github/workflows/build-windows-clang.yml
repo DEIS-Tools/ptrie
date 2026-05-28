@@ -1,5 +1,5 @@
 ---
-name: Build for Windows-MSYS2-UCRT64
+name: Build for Windows using Clang
 on:
   workflow_dispatch:
   push:
@@ -11,7 +11,7 @@ on:
       - cmake/**
       - CMakeLists.txt
       - CMakePresets.json
-      - .github/workflows/build-win-msys2-ucrt64.yml
+      - github/workflows/build-windows-clang.yml
   pull_request:
     branches: [main]
     types: [synchronize, opened, reopened, ready_for_review]
@@ -22,15 +22,17 @@ on:
       - cmake/**
       - CMakeLists.txt
       - CMakePresets.json
-      - .github/workflows/build-win-msys2-ucrt64.yml
+      - github/workflows/build-windows-clang.yml
 
 jobs:
-  windows-msys2-ucrt64:
+  windows-clang:
     runs-on: windows-latest
     defaults:
       run:
         shell: msys2 {0}
     env:
+      CC: clang
+      CXX: clang++
       CMAKE_GENERATOR: "Ninja Multi-Config"
       CTEST_OUTPUT_ON_FAILURE: 1
       PTRIE_TAG: ${{ github.head_ref || github.ref_name }}
@@ -39,7 +41,7 @@ jobs:
         with:
           msystem: UCRT64
           update: true
-          install: mingw-w64-ucrt-x86_64-git mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-sparsehash
+          install: mingw-w64-ucrt-x86_64-git mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja mingw-w64-ucrt-x86_64-clang mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-sparsehash
       - name: Setup Runner Environment
         run: |
           uname -a
@@ -58,19 +60,19 @@ jobs:
 #        run: cmake --build --preset release
 #      - name: Test Release (without Sanitizers)
 #        run: ctest --preset release
-      - name: Quick Release
-        run: cmake --workflow --preset quick-release
-      - name: Quick Release Install to local
-        run: cmake --install build-quick --config Release --prefix "$PWD/local"
-      - name: Configure Example with local
+      - name: Quick Debug (without Sanitizers)
+        run: cmake --workflow --preset quick-debug
+      - name: Quick Debug Install to local (without Sanitizers)
+        run: cmake --install build-quick --config Debug --prefix "$PWD/local"
+      - name: Configure Example with local (without Sanitizers)
         run: cmake -S example -B build-example-local -DCMAKE_PREFIX_PATH="$PWD/local"
-      - name: Build Example with local
+      - name: Build Example with local (without Sanitizers)
         run: cmake --build build-example-local --config Debug
-      - name: Test Example with local
+      - name: Test Example with local (without Sanitizers)
         run: ctest --test-dir build-example-local -C Debug --verbose
-      - name: Configure Example
+      - name: Configure Example (without Sanitizers)
         run: cmake -S example -B build-example -DPTRIE_TAG=${PTRIE_TAG}
-      - name: Build Example
+      - name: Build Example (without Sanitizers)
         run: cmake --build build-example --config Debug
-      - name: Test Example
+      - name: Test Example (without Sanitizers)
         run: ctest --test-dir build-example -C Debug --verbose

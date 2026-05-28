@@ -6,6 +6,8 @@
 #include "binarywrapper.h"
 #include "MurmurHash2.h"
 
+#include <ptrie/ptrie_memory.hpp>
+
 #include <random>
 
 namespace ptrie {
@@ -13,19 +15,19 @@ namespace ptrie {
 inline binarywrapper_t rand_data(size_t seed, size_t maxsize, size_t minsize = sizeof(size_t), size_t mv = 256)
 {
     assert(minsize >= sizeof(size_t));
-    srand(seed);
-    // pick size between 0 and maxsize
-    size_t size = minsize != maxsize ? minsize + rand() % (maxsize - minsize) : minsize;
+    auto gen = std::default_random_engine(seed);
+    auto size_dist = std::uniform_int_distribution{minsize, maxsize};
+    const size_t size = size_dist(gen);
 
-    auto data = binarywrapper_t(size * 8);
+    auto data_dist = std::uniform_int_distribution<size_t>{0, mv - 1};
+    auto data = binarywrapper_t{BitSize<>::of_bytes(size)};
     // fill in random data
-    for (size_t j = 0; j < size; ++j) {
-        data.raw()[j] = static_cast<uchar>(rand() % mv);
-    }
+    for (size_t j = 0; j < size; ++j)
+        data.raw()[j] = static_cast<uchar>(data_dist(gen));
+
     // make sure everything is unique
-    for (size_t j = 1; j <= sizeof(size_t); ++j) {
-        data.raw()[size - j] = ((uchar*)&seed)[j - 1];
-    }
+    for (size_t j = 1; j <= sizeof(size_t); ++j)
+        data.raw()[size - j] = as_array<const uchar>(&seed)[j - 1];
     return data;
 }
 
@@ -38,7 +40,7 @@ struct wrapper_t
     {
         if (_hash == other._hash) {
             if (data.size() == other.data.size())
-                return memcmp(data.const_raw(), other.data.const_raw(), data.size()) > 0;
+                return std::memcmp(data.const_raw(), other.data.const_raw(), data.size()) > 0;
             return data.size() < other.data.size();
         }
         return _hash < other._hash;
@@ -63,15 +65,9 @@ struct equal_o
 template <typename T>
 void set_insert(T& set, const Settings& s)
 {
-    /*
-    auto generator = std::default_random_engine(seed);
-    auto dist = std::uniform_real_distribution<double>{};
-    auto rem = std::uniform_int_distribution<int>(0, elements);
-    */
-
     auto read_generator = std::default_random_engine(s.seed);
-    auto read_dist = std::normal_distribution<double>(s.read_rate, s.read_rate / 2.0);
-    auto read_el = std::uniform_int_distribution<size_t>(0, s.elements);
+    auto read_dist = std::normal_distribution<double>{s.read_rate, s.read_rate / 2.0};
+    auto read_el = std::uniform_int_distribution<size_t>{0, s.elements};
 
     auto w = wrapper_t{};
     for (size_t i = 0; i < s.elements; ++i) {
@@ -84,7 +80,7 @@ void set_insert(T& set, const Settings& s)
         set.insert(w);
 
         if (s.read_rate > 0.0) {
-            const int reads = std::round(read_dist(read_generator));
+            const int reads = static_cast<int>(std::round(read_dist(read_generator)));
             for (int r = 0; r < reads; ++r) {
                 const size_t el = read_el(read_generator);
                 w.data = rand_data(s.seed + el, s.bytes, s.bytes, s.maxval);
@@ -117,15 +113,9 @@ void set_insert(T& set, const Settings& s)
 template <typename T>
 void set_insert_ptrie(T& set, const Settings& s)
 {
-    /*
-    auto del_generator = std::default_random_engine(seed);
-    auto del_dist = std::uniform_real_distribution<double>{};
-    auto del_el = std::uniform_int_distribution<int>(0, elements);
-    */
-
     auto read_generator = std::default_random_engine(s.seed);
-    auto read_dist = std::normal_distribution<double>(s.read_rate, s.read_rate / 2.0);
-    auto read_el = std::uniform_int_distribution<size_t>(0, s.elements);
+    auto read_dist = std::normal_distribution<double>{s.read_rate, s.read_rate / 2.0};
+    auto read_el = std::uniform_int_distribution<size_t>{0, s.elements};
 
     for (size_t i = 0; i < s.elements; ++i) {
         auto data = rand_data(s.seed + i, s.bytes, s.bytes, s.maxval);
@@ -133,9 +123,9 @@ void set_insert_ptrie(T& set, const Settings& s)
         data.release();
 
         if (s.read_rate > 0.0) {
-            int reads = std::round(read_dist(read_generator));
+            const int reads = static_cast<int>(std::round(read_dist(read_generator)));
             for (int r = 0; r < reads; ++r) {
-                size_t el = read_el(read_generator);
+                const size_t el = read_el(read_generator);
                 data = rand_data(s.seed + el, s.bytes, s.bytes, s.maxval);
                 set.exists(data.raw(), data.size());
                 data.release();

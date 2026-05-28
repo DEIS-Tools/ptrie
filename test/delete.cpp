@@ -18,16 +18,20 @@
 
 #include "utils.h"
 #include <ptrie/ptrie_stable.h>
+#include <ptrie/ptrie_memory.hpp>
 
 #include <doctest/doctest.h>
 
 #include <vector>
+#include <algorithm>  // std::max
+
+#include <cstddef>  // size_t
 
 TEST_SUITE_BEGIN("PTrie Delete");
 
 using ptrie::uchar;
 
-auto one_uchar_gen = [](size_t i) { return std::vector{static_cast<uchar>(i)}; };
+const auto one_uchar_gen = [](std::size_t i) { return std::vector{static_cast<uchar>(i)}; };
 
 TEST_CASE("Insert Delete Byte")
 {
@@ -225,7 +229,7 @@ TEST_CASE("Insert Delete Large2")
         CHECK_MESSAGE(!exists1, "FAILED ON DELETE, STILL EXISTS " << i);
         for (int j = std::max(0, i - 100); j < std::min(i + 100, max); ++j) {
             int s2 = 0;
-            if (j % 2)
+            if (j % 2 != 0)
                 s2 = ((max / 2) - 1) - (j / 2);
             else
                 s2 = (max / 2) + (j / 2);
@@ -287,6 +291,81 @@ TEST_CASE("Insert Delete Large3")
             }
         }
         REQUIRE(ok);
+    }
+}
+
+TEST_CASE("Erase Missing Keys")
+{
+    auto set = ptrie::set_stable<>{};
+    {  // erase from an empty trie
+        auto d = one_uchar_gen(7);
+        CHECK_FALSE(set.erase(std::data(d), std::size(d)));
+    }
+    try_insert(set, one_uchar_gen, 10);  // keys 0..9
+    {                                    // erase a key that was never inserted
+        auto d = one_uchar_gen(200);
+        CHECK_FALSE(set.erase(std::data(d), std::size(d)));
+    }
+    {  // erase an existing key, then erase it again
+        auto d = one_uchar_gen(5);
+        CHECK(set.erase(std::data(d), std::size(d)));
+        CHECK_FALSE(set.erase(std::data(d), std::size(d)));
+    }
+    {  // erase a longer key that shares a prefix with existing single-byte keys
+        const std::vector<uchar> d = {3, 0, 0};
+        CHECK_FALSE(set.erase(std::data(d), std::size(d)));
+    }
+    for (size_t i = 0; i < 10; ++i) {  // surviving keys are intact
+        if (i == 5)
+            continue;
+        auto d = one_uchar_gen(i);
+        CHECK_MESSAGE(set.exists(std::data(d), std::size(d)).first, "LOST " << i);
+    }
+}
+
+TEST_CASE("Erase Keeps Dense Node")
+{
+    // Many keys sharing a prefix concentrate in few nodes; partial deletion
+    // leaves nodes above SPLITBOUND/3 so the merge step bails out early.
+    auto set = ptrie::set_stable<uchar, size_t, 9, 16>{};  // HEAPBOUND=9, SPLITBOUND=16
+    const auto gen = [](size_t i) { return std::vector<uchar>{0x10, static_cast<uchar>(i)}; };
+    constexpr size_t N = 200;
+    try_insert(set, gen, N);
+    for (size_t i = 0; i < N; i += 5) {  // erase a sparse subset, keep nodes dense
+        auto d = gen(i);
+        REQUIRE_MESSAGE(set.erase(std::data(d), std::size(d)), "FAILED ERASE " << i);
+    }
+    for (size_t i = 0; i < N; ++i) {
+        auto d = gen(i);
+        const bool present = set.exists(std::data(d), std::size(d)).first;
+        CHECK_MESSAGE(present == (i % 5 != 0), "WRONG STATE " << i);
+    }
+}
+
+TEST_CASE("Erase Deep Subtree Collapse")
+{
+    // A dense 2-byte grid with many distinct first AND second bytes forces forward
+    // nodes at both byte levels (a 2-level deep trie). Erasing a whole first-byte
+    // row empties a second-byte forward node whose parent is not the root, which is
+    // what drives merge_empty's upward collapse loop.
+    auto set = ptrie::set_stable<uchar, size_t, 9, 6>{};  // HEAPBOUND=9, SPLITBOUND=6
+    constexpr size_t SIDE = 16;                           // first/second bytes 0..15
+    const auto gen = [](size_t i) {
+        return std::vector<uchar>{static_cast<uchar>(i / SIDE), static_cast<uchar>(i % SIDE)};
+    };
+    constexpr size_t N = SIDE * SIDE;
+    try_insert(set, gen, N);
+
+    // Erase row by row so that whole second-byte subtrees empty while others remain.
+    for (size_t row = 0; row < SIDE; ++row) {
+        for (size_t col = 0; col < SIDE; ++col) {
+            auto d = gen((row * SIDE) + col);
+            REQUIRE_MESSAGE(set.erase(std::data(d), std::size(d)), "FAILED ERASE " << row << "," << col);
+        }
+        for (size_t k = (row + 1) * SIDE; k < N; ++k) {  // not-yet-erased keys survive
+            auto d = gen(k);
+            CHECK_MESSAGE(set.exists(std::data(d), std::size(d)).first, "LOST " << k << " after row " << row);
+        }
     }
 }
 

@@ -24,6 +24,21 @@
 
 #include <chrono>
 
+#include <cstdlib>  // srand, rand
+
+template <typename T>
+static auto rand_gen(unsigned int seed)
+{
+    srand(seed);                                        // NOLINT(cert-msc30-c,cert-msc50-cpp)
+    return [] { return static_cast<T>(std::rand()); };  // NOLINT(cert-msc30-c,cert-msc50-cpp,concurrency-mt-unsafe)
+}
+
+template <typename T>
+static auto rand_gen()
+{
+    return [] { return static_cast<T>(std::rand()); };  // NOLINT(cert-msc30-c,cert-msc50-cpp,concurrency-mt-unsafe)
+}
+
 template <typename T>
 T read_arg(T default_value, const char* arg, const char* name)
 {
@@ -48,7 +63,7 @@ private:
         os << "Using " << s.type << "\n\tinserting " << s.elements << " items of " << s.bytes << " bytes"
            << "\n\tproduced via seed " << s.seed << "\n\tOf those " << (s.deletes * 100.0) << "% are deleted at random,"
            << "\n\tand for each insert, on average " << s.read_rate << " extra reads will occur."
-           << "\n\tAll bytes in rand data are mod " << s.maxval << std::endl;
+           << "\n\tAll bytes in rand data are mod " << s.maxval << '\n';
         return os;
     }
 };
@@ -81,9 +96,11 @@ struct Timer
     using Duration = std::chrono::duration<double>;
     Timer() = default;
     Duration elapsed() const { return {Clock::now() - start}; }
-    ~Timer() { std::cout << "Completed in " << elapsed().count() << std::endl; }
+    ~Timer() { std::cout << "Completed in " << elapsed().count() << '\n'; }
     Timer(const Timer&) = delete;
     Timer& operator=(const Timer&) = delete;
+    Timer(Timer&&) = delete;
+    Timer& operator=(Timer&&) = delete;
 
 private:
     TimePoint start = Clock::now();

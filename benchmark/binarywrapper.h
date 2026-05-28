@@ -26,17 +26,64 @@
 #define BINARYWRAPPER_H
 
 #include <algorithm>  // std::min
+#include <limits>
+#include <stdexcept>
 
 #include <cassert>
 #include <cstdint>
-#include <cstdlib>  // calloc, free
 #include <cstring>  // memcmp
 
 namespace ptrie {
-constexpr auto PTR_SIZE = sizeof(uintptr_t);  // SIZE OF POINTER!
+constexpr auto PTR_SIZE = sizeof(uintptr_t);  ///< the size of a pointer
 using uint = unsigned int;
 using uchar = unsigned char;
-constexpr uchar Bx80 = 0x80;
+
+/// Strong type for denoting the number of bits
+template <typename Count = uint>
+struct BitSize
+{
+    static constexpr auto BYTE = 8u;  ///< number of bits in a byte
+    explicit constexpr BitSize(Count bits): _bits{bits} {}
+    constexpr Count bits() const { return _bits; }
+    template <typename Bytes = uint16_t>
+    constexpr Bytes bytes() const
+    {
+        const auto res = (_bits + BYTE - 1) / BYTE;  // roundup to ceiling as needed
+        if (std::numeric_limits<Bytes>::max() < res)
+            throw std::overflow_error{"Cannot fit " + std::to_string(_bits) + " bits"};
+        return static_cast<Bytes>(res);
+    }
+    constexpr std::pair<Count, uchar> split() const { return {_bits / BYTE, _bits % BYTE}; }
+    static constexpr BitSize of_bytes(Count bytes) { return BitSize{bytes * BYTE}; }
+    template <typename T>
+    static constexpr BitSize of()
+    {
+        return of_bytes(sizeof(T));
+    }
+
+private:
+    Count _bits;
+};
+template <typename T>
+BitSize(T) -> BitSize<T>;
+
+constexpr BitSize<uint> operator""_bits(unsigned long long bits)
+{
+    if (std::numeric_limits<uint>::max() < bits)
+        throw std::overflow_error{"Cannot fit " + std::to_string(bits) + " bits"};
+    return BitSize{static_cast<uint>(bits)};
+}
+
+static_assert(BitSize{0}.bytes() == 0);
+static_assert(BitSize{1}.bytes() == 1);
+static_assert(BitSize{7}.bytes() == 1);
+static_assert(BitSize{8}.bytes() == 1);
+static_assert(BitSize{9}.bytes() == 2);
+static_assert(BitSize{2040}.bytes<uchar>() == 255);
+// static_assert(Bits{2041}.bytes<uchar>() == 256); // overflow
+static_assert(BitSize{2041}.bytes() == 256);
+
+// NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast,cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
 /**
  * Wrapper for binary data. This provides easy access to individual bits,
@@ -45,18 +92,37 @@ constexpr uchar Bx80 = 0x80;
  */
 struct binarywrapper_t
 {
+    static constexpr uchar Bx80 = 0b10000000;  ///< bitmask with the highest bit set
     /// Default constructor does not allocate any data
-    binarywrapper_t() = default;
+    constexpr binarywrapper_t() = default;
 
-    /// Allocates a room for at least size bits
-    explicit binarywrapper_t(uint size);
+    /// Allocates a room for at least the `bits` number of bits
+    template <typename T>
+    explicit constexpr binarywrapper_t(BitSize<T> bits): _nbytes{bits.bytes()}, _blob{zallocate(_nbytes)}
+    {}
+
+    /// Allocates a room for at least `size` number of bits
+    [[deprecated]] explicit constexpr binarywrapper_t(uint size): binarywrapper_t{BitSize{size}} {}
 
     /**
      * Assign (not copy) raw data to pointer. Set number of bytes to size
-     * @param raw: some memory to point to
-     * @param size: number of bytes.
+     * @param src some raw memory to point to
+     * @param bits number of bits.
      */
-    binarywrapper_t(uchar* raw, uint size);
+    template <typename T>
+    constexpr binarywrapper_t(uchar* src, BitSize<T> bits): _nbytes{bits.bytes()}, _blob{src}
+    {
+        if (_nbytes <= PTR_SIZE)  // store inplace
+            std::copy_n(src, _nbytes, raw());
+        //        assert(raw[0] == const_raw()[0]);
+    }
+
+    /**
+     * Assign (not copy) raw data to pointer. Set number of bytes to size
+     * @param src some raw memory to point to
+     * @param size number of bits.
+     */
+    [[deprecated]] binarywrapper_t(uchar* src, uint size): binarywrapper_t{src, BitSize{size}} {}
 
     /**
      * number of bytes allocated in heap
@@ -71,7 +137,7 @@ struct binarywrapper_t
     uchar* raw()
     {
         if (_nbytes <= PTR_SIZE)
-            return offset((uchar*)&_blob, _nbytes);
+            return offset(reinterpret_cast<uchar*>(&_blob), _nbytes);
         return offset(_blob, _nbytes);
     }
 
@@ -79,48 +145,50 @@ struct binarywrapper_t
      * Raw access to data when in const setting
      * @return
      */
-    uchar* const_raw() const { return const_cast<binarywrapper_t*>(this)->raw(); }
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
+    const uchar* const_raw() const { return const_cast<binarywrapper_t*>(this)->raw(); }
 
     /**
-     * Change value of place'th bit
-     * @param place: index of bit to change
+     * Change the value of the bit with given index
+     * @param index: index of bit to change
      * @param value: desired value
      */
-    void set(const uint place, const bool value)
+    void set(const uint index, const bool value)
     {
-        assert(place < _nbytes * 8);
-        uint offset = place % 8;
-        uint theplace = place / 8;
+        assert(index < BitSize<>::of_bytes(_nbytes).bits());
+        const auto [byte_pos, bit_pos] = BitSize{index}.split();
         if (value) {
-            raw()[theplace] |= (Bx80 >> offset);
+            raw()[byte_pos] |= (Bx80 >> bit_pos);
         } else {
-            raw()[theplace] &= ~(Bx80 >> offset);
+            raw()[byte_pos] &= ~(Bx80 >> bit_pos);
         }
     }
 
     /**
-     * Get value of the place'th bit
-     * @param place: bit index
+     * Get the value of the bit with given index
+     * @param index: bit index
      * @return
      */
-    bool at(const uint place) const
+    bool at(const uint index) const
     {
-        uint offset = place % 8;
-        bool res2;
-        if (place / 8 < _nbytes)
-            res2 = (const_raw()[place / 8] & (Bx80 >> offset)) != 0;
-        else
-            res2 = false;
-        return res2;
+        assert(index < BitSize<>::of_bytes(_nbytes).bits());
+        const auto [byte_pos, bit_pos] = BitSize<>{index}.split();
+        const auto res = (const_raw()[byte_pos] & (Bx80 >> bit_pos)) != 0;
+        return res;
     }
 
     /**
-     * finds the overhead (unused number of bits) when allocating for size
-     * bits.
+     * finds the overhead (unused number of bits) when allocating for size bits.
      * @param size: number of bits
      * @return
      */
-    static size_t overhead(uint size);
+    static size_t overhead(uint size)
+    {
+        size %= BitSize<>::BYTE;
+        if (size == 0)
+            return 0;
+        return BitSize<>::BYTE - size;
+    }
 
     /**
      * Deallocates memory stored on heap
@@ -138,11 +206,9 @@ struct binarywrapper_t
      * @param i: index to access
      * @return
      */
-    uchar operator[](int i) const
+    uchar operator[](unsigned i) const
     {
-        if (i >= _nbytes) {
-            return 0x0;
-        }
+        assert(i < _nbytes);
         return const_raw()[i];
     }
 
@@ -159,7 +225,7 @@ struct binarywrapper_t
         if (_nbytes > other._nbytes)
             return 1;
 
-        size_t bcmp = std::min(_nbytes, other._nbytes);
+        const size_t bcmp = std::min(_nbytes, other._nbytes);
         return std::memcmp(const_raw(), other.const_raw(), bcmp);
     }
 
@@ -223,7 +289,7 @@ private:
         if (n <= PTR_SIZE)
             return nullptr;
 #ifndef NDEBUG
-        size_t on = n;
+        const size_t on = n;
 #endif
         if (n % PTR_SIZE != 0) {
             n = (1 + (n / PTR_SIZE)) * PTR_SIZE;
@@ -231,25 +297,22 @@ private:
         }
         assert(n % PTR_SIZE == 0);
         assert(on <= n);
-        return (uchar*)calloc(n, 1);
+        return new uchar[n]{};  // NOLINT(cppcoreguidelines-owning-memory)
     }
 
-    static void dealloc(uchar* data) { free(data); }
+    static void dealloc(const uchar* data) { delete[] data; }  // NOLINT(cppcoreguidelines-owning-memory)
 
     static uchar* offset(uchar* data, uint16_t size [[maybe_unused]])
     {
-        //            if((size % __BW_BSIZE__) == 0) return data;
-        //            else return &data[(__BW_BSIZE__ - (size % __BW_BSIZE__))];
+        //            if((size % PTR_SIZE) == 0) return data;
+        //            else return &data[(PTR_SIZE - (size % PTR_SIZE))];
         return data;
     }
 
-    // blob of heap-allocated data
-    uchar* _blob{nullptr};
-
-    // number of bytes allocated on heap
-    uint16_t _nbytes{0};
-
-    // masks for single-bit access
+    uint16_t _nbytes{0};    ///< number of bytes allocated on heap
+    uchar* _blob{nullptr};  ///< blob of heap-allocated data
 };
+// NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast,cppcoreguidelines-pro-bounds-pointer-arithmetic)
+
 }  // namespace ptrie
 #endif /* BINARYWRAPPER_H */

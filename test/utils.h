@@ -20,24 +20,30 @@
 #ifndef PTRIE_UTILS_H
 #define PTRIE_UTILS_H
 
+#include <ptrie/ptrie_memory.hpp>
+
 #include <doctest/doctest.h>
 
-#include <memory>
+#include <iostream>
 #include <vector>
 
-#include <cstddef>  // size_t etc
+#include <cstddef>  // size_t
+#include <cstdlib>  // rand
+
+/// Workaround for "literal suffix `uz` is a C++23 feature"
+constexpr std::size_t operator""_uz(unsigned long long n) { return n; }
 
 template <typename T>
 auto rand_gen(unsigned int seed)
 {
-    srand(seed);
-    return [] { return static_cast<T>(rand()); };
+    srand(seed);                                        // NOLINT(cert-msc30-c,cert-msc50-cpp)
+    return [] { return static_cast<T>(std::rand()); };  // NOLINT(cert-msc30-c,cert-msc50-cpp,concurrency-mt-unsafe)
 }
 
 template <typename T>
 auto rand_gen()
 {
-    return [] { return static_cast<T>(rand()); };
+    return [] { return static_cast<T>(std::rand()); };  // NOLINT(cert-msc30-c,cert-msc50-cpp,concurrency-mt-unsafe)
 }
 
 template <typename T, typename G>
@@ -64,7 +70,7 @@ inline std::vector<unsigned char> rand_data(size_t seed, size_t maxsize, size_t 
     REQUIRE(minsize >= sizeof(size_t));
     auto int_gen = rand_gen<int>(seed);
     // pick size between 0 and maxsize
-    size_t size = minsize != maxsize ? minsize + int_gen() % (maxsize - minsize) : minsize;
+    const size_t size = minsize != maxsize ? minsize + (int_gen() % (maxsize - minsize)) : minsize;
 
     auto uchar_gen = rand_gen<unsigned char>();
     auto data = std::vector<unsigned char>(size);
@@ -72,7 +78,7 @@ inline std::vector<unsigned char> rand_data(size_t seed, size_t maxsize, size_t 
         value = uchar_gen();
     // make sure everything is unique
     for (size_t j = 1; j <= sizeof(size_t); ++j) {
-        data[size - j] = ((unsigned char*)&seed)[j - 1];
+        data[size - j] = ptrie::as_array(&seed)[j - 1];
     }
     return data;
 }

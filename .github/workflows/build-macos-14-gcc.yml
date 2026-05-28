@@ -1,5 +1,5 @@
 ---
-name: Build for macOS-14
+name: Build for macOS-14 with GCC
 on:
   workflow_dispatch:
 #  push:
@@ -11,7 +11,7 @@ on:
 #      - cmake/**
 #      - CMakeLists.txt
 #      - CMakePresets.json
-#      - .github/workflows/build-macos-14.yml
+#      - .github/workflows/build-macos-14-gcc.yml
 #  pull_request:
 #    branches: [main]
 #    types: [synchronize, opened, reopened, ready_for_review]
@@ -20,13 +20,16 @@ on:
 #      - test/**
 #      - benchmark/**
 #      - cmake/**
+#      - CMakeLists.txt
 #      - CMakePresets.json
-#      - .github/workflows/build-macos-14.yml
+#      - .github/workflows/build-macos-14-gcc.yml
 
 jobs:
-  macOS-14:
+  macOS-14-gcc:
     runs-on: macos-14
     env:
+      CC: gcc-15
+      CXX: g++-15
       CMAKE_GENERATOR: "Ninja Multi-Config"
       CTEST_OUTPUT_ON_FAILURE: 1
       PTRIE_TAG: ${{ github.head_ref || github.ref_name }}
@@ -46,10 +49,6 @@ jobs:
           echo "CMAKE_BUILD_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
           echo "CTEST_TEST_PARALLEL_LEVEL=$CORES" >> $GITHUB_ENV
           echo "CTEST_TEST_LOAD=$CORES" >> $GITHUB_ENV
-          GCC_PREFIX=$(brew --prefix gcc)
-          GCC_VERSION=$(brew list --versions gcc | awk '{print $2}' | cut -d. -f1)
-          echo "CC=${GCC_PREFIX}/bin/gcc-${GCC_VERSION}" >> $GITHUB_ENV
-          echo "CXX=${GCC_PREFIX}/bin/g++-${GCC_VERSION}" >> $GITHUB_ENV
       - uses: actions/checkout@v5
       - name: Configure Multi-Config (without Sanitizers)
         run: cmake --preset multi -DBENCHMARK_PLOTS=OFF
@@ -61,19 +60,19 @@ jobs:
 #        run: cmake --build --preset release
 #      - name: Test Release (without Sanitizers)
 #        run: ctest --preset release
-      - name: Quick Release
-        run: cmake --workflow --preset quick-release
-      - name: Quick Release Install to local
-        run: cmake --install build-quick --config Release --prefix "$PWD/local"
-      - name: Configure Example with local
+      - name: Quick Debug (without Sanitizers)
+        run: cmake --workflow --preset quick-debug
+      - name: Quick Debug Install to local (without Sanitizers)
+        run: cmake --install build-quick --config Debug --prefix "$PWD/local"
+      - name: Configure Example with local (without Sanitizers)
         run: cmake -S example -B build-example-local -DCMAKE_PREFIX_PATH="$PWD/local"
-      - name: Build Example with local
+      - name: Build Example with local (without Sanitizers)
         run: cmake --build build-example-local --config Debug
-      - name: Test Example with local
+      - name: Test Example with local (without Sanitizers)
         run: ctest --test-dir build-example-local -C Debug --verbose
-      - name: Configure Example
+      - name: Configure Example (without Sanitizers)
         run: cmake -S example -B build-example -DPTRIE_TAG=${PTRIE_TAG}
-      - name: Build Example
-        run: cmake --build build-example
-      - name: Test Example
+      - name: Build Example (without Sanitizers)
+        run: cmake --build build-example --config Debug
+      - name: Test Example (without Sanitizers)
         run: ctest --test-dir build-example -C Debug --verbose
