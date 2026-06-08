@@ -6,3 +6,6 @@
 /cmake-build-*
 /local
 compile_commands.json
+
+# Local files to keep out of commits
+.github/PR_BODY.md
