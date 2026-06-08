@@ -26,6 +26,7 @@
 
 #include <iostream>
 #include <vector>
+#include <cstdio>
 
 #include <cstddef>  // size_t
 #include <cstdlib>  // rand
@@ -96,5 +97,21 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
     }
     return os << ']';
 }
+
+// Close stdout/stderr at program exit to ensure libc FILE buffers are freed for heap profilers
+namespace {
+struct StdioCloser
+{
+    ~StdioCloser()
+    {
+        fflush(stdout);
+        fflush(stderr);
+        // ignore errors
+        fclose(stdout);
+        fclose(stderr);
+    }
+};
+static StdioCloser _stdio_closer_instance;
+}  // namespace
 
 #endif  // PTRIE_UTILS_H
