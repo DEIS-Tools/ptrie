@@ -6,6 +6,14 @@ cmake --preset multi
 cmake --build --preset release-deb
 
 mkdir -p artifacts
+# Run repeated Map runs to compute medians (map_repeats.py will write artifacts/map_repeats_results.json)
+MAP_REPEATS_COUNT=${MAP_REPEATS:-7}
+if python3 tools/bench/map_repeats.py "$MAP_REPEATS_COUNT"; then
+  echo "map_repeats completed"
+else
+  echo "map_repeats exited non-zero (continuing)"
+fi
+
 # Collect JSON object strings in a bash array to avoid sed quoting issues
 declare -a results_arr=()
 
@@ -57,6 +65,30 @@ for name in "${bins[@]}"; do
   else
     wall_sec=0
     max_rss_kb=0
+  fi
+
+  # If this is the Map entry and map_repeats produced medians, prefer those values
+  if [ "$name" = "Map" ] && [ -f "${artifacts_dir}/map_repeats_results.json" ]; then
+    # Extract median_wall_seconds and median_peak_rss_kb using python (avoid jq dependency)
+    read -r map_median_wall map_median_rss <<EOF
+$(python3 - <<PY
+import json,sys
+p='artifacts/map_repeats_results.json'
+try:
+    j=json.load(open(p))
+    print(j.get('median_wall_seconds',0), j.get('median_peak_rss_kb',0))
+except Exception as e:
+    print(0,0)
+PY
+)
+EOF
+    # If parsing succeeded and non-zero, use medians
+    if [ -n "$map_median_wall" ] && [ "$map_median_wall" != "0" ]; then
+      wall_sec=$map_median_wall
+    fi
+    if [ -n "$map_median_rss" ] && [ "$map_median_rss" != "0" ]; then
+      max_rss_kb=$map_median_rss
+    fi
   fi
 
   # Append JSON entry
