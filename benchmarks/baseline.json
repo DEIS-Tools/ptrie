@@ -10,8 +10,8 @@
   {
     "name": "Map",
     "binary": "build-multi/test/RelWithDebInfo/Map",
-    "wall_seconds": 3.87,
-    "peak_rss_kb": 324664,
+    "wall_seconds": 0.95,
+    "peak_rss_kb": 7036,
     "heaptrack": "artifacts/heap-Map.zst",
     "heaptrack_summary": "artifacts/heap-Map.txt"
   },
