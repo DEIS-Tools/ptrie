@@ -99,19 +99,28 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
 }
 
 // Close stdout/stderr at program exit to ensure libc FILE buffers are freed for heap profilers
-namespace {
+namespace ptrie_test_utils {
 struct StdioCloser
 {
+    StdioCloser() = default;
+    // non-copyable/non-movable to satisfy clang-tidy special-member checks
+    StdioCloser(const StdioCloser&) = delete;
+    StdioCloser& operator=(const StdioCloser&) = delete;
+    StdioCloser(StdioCloser&&) = delete;
+    StdioCloser& operator=(StdioCloser&&) = delete;
+
     ~StdioCloser()
     {
-        fflush(stdout);
-        fflush(stderr);
-        // ignore errors
-        fclose(stdout);
-        fclose(stderr);
+        // flush/close streams; cast results to void to silence warnings about ignored return values
+        (void)fflush(stdout);
+        (void)fflush(stderr);
+        (void)fclose(stdout);
+        (void)fclose(stderr);
     }
 };
-static StdioCloser _stdio_closer_instance;
-}  // namespace
+
+// inline const avoids non-const global-variable warnings and redundant 'static' in headers
+inline const StdioCloser k_stdio_closer_instance{};
+}  // namespace ptrie_test_utils
 
 #endif  // PTRIE_UTILS_H
