@@ -1,0 +1,6 @@
+[
+  {"name":"Set","wall_seconds":0.00,"peak_rss_kb":1988,"heaptrack_summary":"artifacts/heap-Set.txt"},
+  {"name":"Map","wall_seconds":0.00,"peak_rss_kb":2008,"heaptrack_summary":"artifacts/heap-Map.txt"},
+  {"name":"Delete","wall_seconds":0.00,"peak_rss_kb":2028,"heaptrack_summary":"artifacts/heap-Delete.txt"},
+  {"name":"StableSet","wall_seconds":0.00,"peak_rss_kb":2068,"heaptrack_summary":"artifacts/heap-StableSet.txt"}
+]
