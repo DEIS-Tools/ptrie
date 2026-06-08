@@ -1,0 +1,44 @@
+name: Benchmarks & Heaptrack
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  bench:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build g++ libsparsehash-dev heaptrack heaptrack-print time
+
+      - name: Run benchmark + heaptrack
+        run: |
+          chmod +x tools/bench/run_bench.sh
+          ./tools/bench/run_bench.sh
+        env:
+          CC: gcc
+          CXX: g++
+
+      - name: Compare with baseline
+        run: |
+          python3 tools/bench/compare_results.py 5.0 5.0 || true
+        continue-on-error: true
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-artifacts
+          path: artifacts/**
+
+      - name: Upload comparison result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-current-results
+          path: artifacts/current_results.json
