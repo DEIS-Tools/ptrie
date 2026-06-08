@@ -1180,7 +1180,7 @@ DOCTEST_ANON_FUNC_29
       in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/StableSet
 
 73.73K peak memory consumed over 1 calls from
-0x7fe0baeb9e63
+0x7f4ba9cb9e63
   in /usr/lib/x86_64-linux-gnu/libstdc++.so.6
 73.73K consumed over 1 calls from:
     call_init::call_init
@@ -1472,7 +1472,7 @@ std::_Deque_base<>::_M_initialize_map(unsigned long)
   and 716.88K from 24 other places
 
 1 temporary allocations of 1 allocations in total (100.00%) from
-0x7fe0baeb9e63
+0x7f4ba9cb9e63
   in /usr/lib/x86_64-linux-gnu/libstdc++.so.6
 1 temporary allocations of 1 allocations in total (100.00%) from:
     call_init::call_init
@@ -1487,9 +1487,9 @@ std::_Deque_base<>::_M_initialize_map(unsigned long)
       in /lib64/ld-linux-x86-64.so.2
 
 
-total runtime: 2.82s.
-calls to allocation functions: 6671514 (2364946/s)
-temporary memory allocations: 1228886 (435620/s)
+total runtime: 2.88s.
+calls to allocation functions: 6671514 (2314087/s)
+temporary memory allocations: 1228886 (426252/s)
 peak heap memory consumption: 7.43M
-peak RSS (including heaptrack overhead): 13.23M
-total memory leaked: 4.10K
+peak RSS (including heaptrack overhead): 13.24M
+total memory leaked: 0B

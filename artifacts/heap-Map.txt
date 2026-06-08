@@ -20,7 +20,7 @@ std::_Vector_base<>::_Vector_base(unsigned long, std::allocator<> const&)
 std::vector<>::vector(unsigned long, std::allocator<> const&)
   at /usr/include/c++/15/bits/stl_vector.h:587
 rand_data(unsigned long, unsigned long, unsigned long)
-  at /home/marius/work/UPPAAL/ptrie/test/utils.h:76
+  at /home/marius/work/UPPAAL/ptrie/test/utils.h:77
 102400 calls with 0B peak consumption from:
     DOCTEST_ANON_FUNC_11
       at /home/marius/work/UPPAAL/ptrie/test/map.cpp:45
@@ -1045,7 +1045,7 @@ ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
   and 0B from 5 other places
 
 73.73K peak memory consumed over 1 calls from
-0x7faec26b9e63
+0x7f12440b9e63
   in /usr/lib/x86_64-linux-gnu/libstdc++.so.6
 73.73K consumed over 1 calls from:
     call_init::call_init
@@ -1289,7 +1289,7 @@ std::_Vector_base<>::_Vector_base(unsigned long, std::allocator<> const&)
 std::vector<>::vector(unsigned long, std::allocator<> const&)
   at /usr/include/c++/15/bits/stl_vector.h:587
 rand_data(unsigned long, unsigned long, unsigned long)
-  at /home/marius/work/UPPAAL/ptrie/test/utils.h:76
+  at /home/marius/work/UPPAAL/ptrie/test/utils.h:77
 102400 temporary allocations of 102400 allocations in total (100.00%) from:
     DOCTEST_ANON_FUNC_11
       at /home/marius/work/UPPAAL/ptrie/test/map.cpp:54
@@ -1375,7 +1375,7 @@ rand_data(unsigned long, unsigned long, unsigned long)
   and 0B from 4 other places
 
 1 temporary allocations of 1 allocations in total (100.00%) from
-0x7faec26b9e63
+0x7f12440b9e63
   in /usr/lib/x86_64-linux-gnu/libstdc++.so.6
 1 temporary allocations of 1 allocations in total (100.00%) from:
     call_init::call_init
@@ -1390,9 +1390,9 @@ rand_data(unsigned long, unsigned long, unsigned long)
       in /lib64/ld-linux-x86-64.so.2
 
 
-total runtime: 1.41s.
-calls to allocation functions: 2305831 (1634182/s)
-temporary memory allocations: 512001 (362863/s)
+total runtime: 1.43s.
+calls to allocation functions: 2305831 (1607971/s)
+temporary memory allocations: 512001 (357043/s)
 peak heap memory consumption: 3.37M
-peak RSS (including heaptrack overhead): 8.90M
-total memory leaked: 4.10K
+peak RSS (including heaptrack overhead): 8.99M
+total memory leaked: 0B
