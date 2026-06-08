@@ -15,7 +15,8 @@ jobs:
       - name: Install packages
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build g++ libsparsehash-dev heaptrack heaptrack-print time
+          # Install heaptrack (provides heaptrack and heaptrack_print) — avoid non-existing 'heaptrack-print' package
+          sudo apt-get install -y cmake ninja-build g++ libsparsehash-dev heaptrack time
 
       - name: Run benchmark + heaptrack
         run: |
