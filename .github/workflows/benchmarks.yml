@@ -25,6 +25,7 @@ jobs:
         env:
           CC: gcc
           CXX: g++
+          MAP_REPEATS: '7'
 
       - name: Compare with baseline
         run: |
