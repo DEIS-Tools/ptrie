@@ -1,0 +1,44 @@
+{
+  "runs": [
+    {
+      "run": 1,
+      "wall_seconds": 0.95,
+      "peak_rss_kb": 7176
+    },
+    {
+      "run": 2,
+      "wall_seconds": 0.95,
+      "peak_rss_kb": 7536
+    },
+    {
+      "run": 3,
+      "wall_seconds": 0.94,
+      "peak_rss_kb": 7564
+    },
+    {
+      "run": 4,
+      "wall_seconds": 0.95,
+      "peak_rss_kb": 7444
+    },
+    {
+      "run": 5,
+      "wall_seconds": 0.96,
+      "peak_rss_kb": 7028
+    },
+    {
+      "run": 6,
+      "wall_seconds": 0.95,
+      "peak_rss_kb": 7144
+    },
+    {
+      "run": 7,
+      "wall_seconds": 0.91,
+      "peak_rss_kb": 7032
+    }
+  ],
+  "median_wall_seconds": 0.95,
+  "median_peak_rss_kb": 7176,
+  "baseline_map_wall_seconds": 0.95,
+  "pct_change_vs_baseline": 0.0,
+  "status": "OK"
+}

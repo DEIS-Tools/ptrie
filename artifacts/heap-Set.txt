@@ -1,0 +1,1230 @@
+reading file "/home/marius/work/UPPAAL/ptrie/artifacts/heap-Set.zst" - please wait, this might take some time...
+Debuggee command was: /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+finished reading file, now analyzing data:
+
+MOST CALLS TO ALLOCATION FUNCTIONS
+2743900 calls to allocation functions with 49.99M peak consumption from
+std::__new_allocator<>::allocate(unsigned long, void const*)
+  at /usr/include/c++/15/bits/new_allocator.h:151
+  in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+std::allocator<>::allocate(unsigned long)
+  at /usr/include/c++/15/bits/allocator.h:203
+std::allocator_traits<>::allocate(std::allocator<>&, unsigned long)
+  at /usr/include/c++/15/bits/alloc_traits.h:614
+std::_Vector_base<>::_M_allocate(unsigned long)
+  at /usr/include/c++/15/bits/stl_vector.h:387
+void std::vector<>::_M_range_initialize_n<>(unsigned char const*, unsigned char const*, unsigned long)
+  at /usr/include/c++/15/bits/stl_vector.h:1985
+std::vector<>::vector(std::initializer_list<>, std::allocator<> const&)
+  at /usr/include/c++/15/bits/stl_vector.h:712
+DOCTEST_ANON_FUNC_13::try_insert<>::operator()
+  at /home/marius/work/UPPAAL/ptrie/test/set.cpp:44
+DOCTEST_ANON_FUNC_13::try_insert<>
+  at /home/marius/work/UPPAAL/ptrie/test/utils.h:54
+DOCTEST_ANON_FUNC_13
+  at /home/marius/work/UPPAAL/ptrie/test/set.cpp:44
+1048576 calls with 0B peak consumption from:
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+1048576 calls with 0B peak consumption from:
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+102400 calls with 0B peak consumption from:
+    DOCTEST_ANON_FUNC_25::try_insert<>::operator()
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:99
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:63
+    DOCTEST_ANON_FUNC_25
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:99
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+102400 calls with 0B peak consumption from:
+    DOCTEST_ANON_FUNC_25::try_insert<>::operator()
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:99
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:54
+    DOCTEST_ANON_FUNC_25
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:99
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+102400 calls with 0B peak consumption from:
+    DOCTEST_ANON_FUNC_23::try_insert<>::operator()
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:91
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_23::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:63
+    DOCTEST_ANON_FUNC_23
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:91
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+  and 339548 from 37 other places
+
+1768495 calls to allocation functions with 100.14K peak consumption from
+std::__detail::_MakeUniq<>::__array std::make_unique<>(unsigned long)
+  at /usr/include/c++/15/bits/unique_ptr.h:1099
+  in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+ptrie::internal::ptrie_base<>::bucket_t::bucket_t(unsigned long)
+  at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:275
+ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+  at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1306
+1048576 calls with 0B peak consumption from:
+    DOCTEST_ANON_FUNC_19::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_19
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:69
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+102400 calls with 0B peak consumption from:
+    DOCTEST_ANON_FUNC_21::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_21
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:83
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+102400 calls with 0B peak consumption from:
+    DOCTEST_ANON_FUNC_25::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:99
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+102400 calls with 0B peak consumption from:
+    DOCTEST_ANON_FUNC_23::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_23
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:91
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+100000 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::insert(unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:421
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_63::operator()
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:257
+    DOCTEST_ANON_FUNC_63
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:286
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+  and 312719 from 141 other places
+
+210770 calls to allocation functions with 49.98M peak consumption from
+ptrie::internal::new_uchar2(unsigned long, std::__cxx11::basic_string<> const&, unsigned long)
+  at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:34
+  in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+  at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1389
+98110 calls with 0B peak consumption from:
+    DOCTEST_ANON_FUNC_21::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_21
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:83
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+62327 calls with 0B peak consumption from:
+    DOCTEST_ANON_FUNC_25::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:99
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+12254 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:99
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+12208 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:99
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+9983 calls with 25.20M peak consumption from:
+    DOCTEST_ANON_FUNC_65
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:300
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+  and 15888 from 23 other places
+
+210770 calls to allocation functions with 64B peak consumption from
+std::__new_allocator<>::allocate(unsigned long, void const*)
+  at /usr/include/c++/15/bits/new_allocator.h:151
+  in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+std::allocator<>::allocate(unsigned long)
+  at /usr/include/c++/15/bits/allocator.h:203
+std::allocator_traits<>::allocate(std::allocator<>&, unsigned long)
+  at /usr/include/c++/15/bits/alloc_traits.h:614
+std::__cxx11::basic_string<>::_S_allocate(std::allocator<>&, unsigned long)
+  at /usr/include/c++/15/bits/basic_string.h:142
+std::__cxx11::basic_string<>::_M_create(unsigned long&, unsigned long)
+  at /usr/include/c++/15/bits/basic_string.tcc:164
+void std::__cxx11::basic_string<>::_M_construct<>(char const*, char const*, std::forward_iterator_tag)
+  at /usr/include/c++/15/bits/basic_string.tcc:235
+std::__cxx11::basic_string<>::basic_string<>(char const*, std::allocator<> const&)
+  at /usr/include/c++/15/bits/basic_string.h:714
+98110 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1389
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_21::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_21
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:83
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+62327 calls with 0B peak consumption from:
+    DOCTEST_ANON_FUNC_25::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:99
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+12254 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:99
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+12208 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:99
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+9983 calls with 64B peak consumption from:
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1389
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_65
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:300
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+  and 15888 from 23 other places
+
+21935 calls to allocation functions with 0B peak consumption from
+ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+  at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1156
+  in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+19433 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:99
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+1060 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1056
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1056
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1056
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1056
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1056
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1056
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1056
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:99
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+847 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_34::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_34
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:151
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+510 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1056
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:99
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+70 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1002
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1056
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:99
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+  and 15 from 3 other places
+
+14237 calls to allocation functions with 0B peak consumption from
+ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+  at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:843
+  in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+  at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1056
+7549 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:99
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+1070 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1056
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:99
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+1070 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1056
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1056
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:99
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+1070 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1056
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1056
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1056
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:99
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+1070 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1056
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1056
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1056
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1056
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:99
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+  and 2408 from 5 other places
+
+10284 calls to allocation functions with 0B peak consumption from
+ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+  at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1156
+  in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+7934 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_19::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_19
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:69
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+1220 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_21::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_21
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:83
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+1110 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_23::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_23
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:91
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+10 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_23::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_23
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:91
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+10 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_23::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_23
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:91
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+
+6151 calls to allocation functions with 0B peak consumption from
+ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+  at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1025
+  in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+  at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1056
+5899 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:99
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+251 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_34::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_34
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:151
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+1 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1023
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1056
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_34::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_34
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:151
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+
+2964 calls to allocation functions with 0B peak consumption from
+ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+  at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1254
+  in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+2936 calls with 0B peak consumption from:
+    DOCTEST_ANON_FUNC_25::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:99
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+28 calls with 0B peak consumption from:
+    DOCTEST_ANON_FUNC_34::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:58
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_34
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:151
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+
+2298 calls to allocation functions with 0B peak consumption from
+ptrie::internal::ptrie_base<>::split_node(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+  at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1156
+  in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+766 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::insert(unsigned long const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::insert(unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:421
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_27
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:107
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+766 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::insert(unsigned long const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::insert(unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:421
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_59::operator()
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:257
+    DOCTEST_ANON_FUNC_59
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:259
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+766 calls with 0B peak consumption from:
+    ptrie::internal::ptrie_base<>::insert(unsigned long const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    ptrie::internal::ptrie_base<>::insert(unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:421
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_63::operator()
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:257
+    DOCTEST_ANON_FUNC_63
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:286
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+
+
+PEAK MEMORY CONSUMERS
+49.99M peak memory consumed over 2743900 calls from
+std::__new_allocator<>::allocate(unsigned long, void const*)
+  at /usr/include/c++/15/bits/new_allocator.h:151
+  in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+std::allocator<>::allocate(unsigned long)
+  at /usr/include/c++/15/bits/allocator.h:203
+std::allocator_traits<>::allocate(std::allocator<>&, unsigned long)
+  at /usr/include/c++/15/bits/alloc_traits.h:614
+std::_Vector_base<>::_M_allocate(unsigned long)
+  at /usr/include/c++/15/bits/stl_vector.h:387
+void std::vector<>::_M_range_initialize_n<>(unsigned char const*, unsigned char const*, unsigned long)
+  at /usr/include/c++/15/bits/stl_vector.h:1985
+std::vector<>::vector(std::initializer_list<>, std::allocator<> const&)
+  at /usr/include/c++/15/bits/stl_vector.h:712
+DOCTEST_ANON_FUNC_13::try_insert<>::operator()
+  at /home/marius/work/UPPAAL/ptrie/test/set.cpp:44
+DOCTEST_ANON_FUNC_13::try_insert<>
+  at /home/marius/work/UPPAAL/ptrie/test/utils.h:54
+DOCTEST_ANON_FUNC_13
+  at /home/marius/work/UPPAAL/ptrie/test/set.cpp:44
+49.99M consumed over 9999 calls from:
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+  and 0B from 37 other places
+
+49.98M peak memory consumed over 210770 calls from
+ptrie::internal::new_uchar2(unsigned long, std::__cxx11::basic_string<> const&, unsigned long)
+  at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:34
+  in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+  at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1389
+25.20M consumed over 9983 calls from:
+    DOCTEST_ANON_FUNC_65
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:300
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+24.59M consumed over 4974 calls from:
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_65
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:300
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+194.78K consumed over 40 calls from:
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_65
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:300
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+  and 0B from 23 other places
+
+240.00K peak memory consumed over 1 calls from
+std::__new_allocator<>::allocate(unsigned long, void const*)
+  at /usr/include/c++/15/bits/new_allocator.h:151
+  in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+std::allocator<>::allocate(unsigned long)
+  at /usr/include/c++/15/bits/allocator.h:203
+std::allocator_traits<>::allocate(std::allocator<>&, unsigned long)
+  at /usr/include/c++/15/bits/alloc_traits.h:614
+std::_Vector_base<>::_M_allocate(unsigned long)
+  at /usr/include/c++/15/bits/stl_vector.h:387
+std::vector<>::reserve(unsigned long)
+  at /usr/include/c++/15/bits/vector.tcc:79
+DOCTEST_ANON_FUNC_65
+  at /home/marius/work/UPPAAL/ptrie/test/set.cpp:297
+240.00K consumed over 1 calls from:
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+
+100.14K peak memory consumed over 1768495 calls from
+std::__detail::_MakeUniq<>::__array std::make_unique<>(unsigned long)
+  at /usr/include/c++/15/bits/unique_ptr.h:1099
+  in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+ptrie::internal::ptrie_base<>::bucket_t::bucket_t(unsigned long)
+  at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:275
+ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+  at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1306
+50.23K consumed over 9999 calls from:
+    DOCTEST_ANON_FUNC_65
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:300
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+49.91K consumed over 39 calls from:
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_65
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:300
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+  and 0B from 141 other places
+
+80.50K peak memory consumed over 459 calls from
+ptrie::internal::ptrie_base<>::split_fwd(ptrie::internal::ptrie_base<>::node_t*, ptrie::internal::ptrie_base<>::fwdnode_t*, ptrie::internal::ptrie_base<>::node_t*, int, unsigned long)
+  at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:843
+  in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+80.50K consumed over 39 calls from:
+    ptrie::internal::ptrie_base<>::insert(unsigned char const*, unsigned long)
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:1412
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_65
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:300
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+  and 0B from 8 other places
+
+73.73K peak memory consumed over 1 calls from
+0x7ff9ca0b9e63
+  in /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+73.73K consumed over 1 calls from:
+    call_init::call_init
+      at ./elf/dl-init.c:74
+      in /lib64/ld-linux-x86-64.so.2
+    call_init
+      at ./elf/./elf/dl-init.c:26
+    _dl_init
+      at ./elf/dl-init.c:121
+      in /lib64/ld-linux-x86-64.so.2
+    _dl_start_user
+      in /lib64/ld-linux-x86-64.so.2
+
+54.02K peak memory consumed over 1 calls from
+doctest::detail::FatalConditionHandler::allocateAltStackMem()
+  at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:7998
+  in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+54.02K consumed over 1 calls from:
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:5894
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+
+4.50K peak memory consumed over 1 calls from
+doctest::Context::Context(int, char const* const*)
+  at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:5643
+  in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+4.50K consumed over 1 calls from:
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+
+4.22K peak memory consumed over 24 calls from
+std::__new_allocator<>::allocate(unsigned long, void const*)
+  at /usr/include/c++/15/bits/new_allocator.h:151
+  in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+std::allocator_traits<>::allocate(std::allocator<>&, unsigned long)
+  at /usr/include/c++/15/bits/alloc_traits.h:614
+std::_Rb_tree<>::_M_get_node()
+  at /usr/include/c++/15/bits/stl_tree.h:1170
+std::_Rb_tree_node<>* std::_Rb_tree<>::_M_create_node<>(doctest::detail::TestCase const&)
+  at /usr/include/c++/15/bits/stl_tree.h:1253
+std::_Rb_tree_node<>* std::_Rb_tree<>::_Alloc_node::operator()<>(doctest::detail::TestCase const&) const
+  at /usr/include/c++/15/bits/stl_tree.h:1136
+std::_Rb_tree_iterator<> std::_Rb_tree<>::_M_insert_<>(std::_Rb_tree_node_base*, std::_Rb_tree_node_base*, doctest::detail::TestCase const&, std::_Rb_tree<>::_Alloc_node&)
+  at /usr/include/c++/15/bits/stl_tree.h:2481
+std::pair<> std::_Rb_tree<>::_M_insert_unique<>(doctest::detail::TestCase const&)
+  at /usr/include/c++/15/bits/stl_tree.h:2798
+std::set<>::insert(doctest::detail::TestCase const&)
+  at /usr/include/c++/15/bits/stl_set.h:536
+doctest::detail::regTest(doctest::detail::TestCase const&)
+  at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:8614
+176B consumed over 1 calls from:
+    __static_initialization_and_destruction_0
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:201
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+176B consumed over 1 calls from:
+    __static_initialization_and_destruction_0
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:415
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+176B consumed over 1 calls from:
+    __static_initialization_and_destruction_0
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:389
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+176B consumed over 1 calls from:
+    __static_initialization_and_destruction_0
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:372
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+176B consumed over 1 calls from:
+    __static_initialization_and_destruction_0
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:339
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+  and 3.34K from 19 other places
+
+4.10K peak memory consumed over 1 calls from
+__GI__IO_file_doallocate
+  at ./libio/filedoalloc.c:91
+  in /usr/lib/x86_64-linux-gnu/libc.so.6
+4.10K consumed over 1 calls from:
+    __GI__IO_doallocbuf
+      at ./libio/genops.c:373
+      in /usr/lib/x86_64-linux-gnu/libc.so.6
+    __GI__IO_doallocbuf
+      at ./libio/./libio/genops.c:368
+    _IO_new_file_overflow
+      at ./libio/fileops.c:779
+      in /usr/lib/x86_64-linux-gnu/libc.so.6
+    _IO_new_file_xsputn::_IO_new_file_xsputn
+      at ./libio/fileops.c:1305
+      in /usr/lib/x86_64-linux-gnu/libc.so.6
+    _IO_new_file_xsputn
+      at ./libio/./libio/fileops.c:1258
+    __GI__IO_fwrite
+      at ./libio/iofwrite.c:44
+      in /usr/lib/x86_64-linux-gnu/libc.so.6
+    std::basic_ostream<>& std::__ostream_insert<>(std::basic_ostream<>&, char const*, long)
+      in /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+    std::basic_ostream<>& std::operator<< <>(std::basic_ostream<>&, char const*)
+      in /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+    doctest::ConsoleReporter::printVersion()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6939
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    doctest::ConsoleReporter::printVersion()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6937
+    doctest::ConsoleReporter::printIntro()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6944
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    doctest::ConsoleReporter::printIntro()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6942
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:5983
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+
+
+MOST TEMPORARY ALLOCATIONS
+1370250 temporary allocations of 2743900 allocations in total (49.94%) from
+std::__new_allocator<>::allocate(unsigned long, void const*)
+  at /usr/include/c++/15/bits/new_allocator.h:151
+  in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+std::allocator<>::allocate(unsigned long)
+  at /usr/include/c++/15/bits/allocator.h:203
+std::allocator_traits<>::allocate(std::allocator<>&, unsigned long)
+  at /usr/include/c++/15/bits/alloc_traits.h:614
+std::_Vector_base<>::_M_allocate(unsigned long)
+  at /usr/include/c++/15/bits/stl_vector.h:387
+void std::vector<>::_M_range_initialize_n<>(unsigned char const*, unsigned char const*, unsigned long)
+  at /usr/include/c++/15/bits/stl_vector.h:1985
+std::vector<>::vector(std::initializer_list<>, std::allocator<> const&)
+  at /usr/include/c++/15/bits/stl_vector.h:712
+DOCTEST_ANON_FUNC_13::try_insert<>::operator()
+  at /home/marius/work/UPPAAL/ptrie/test/set.cpp:44
+DOCTEST_ANON_FUNC_13::try_insert<>
+  at /home/marius/work/UPPAAL/ptrie/test/utils.h:54
+DOCTEST_ANON_FUNC_13
+  at /home/marius/work/UPPAAL/ptrie/test/set.cpp:44
+1048576 temporary allocations of 1048576 allocations in total (100.00%) from:
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+102400 temporary allocations of 102400 allocations in total (100.00%) from:
+    DOCTEST_ANON_FUNC_25::try_insert<>::operator()
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:99
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_25::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:63
+    DOCTEST_ANON_FUNC_25
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:99
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+102400 temporary allocations of 102400 allocations in total (100.00%) from:
+    DOCTEST_ANON_FUNC_23::try_insert<>::operator()
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:91
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_23::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:63
+    DOCTEST_ANON_FUNC_23
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:91
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+102400 temporary allocations of 102400 allocations in total (100.00%) from:
+    DOCTEST_ANON_FUNC_21::try_insert<>::operator()
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:83
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_21::try_insert<>
+      at /home/marius/work/UPPAAL/ptrie/test/utils.h:63
+    DOCTEST_ANON_FUNC_21
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:83
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+4000 temporary allocations of 4000 allocations in total (100.00%) from:
+    DOCTEST_ANON_FUNC_34::operator()
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:150
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_34
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:155
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+  and 10.47K from 37 other places
+
+1 temporary allocations of 1 allocations in total (100.00%) from
+0x7ff9ca0b9e63
+  in /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+1 temporary allocations of 1 allocations in total (100.00%) from:
+    call_init::call_init
+      at ./elf/dl-init.c:74
+      in /lib64/ld-linux-x86-64.so.2
+    call_init
+      at ./elf/./elf/dl-init.c:26
+    _dl_init
+      at ./elf/dl-init.c:121
+      in /lib64/ld-linux-x86-64.so.2
+    _dl_start_user
+      in /lib64/ld-linux-x86-64.so.2
+
+1 temporary allocations of 55 allocations in total (1.82%) from
+std::__new_allocator<>::allocate(unsigned long, void const*)
+  at /usr/include/c++/15/bits/new_allocator.h:151
+  in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+std::allocator<>::allocate(unsigned long)
+  at /usr/include/c++/15/bits/allocator.h:203
+std::allocator_traits<>::allocate(std::allocator<>&, unsigned long)
+  at /usr/include/c++/15/bits/alloc_traits.h:614
+std::_Deque_base<>::_M_allocate_node()
+  at /usr/include/c++/15/bits/stl_deque.h:586
+std::_Deque_base<>::_M_create_nodes(ptrie::internal::ptrie_base<>::~ptrie_base()::NodeContext**, ptrie::internal::ptrie_base<>::~ptrie_base()::NodeContext**)
+  at /usr/include/c++/15/bits/stl_deque.h:687
+std::_Deque_base<>::_M_initialize_map(unsigned long)
+  at /usr/include/c++/15/bits/stl_deque.h:661
+std::_Deque_base<>::_Deque_base()
+  at /usr/include/c++/15/bits/stl_deque.h:463
+std::deque<>::deque()
+  at /usr/include/c++/15/bits/stl_deque.h:858
+std::stack<>::stack<>()
+  at /usr/include/c++/15/bits/stl_stack.h:171
+ptrie::internal::ptrie_base<>::~ptrie_base()
+  at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie_internal.hpp:449
+1 temporary allocations of 1 allocations in total (100.00%) from:
+    ptrie::set<>::~set()
+      at /home/marius/work/UPPAAL/ptrie/include/ptrie/ptrie.h:43
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    DOCTEST_ANON_FUNC_55
+      at /home/marius/work/UPPAAL/ptrie/test/set.cpp:230
+    doctest::Context::run()
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6077
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+    main
+      at /home/marius/work/UPPAAL/ptrie/build-multi/_deps/doctest-src/doctest/doctest.h:6501
+      in /home/marius/work/UPPAAL/ptrie/build-multi/test/RelWithDebInfo/Set
+  and 0B from 6 other places
+
+
+total runtime: 2.35s.
+calls to allocation functions: 4998491 (2130644/s)
+temporary memory allocations: 1370252 (584080/s)
+peak heap memory consumption: 100.55M
+peak RSS (including heaptrack overhead): 102.26M
+total memory leaked: 0B
